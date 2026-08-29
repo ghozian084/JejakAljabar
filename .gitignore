@@ -4,3 +4,6 @@ package-lock.json
 
 # Tangkapan layar hasil sampingan uji
 shot-*.png
+
+# Keluaran build untuk Vercel (dibentuk ulang tiap build)
+public/
