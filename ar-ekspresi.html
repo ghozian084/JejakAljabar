@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JEJAK ALJABAR — Modul 4: Baca Ekspresi</title>
+<style>
+/* =====================================================================
+   TEMA WARNA
+   Empat tema, masing-masing punya alasan pakai — bukan sekadar pilihan
+   rasa. Seluruh warna media diambil dari variabel di bawah ini, sehingga
+   mengganti tema tidak menyentuh satu pun aturan tata letak.
+
+   Dua hal SENGAJA kebal tema:
+   1. Lembar kartu cetak Modul 4 (#lembar) — kartunya harus hitam pekat di
+      atas kertas putih, karena pengenal kartu bergantung pada kontras itu.
+   2. Blok @media print — mencetak tema gelap memboroskan tinta dan membuat
+      Lembar Kerja PDF sulit dibaca.
+   ===================================================================== */
+:root{
+  --m-sky1:#cfe4f0; --m-sky2:#eaf2ee; --m-h1a:#a9c7c2; --m-h1b:#bfd6cf; --m-h2a:#8fb6ad; --m-h2b:#a7c6ba;
+  --m-h3a:#7ba795; --m-h3b:#94b99f; --m-gunung:#b8ccd6; --m-gunung2:#c3d5dd; --m-awan:#ffffff;
+  --m-rumus:#7d99a6; --m-pohon:#5d8f79; --m-sungai:#9cc3d6; --m-jalur:#e0cfae; --m-jalurGaris:#ffffff;
+
+  /* Kertas — bawaan. Hangat, silaunya rendah, nyaman untuk sesi panjang. */
+  --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+  --line:#e3ddd2; --line-strong:#cfc6b6;
+  --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+  --stage:#26302f; --sky:#dceaf2;
+  /* #c97a10 hanya mencapai kontras 3,35:1 di atas kartu putih — di bawah
+     ambang WCAG AA untuk teks biasa. Digelapkan ke #a8630c (4,71:1).
+     Ini kekeliruan yang sudah ada sejak versi pertama dan baru
+     ketahuan ketika pemeriksa kontras dijalankan untuk keempat tema. */
+  --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd; --amber-hover:#8f5309;
+  --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+  --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+  --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+  --ok:#14776f; --warn:#b8760c; --bad:#b04a33;
+  --r:14px; --shadow:0 1px 2px rgba(31,42,46,.05), 0 8px 24px -14px rgba(31,42,46,.28);
+}
+
+/* Laut — sejuk. Untuk yang silau oleh nada hangat, atau ruang berlampu kuning. */
+html[data-tema="laut"]{
+  --m-sky1:#c3ddec; --m-sky2:#e4eef2; --m-h1a:#9fc0c4; --m-h1b:#b6d0d3; --m-h2a:#83aeb0; --m-h2b:#9cbfc0;
+  --m-h3a:#6e9fa1; --m-h3b:#88b2ad; --m-gunung:#aec6d4; --m-gunung2:#bad0da; --m-awan:#ffffff;
+  --m-rumus:#6f93a4; --m-pohon:#4f8a86; --m-sungai:#8fbdd6; --m-jalur:#dbcfb8; --m-jalurGaris:#ffffff;
+
+  --paper:#f1f6f8; --card:#ffffff; --ink:#15282f; --ink-soft:#4c6570; --ink-mute:#5f7a85;
+  --line:#d6e3e8; --line-strong:#b5ccd4;
+  --surf:#fbfdfe; --surf2:#e8f0f4; --surf3:#dae7ec; --mute:#9db1b9;
+  --stage:#1d2b31; --sky:#d2e6f1;
+  --amber:#a8630c; --amber-bg:#fdf0dc; --amber-ink:#7a4806; --amber-line:#dc9e46; --amber-soft:#f2e0c0; --amber-hover:#9c5c0b;
+  --teal:#0f6f74;  --teal-bg:#dff2f3;  --teal-ink:#0a5155;  --teal-line:#b0d9dc;  --teal-lite:#159aa1;
+  --clay:#a74631;  --clay-bg:#fae8e4;  --clay-ink:#823623;  --clay-line:#e7c8c0;  --heart:#962c17;
+  --plum:#5b4e8b;  --plum-bg:#eceaf7;  --plum-line:#c9c5e5; --plum-lite:#7467a7;
+  --ok:#0f6f74; --warn:#a8630c; --bad:#a74631;
+  --shadow:0 1px 2px rgba(21,40,47,.05), 0 8px 24px -14px rgba(21,40,47,.3);
+}
+
+/* Malam — gelap. Untuk belajar malam, ruang gelap, atau layar yang menyilaukan.
+   Nada aksen dibalik: yang tadinya varian gelap kini varian terang, supaya
+   teks di atas latar berwarna tetap terbaca. */
+html[data-tema="malam"]{
+  --m-sky1:#16242e; --m-sky2:#1b2b2e; --m-h1a:#22353a; --m-h1b:#2a3f42; --m-h2a:#1d3236; --m-h2b:#254045;
+  --m-h3a:#182b2d; --m-h3b:#20383a; --m-gunung:#243740; --m-gunung2:#2b414a; --m-awan:#3a4d55;
+  --m-rumus:#6f8b96; --m-pohon:#2f5f52; --m-sungai:#2c5872; --m-jalur:#4a4132; --m-jalurGaris:#7d6f55;
+
+  --paper:#131a1c; --card:#1c2427; --ink:#e9eff1; --ink-soft:#a4b4b9; --ink-mute:#8b9ba1;
+  --line:#2d3639; --line-strong:#414e52;
+  --surf:#222b2e; --surf2:#283235; --surf3:#303b3f; --mute:#4c585c;
+  --stage:#0c1113; --sky:#1a2933;
+  --amber:#e8a341; --amber-bg:#3a2b13; --amber-ink:#f6c67f; --amber-line:#7d5c23; --amber-soft:#4c3818; --amber-hover:#f2b055;
+  --teal:#40bfb2;  --teal-bg:#0f322f;  --teal-ink:#74dacd;  --teal-line:#1f5d56;  --teal-lite:#55d6c7;
+  --clay:#ec8a70;  --clay-bg:#3a1f19;  --clay-ink:#f6b3a1;  --clay-line:#6d3a2c;  --heart:#f07a5e;
+  --plum:#b79ed8;  --plum-bg:#282034;  --plum-line:#4c3f66; --plum-lite:#c8b2e6;
+  --ok:#40bfb2; --warn:#e8a341; --bad:#ec8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+/* Kontras Tinggi — untuk siswa berpenglihatan rendah, proyektor pucat, atau
+   ruang yang terkena cahaya matahari langsung. Garis dibuat hitam pekat dan
+   bayangan dimatikan supaya batas antarbagian tegas. */
+html[data-tema="kontras"]{
+  --m-sky1:#eef5f9; --m-sky2:#f7fafb; --m-h1a:#d8e4e2; --m-h1b:#e6eeec; --m-h2a:#c4d6d1; --m-h2b:#d4e2dd;
+  --m-h3a:#b0c8bf; --m-h3b:#c2d6cc; --m-gunung:#cfdde4; --m-gunung2:#dde7ec; --m-awan:#ffffff;
+  --m-rumus:#3a5560; --m-pohon:#2c6b52; --m-sungai:#5b93b5; --m-jalur:#cbb894; --m-jalurGaris:#ffffff;
+
+  --paper:#ffffff; --card:#ffffff; --ink:#000000; --ink-soft:#1c1c1c; --ink-mute:#333333;
+  --line:#000000; --line-strong:#000000;
+  --surf:#ffffff; --surf2:#eeeeee; --surf3:#dddddd; --mute:#6b6b6b;
+  --stage:#000000; --sky:#e8f0f5;
+  --amber:#7a4600; --amber-bg:#fff3df; --amber-ink:#5a3300; --amber-line:#7a4600; --amber-soft:#ffe7c2; --amber-hover:#5a3300;
+  --teal:#00564f;  --teal-bg:#dff4f1;  --teal-ink:#003b36;  --teal-line:#00564f;  --teal-lite:#00776d;
+  --clay:#8c2a12;  --clay-bg:#fde9e5;  --clay-ink:#661d0b;  --clay-line:#8c2a12;  --heart:#8c2a12;
+  --plum:#472b73;  --plum-bg:#efe9f8;  --plum-line:#472b73; --plum-lite:#5b3891;
+  --ok:#00564f; --warn:#7a4600; --bad:#8c2a12;
+  --shadow:none;
+}
+
+/* Mencetak selalu memakai tema Kertas, apa pun tema yang sedang dipakai. */
+@media print{
+  html[data-tema]{
+    --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+    --line:#e3ddd2; --line-strong:#cfc6b6;
+    --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+    --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd;
+    --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+    --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+    --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+    --ok:#14776f; --warn:#b8760c; --bad:#b04a33; --shadow:none;
+  }
+}
+
+/* ---------- tombol tema ---------- */
+.temaWrap{position:relative;display:inline-block}
+.temaBtn{
+  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.4;
+}
+.temaBtn:hover{border-color:var(--line-strong);color:var(--ink)}
+.temaBtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.temaMenu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:200;width:252px;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 34px -12px rgba(0,0,0,.35);
+  padding:6px;
+}
+.temaMenu[hidden]{display:none}
+.temaMenu .hd{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+  padding:7px 10px 5px;
+}
+.temaMenu button{
+  display:flex;width:100%;text-align:left;gap:10px;align-items:center;
+  font:inherit;cursor:pointer;background:none;border:0;border-radius:9px;
+  padding:8px 10px;color:var(--ink);
+}
+.temaMenu button:hover{background:var(--surf2)}
+.temaMenu button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.temaMenu button[aria-checked="true"]{background:var(--teal-bg)}
+.temaMenu .sw{
+  flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-strong);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+}
+.temaMenu .sw i{display:block}
+.temaMenu .nm{font-size:13.5px;font-weight:650;line-height:1.25}
+/* Tanda pilihan berupa teks, bukan warna saja — supaya tetap terbaca oleh
+   siswa yang kesulitan membedakan warna. */
+.temaMenu .ket{font-size:11.5px;color:var(--ink-soft);line-height:1.3;display:block;font-weight:400}
+.temaMenu .tick{margin-left:auto;font-weight:700;color:var(--teal)}
+.temabar{display:flex;justify-content:center;margin:16px 0 -2px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.math{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;white-space:nowrap}
+header.top{position:sticky;top:0;z-index:40;background:rgba(250,247,242,.94);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+header.top .in{max-width:760px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.brand{font-weight:750;letter-spacing:-.02em;font-size:15px}
+.brand span{color:var(--amber)}
+.modtag{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;
+  border-radius:999px;background:var(--plum-bg);color:var(--plum)}
+.backlink{margin-left:auto;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ink-soft);
+  border:1px solid var(--line-strong);border-radius:999px;padding:6px 13px}
+.backlink:hover{background:var(--card);color:var(--ink);border-color:var(--ink)}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 90px}
+h1{font-size:clamp(23px,5vw,31px);letter-spacing:-.02em;margin:0 0 8px;line-height:1.18}
+.lede{color:var(--ink-soft);font-size:16px;margin:0 0 16px}
+.pillrow{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+.card h2{font-size:16px;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 .step{font-size:10px;font-weight:700;letter-spacing:.09em;padding:3px 7px;border-radius:5px;background:var(--plum-bg);color:var(--plum)}
+.card .ctx{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:11px 0}
+button.act{font:inherit;font-size:14px;font-weight:600;padding:8px 15px;border-radius:9px;border:1.5px solid var(--ink);
+  background:var(--ink);color:var(--card);cursor:pointer;transition:.15s}
+button.act.ghost{background:transparent;color:var(--ink)}
+button.act.small{font-size:13px;padding:6px 11px}
+button.act:disabled{opacity:.4;cursor:not-allowed}
+input[type=text]{font:inherit;font-size:17px;padding:9px 12px;border:1.5px solid var(--line-strong);
+  border-radius:9px;background:var(--card);color:var(--ink);width:170px}
+input.alg{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;font-size:19px}
+input.short{width:74px;text-align:center}
+input:focus{outline:0;border-color:var(--ink)}
+.chip{font:inherit;font-size:13px;font-weight:600;padding:6px 13px;border-radius:999px;border:1.5px solid var(--line-strong);
+  background:var(--card);color:var(--ink-soft);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.stage{position:relative;background:var(--stage);border-radius:12px;overflow:hidden;line-height:0}
+.stage canvas{width:100%;height:auto;display:block}
+video{display:none}
+.hud{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(31,42,46,.86);color:var(--card);
+  border-radius:9px;padding:9px 12px;font-size:12.5px;line-height:1.45;backdrop-filter:blur(6px)}
+.hud b{color:var(--amber-soft)}
+.fb{margin-top:10px;padding:11px 13px;border-radius:9px;font-size:14px;display:none;line-height:1.55}
+.fb.show{display:block}
+.fb.ok{background:var(--teal-bg);color:var(--teal-ink);border:1px solid var(--teal-line)}
+.fb.bad{background:var(--clay-bg);color:var(--clay-ink);border:1px solid var(--clay-line)}
+.fb.hint{background:var(--amber-bg);color:var(--amber-ink);border:1px solid var(--amber-soft)}
+.fb .why{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed currentColor;font-size:13px}
+.model{background:linear-gradient(var(--surf2),var(--surf2));border:1px solid var(--line-strong);border-radius:11px;
+  padding:16px;margin:12px 0;text-align:center}
+.model .eq{font-family:Palatino,Georgia,serif;font-size:clamp(23px,6.4vw,34px);font-style:italic;margin:2px 0}
+.model .eq .v{color:var(--amber);font-weight:600}
+.model .eq .c{color:var(--teal);font-weight:600}
+.model .cap{font-size:12px;color:var(--ink-soft);font-style:normal;font-family:inherit;margin-top:5px}
+.tally{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:10px 0 2px}
+.tally .t{display:flex;align-items:center;gap:8px;font-size:13.5px}
+.tally .t b{font-size:23px;font-variant-numeric:tabular-nums}
+.ikon-sq{width:19px;height:19px;background:var(--ink);border-radius:2px;flex:none}
+.ikon-ci{width:19px;height:19px;background:var(--ink);border-radius:50%;flex:none}
+.ctr{display:inline-flex;align-items:center;gap:5px;background:var(--surf);border:1px solid var(--line-strong);border-radius:999px;padding:3px 5px}
+.ctr b{font-size:13px;padding:0 6px;min-width:74px;text-align:center;font-weight:600}
+.ctr button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);background:var(--card);cursor:pointer;font-size:15px;line-height:1;color:var(--ink)}
+.note{background:var(--amber-bg);border-left:3px solid var(--amber);padding:11px 13px;border-radius:0 8px 8px 0;font-size:13.5px;margin:12px 0;line-height:1.65}
+.note b{color:var(--amber)}
+.note.teal{background:var(--teal-bg);border-color:var(--teal)}
+.note.teal b{color:var(--teal)}
+.note.plum{background:var(--plum-bg);border-color:var(--plum)}
+.note.plum b{color:var(--plum)}
+.dim{opacity:.45;pointer-events:none}
+.handoff{background:linear-gradient(135deg,var(--plum-bg),var(--teal-bg));border:1px solid var(--plum-line);border-radius:var(--r);padding:18px;margin:18px 0}
+.handoff .t{font-weight:650;font-size:15.5px;margin-bottom:4px}
+.handoff .d{font-size:13.5px;color:var(--ink-soft);line-height:1.65}
+.handoff a.go{display:inline-flex;gap:6px;margin-top:10px;font-size:14px;font-weight:600;text-decoration:none;
+  background:var(--ink);color:var(--card);padding:8px 15px;border-radius:9px}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+details.sheetwrap{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:0;margin:14px 0;box-shadow:var(--shadow)}
+details.sheetwrap>summary{cursor:pointer;padding:16px 18px;font-weight:650;font-size:15.5px;list-style:none}
+details.sheetwrap>summary::-webkit-details-marker{display:none}
+details.sheetwrap>summary::before{content:"▸ ";color:var(--ink-soft)}
+details.sheetwrap[open]>summary::before{content:"▾ "}
+.sheetbody{padding:0 18px 18px}
+
+/* ---------- lembar cetak ---------- */
+#lembar{background:#fff;color:#000;padding:12px;border:1px solid var(--line);border-radius:10px}
+#lembar .kop{border-bottom:2.5px solid #000;padding-bottom:8px;margin-bottom:12px}
+#lembar .kop .b{font-weight:750;font-size:16px;letter-spacing:-.01em}
+#lembar .kop .s{font-size:11px;color:#555}
+#lembar h5{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#555;margin:16px 0 7px}
+#lembar .leg{display:flex;gap:26px;flex-wrap:wrap;font-size:12px;margin-bottom:10px}
+#lembar .leg span{display:flex;align-items:center;gap:8px}
+#lembar .arena{border:3px solid #000;border-radius:6px;height:190px;position:relative;
+  display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}
+#lembar .arena .mark{position:absolute;width:15px;height:15px;border:3px solid #000}
+#lembar .arena .m1{top:7px;left:7px;border-right:0;border-bottom:0}
+#lembar .arena .m2{top:7px;right:7px;border-left:0;border-bottom:0}
+#lembar .arena .m3{bottom:7px;left:7px;border-right:0;border-top:0}
+#lembar .arena .m4{bottom:7px;right:7px;border-left:0;border-top:0}
+#lembar .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+#lembar .cut{border:1px dashed #aaa;border-radius:4px;padding:7px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;aspect-ratio:1/1.15}
+#lembar .sq{width:64%;aspect-ratio:1/1;background:#000;border-radius:2px}
+#lembar .ci{width:64%;aspect-ratio:1/1;background:#000;border-radius:50%}
+#lembar .cut i{font-size:8.5px;font-style:normal;color:#666;letter-spacing:.04em}
+#lembar ol{font-size:12px;padding-left:18px;margin:6px 0;line-height:1.7}
+#lembar .tip{font-size:11px;color:#555;border-top:1px solid #ccc;padding-top:8px;margin-top:12px;line-height:1.6}
+@media print{
+  @page{margin:11mm}
+  body{background:#fff}
+  header.top,.wrap>h1,.wrap>.lede,.wrap>.pillrow,.wrap>.note,.card,.handoff,footer,.noprint{display:none !important}
+  details.sheetwrap{border:0;box-shadow:none;margin:0}
+  details.sheetwrap>summary{display:none}
+  .sheetbody{padding:0}
+  .sheetbody>.row{display:none !important}
+  #lembar{border:0;border-radius:0;padding:0}
+  #lembar .arena{height:230px;break-inside:avoid}
+  #lembar .cards{break-inside:avoid}
+  .wrap{max-width:none;padding:0;margin:0}
+}
+
+/* ---------- lapisan bengkel ---------- */
+.restore{background:var(--teal-bg);border:1px solid var(--teal-line);border-radius:var(--r);padding:12px 16px;
+  margin:14px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--teal-ink);line-height:1.55}
+.restore b{font-weight:700}
+.restore button{margin-left:auto}
+.hide{display:none !important}
+.xpchip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:5px 12px;
+  border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);white-space:nowrap}
+.xpchip b{color:var(--ink);font-variant-numeric:tabular-nums}
+.xpchip .lv{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--amber)}
+.misirow{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 4px}
+.misidot{width:34px;height:34px;border-radius:50%;border:2.5px solid var(--line-strong);background:var(--card);
+  display:grid;place-items:center;font-size:13px;font-weight:750;color:var(--ink-soft);
+  font-variant-numeric:tabular-nums;transition:.2s;cursor:default}
+.misidot[data-s="now"]{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 5px rgba(31,42,46,.07)}
+.misidot[data-s="done"]{background:var(--teal);border-color:var(--teal);color:var(--card)}
+.misidot[data-s="lock"]{opacity:.4}
+.misibox{background:linear-gradient(135deg,var(--plum-bg),var(--teal-bg));border:1px solid var(--plum-line);border-radius:12px;
+  padding:15px 17px;margin:12px 0}
+.misibox .no{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--plum)}
+.misibox .ti{font-size:16.5px;font-weight:700;margin:2px 0 4px;letter-spacing:-.01em}
+.misibox .de{font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+.misibox .de b{color:var(--ink)}
+.toastwrap{position:fixed;left:0;right:0;bottom:18px;z-index:90;display:flex;flex-direction:column;
+  align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+@media (min-width:860px){ .toastwrap{left:auto;right:20px;align-items:flex-end;padding:0} }
+.toast{background:var(--ink);color:var(--card);border-radius:12px;padding:12px 17px;max-width:380px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;
+  transform:translateY(14px);opacity:0;transition:.32s cubic-bezier(.2,.8,.3,1)}
+.toast.in{transform:none;opacity:1}
+.toast .medal{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--amber-line),#c1740c);color:var(--card);font-weight:750;font-size:14px}
+.toast.xp .medal{background:linear-gradient(150deg,var(--teal-lite),var(--teal-ink))}
+.toast .tt{font-size:14px;font-weight:650;line-height:1.35}
+.toast .td{font-size:12px;opacity:.82;line-height:1.45;margin-top:2px}
+.kstat{display:flex;gap:22px;flex-wrap:wrap;margin:12px 0 4px}
+.kstat div{font-size:12px;color:var(--ink-soft)}
+.kstat div b{display:block;font-size:24px;color:var(--ink);font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin-top:12px}
+.badge{border:1px solid var(--line);border-radius:11px;padding:12px;display:flex;gap:10px;align-items:flex-start;background:var(--card)}
+.badge.locked{opacity:.45;background:var(--surf)}
+.badge .m{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:750;
+  font-size:13px;background:var(--line);color:var(--ink-soft)}
+.badge.got .m{background:linear-gradient(150deg,var(--amber-line),#c1740c);color:var(--card)}
+.badge .n{font-size:12.5px;font-weight:650;line-height:1.3}
+.badge .d{font-size:11px;color:var(--ink-soft);line-height:1.45;margin-top:2px}
+</style>
+<script>
+/* Dipasang sebelum halaman dilukis. Kalau tema baru dibaca setelah halaman
+   tampil, pengguna tema Malam akan melihat kedipan putih lebih dulu. */
+(function(){try{var v=localStorage.getItem("jejak.tema.v1");
+if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute("data-tema",v);}catch(e){}})();
+</script>
+</head>
+<body>
+<header class="top">
+  <div class="in">
+    <span class="brand">JEJAK <span>ALJABAR</span></span>
+    <span class="modtag">Modul 4 · Baca Ekspresi</span>
+    <a class="backlink" href="index.html">☰ Menu</a>
+    <span class="temaWrap noprint" id="temaWrap"></span>
+    <a class="backlink" href="jejak-aljabar.html">← Modul 1 · Kelas</a>
+    <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Calon Perajin</span><b id="xpVal">0</b> jejak</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>Susun dengan tangan,<br>kamera yang membacanya.</h1>
+  <p class="lede">Kotak bandeng di Modul 1 cuma gambar di layar. Di sini kartunya benar-benar ada di mejamu —
+    dan kamera memeriksa apakah susunanmu cocok dengan ekspresi yang diminta.</p>
+  <div class="pillrow">
+    <span class="pill">Kartu cetak hitam-putih</span>
+    <span class="pill">Tanpa pustaka luar · tanpa internet</span>
+    <span class="pill">Dua arah: baca &amp; susun</span>
+  </div>
+
+  <div class="note plum">
+    <b>Kenapa kartu fisik masih perlu, padahal sudah ada layar?</b> Menggeser kotak di layar itu memilih;
+    memindahkan kartu dengan tangan itu <i>memutuskan</i>. Salah paham “huruf = singkatan benda” paling sering
+    runtuh saat siswa memegang tumpukan yang jumlahnya benar-benar tidak dia ketahui.
+  </div>
+
+  <details class="sheetwrap noprint-summary">
+    <summary>Lembar cetak — arena &amp; kartu (buka lalu cetak)</summary>
+    <div class="sheetbody">
+      <div class="row" style="margin-top:0">
+        <button class="act small" id="btnCetak">Cetak lembar ini</button>
+        <span style="font-size:12.5px;color:var(--ink-soft)">Cukup kertas HVS biasa, cetak <b>hitam-putih</b>.</span>
+      </div>
+      <div id="lembar">
+        <div class="kop">
+          <div class="b">JEJAK ALJABAR — Lembar Kartu Ekspresi</div>
+          <div class="s">Modul 4 · Baca Ekspresi — gunting kartunya, susun di dalam arena, lalu pindai dengan kamera.</div>
+        </div>
+
+        <div class="leg">
+          <span><span style="width:19px;height:19px;background:#000;border-radius:2px;display:inline-block"></span>
+            <b>Kotak</b> — isinya belum diketahui. Satu kartu = satu variabel.</span>
+          <span><span style="width:19px;height:19px;background:#000;border-radius:50%;display:inline-block"></span>
+            <b>Ikan satuan</b> — sudah terhitung. Satu kartu = 1.</span>
+        </div>
+
+        <h5>Arena — letakkan kartu di dalam bingkai ini</h5>
+        <div class="arena">
+          <span class="mark m1"></span><span class="mark m2"></span>
+          <span class="mark m3"></span><span class="mark m4"></span>
+          letakkan kartu di sini, jangan sampai bertumpuk atau bersentuhan
+        </div>
+
+        <h5>Kartu — gunting mengikuti garis putus-putus</h5>
+        <div class="cards" id="kartuGrid"></div>
+
+        <h5>Cara pakai</h5>
+        <ol>
+          <li>Gunting kartunya. Simpan di amplop supaya tidak hilang.</li>
+          <li>Letakkan lembar arena di meja, di tempat yang <b>terang dan tidak berbayang</b>.</li>
+          <li>Susun kartu di dalam arena — <b>jangan bersentuhan</b>, kamera membacanya satu per satu.</li>
+          <li>Pegang HP kira-kira 30 cm di atas arena, lurus ke bawah, lalu tekan <b>Pindai</b>.</li>
+        </ol>
+        <div class="tip"><b>Kalau kamera sering keliru:</b> tambah cahaya, jauhkan kartu satu sama lain,
+          dan pastikan bayangan tanganmu tidak jatuh ke arena. Jumlah kartu selalu bisa dibetulkan
+          manual di aplikasi — kamera hanya membantu, bukan penentu.</div>
+      </div>
+    </div>
+  </details>
+
+  <div class="restore hide" id="restoreBar">
+    <span id="restoreTxt"></span>
+    <button class="act ghost small" id="btnMulaiBaru">Mulai dari awal</button>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">LANGKAH 1</span> Misi bengkel</h2>
+    <p class="ctx">Delapan misi, berganti-ganti arah: kadang kamera yang membaca, kadang kamu yang menyusun.
+      Arahnya ditentukan misi — bukan dipilih sendiri, supaya kedua arah benar-benar terlatih.</p>
+    <div class="misirow" id="misiRow"></div>
+    <div class="misibox" id="misiBox"></div>
+    <div class="row">
+      <span style="font-size:14px">Huruf untuk isi satu kotak:</span>
+      <input type="text" class="alg short" id="huruf" maxlength="1" value="n" aria-label="huruf variabel">
+      <button class="act ghost small" id="btnBebas">Mode bebas</button>
+    </div>
+    <div class="row hide" id="modeRow">
+      <button class="chip" id="mBaca" aria-pressed="true">Kamera membaca → aku menulis</button>
+      <button class="chip" id="mSusun" aria-pressed="false">Media meminta → aku menyusun</button>
+    </div>
+    <div class="note teal" id="tugas" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">LANGKAH 2</span> Pindai arena</h2>
+    <p class="ctx">Kamera butuh HTTPS. Kalau berkas ini dibuka langsung dari berkas, pakai
+      <b>Contoh simulasi</b> atau unggah foto.</p>
+    <div class="row">
+      <button class="act" id="btnCam">Nyalakan kamera</button>
+      <button class="act ghost small" id="btnSim">Contoh simulasi</button>
+      <button class="act ghost small" id="btnFile">Unggah foto</button>
+      <input type="file" id="file" accept="image/*" style="display:none">
+    </div>
+    <div class="stage">
+      <video id="vid" playsinline muted></video>
+      <canvas id="cv" width="640" height="440"></canvas>
+      <div class="hud" id="hud">Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.</div>
+    </div>
+    <div class="row">
+      <button class="act small" id="btnPindai">Pindai</button>
+      <span style="font-size:12.5px;color:var(--ink-soft)">Hasilnya bisa dibetulkan manual di bawah.</span>
+    </div>
+    <div class="fb" id="fb-pindai"></div>
+
+    <div class="tally">
+      <div class="t"><span class="ikon-sq"></span><b id="nSq">0</b> kotak</div>
+      <div class="t"><span class="ikon-ci"></span><b id="nCi">0</b> ikan satuan</div>
+    </div>
+    <div class="row" style="justify-content:center">
+      <span class="ctr"><button data-adj="sq:-1">−</button><b>kotak</b><button data-adj="sq:1">+</button></span>
+      <span class="ctr"><button data-adj="ci:-1">−</button><b>ikan satuan</b><button data-adj="ci:1">+</button></span>
+    </div>
+
+    <div class="model">
+      <div class="eq" id="eq">—</div>
+      <div class="cap" id="eqCap">Belum ada kartu yang terbaca.</div>
+    </div>
+  </div>
+
+  <div class="card dim" id="cJawab">
+    <h2><span class="step">LANGKAH 3</span> <span id="l3title">Tulis ekspresinya</span></h2>
+    <p class="ctx" id="l3ctx">Kamera sudah menghitung kartunya. Sekarang giliranmu menuliskannya sebagai aljabar —
+      kamera sengaja tidak menampilkan jawabannya sebelum kamu mencoba.</p>
+    <div id="jawabBox">
+      <div class="row">
+        <span>Ekspresi =</span>
+        <input type="text" class="alg" id="jwb" placeholder="tulis ekspresinya" aria-label="ekspresi">
+        <button class="act small" id="btnCek">Periksa</button>
+      </div>
+    </div>
+    <div class="row" id="susunBox" style="display:none">
+      <button class="act small" id="btnCekSusun">Periksa susunanku</button>
+      <button class="act ghost small" id="btnTugasBaru">Tugas lain</button>
+    </div>
+    <div class="fb" id="fb-jawab"></div>
+  </div>
+
+  <div class="card">
+    <h2>Bekal Bengkel</h2>
+    <p class="ctx">Poinnya dihitung dengan aturan yang sama seperti modul lain: <b>memperbaiki jawaban yang
+      sempat keliru dibayar lebih mahal daripada tepat sejak awal.</b></p>
+    <div class="kstat">
+      <div><b id="pjXp">0</b>jejak terkumpul</div>
+      <div><b id="pjLv">—</b>peringkat</div>
+      <div><b id="pjMisi">0/8</b>misi</div>
+      <div><b id="pjBadge">0/8</b>lencana</div>
+    </div>
+    <div class="badgegrid" id="badgeGrid"></div>
+
+    <h2 style="margin-top:24px">Pindah ke perangkat lain</h2>
+    <p class="ctx">Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.</p>
+    <div class="row">
+      <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
+      <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+    </div>
+    <div id="simpanBox" style="display:none;font-family:Menlo,Consolas,monospace;font-weight:700;
+      font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em;background:#fffdf9;border:1.5px dashed var(--line-strong);
+      border-radius:11px;padding:13px;text-align:center;user-select:all;margin:10px 0">—</div>
+    <div class="row">
+      <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+      <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+    </div>
+    <div class="fb" id="fb-simpan"></div>
+  </div>
+
+  <div class="handoff">
+    <div class="t">Modul lain</div>
+    <div class="d">Modul 1 membangun konsepnya di kelas, Modul 2 mengukur papan mading yang sebenarnya,
+      Modul 3 melatih sampai lancar. Modul ini menjembatani benda nyata dengan simbol.</div>
+    <a class="go" href="jejak-aljabar.html">← Modul 1</a>
+    <a class="go" href="latihan.html" style="margin-left:8px">Modul 3 · Latihan</a>
+  </div>
+
+  <footer>
+    <b>JEJAK ALJABAR · Modul 4 — Baca Ekspresi (prototipe).</b> Pengenal kartu ditulis sendiri:
+    grayscale → ambang Otsu → pelabelan komponen terhubung → klasifikasi bentuk lewat
+    <b>rasio jari-jari tepi</b> (p90 ÷ p15 terhadap titik berat), yang tidak berubah bila kartu diputar.
+    Terukur pada 700 kartu simulasi: lingkaran 1,10–1,18 dan persegi 1,29–1,41 — dua sebaran yang
+    terpisah jelas, sehingga ambang pemisahnya tidak sensitif.
+    Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak berpola. Cetak hitam-putih di HVS biasa.<br>
+    Simpan berkas ini satu folder dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi.
+  </footer>
+
+  <div class="toastwrap" id="toastWrap" aria-live="polite"></div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const CV = $("cv"), X = CV.getContext("2d", { willReadFrequently:true });
+const VID = $("vid"), HUD = $("hud");
+const ST = { img:null, live:false, sq:0, ci:0, mode:"baca", target:null, blobs:[], scanned:false };
+
+
+/* =====================================================================
+   KODE SIMPAN — memindahkan kemajuan antar perangkat
+   Bukan enkripsi. Tujuannya memindahkan, bukan mengamankan: siswa bisa
+   memotretnya, menuliskannya, atau mengirimnya lewat WhatsApp, lalu
+   menempelkannya di HP lain.
+
+   Alfabet Crockford (tanpa I, L, O, U) supaya salah baca tulisan tangan
+   tidak menghasilkan kode lain yang kebetulan sah. Checksum dua karakter
+   bergaya Fletcher — menangkap salah ketik satu karakter maupun dua
+   karakter yang tertukar posisinya.
+   ===================================================================== */
+const B32S = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function BitTulis(){ this.b = []; }
+BitTulis.prototype.put = function(v, n){
+  v = Math.max(0, Math.min(Math.floor(v) || 0, Math.pow(2, n) - 1));
+  for(let i = n - 1; i >= 0; i--) this.b.push(Math.floor(v / Math.pow(2, i)) % 2);
+  return this;
+};
+BitTulis.prototype.selesai = function(awalan){
+  const b = this.b.slice();
+  while(b.length % 5) b.push(0);
+  let s = "";
+  for(let i = 0; i < b.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + b[i + j];
+    s += B32S[v];
+  }
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < s.length; i++){ c1 = (c1 + B32S.indexOf(s[i])) % 32; c2 = (c2 + c1) % 32; }
+  s += B32S[c1] + B32S[c2];
+  return awalan + "-" + (s.match(/.{1,5}/g) || []).join("-");
+};
+
+function BitBaca(teks, awalan){
+  let t = String(teks).toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if(t.indexOf(awalan) !== 0) return null;
+  t = t.slice(awalan.length).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  if(t.length < 4) return null;
+  const isi = t.slice(0, -2), cs = t.slice(-2);
+  if(isi.split("").some(c => B32S.indexOf(c) < 0)) return null;
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < isi.length; i++){ c1 = (c1 + B32S.indexOf(isi[i])) % 32; c2 = (c2 + c1) % 32; }
+  if(B32S[c1] + B32S[c2] !== cs) return null;               // checksum gagal
+  const bits = [];
+  for(let i = 0; i < isi.length; i++){
+    const v = B32S.indexOf(isi[i]);
+    for(let j = 4; j >= 0; j--) bits.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  let pos = 0;
+  return { get:function(n){
+    let v = 0;
+    for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
+    return v;
+  } };
+}
+
+/* =====================================================================
+   BENGKEL KARTU — lapisan misi
+   Arah latihan ditentukan misi, bukan dipilih siswa. Alasannya: kalau
+   boleh memilih, hampir semua siswa akan bertahan di arah "kamera membaca
+   → aku menulis", karena arah sebaliknya (simbol → benda) terasa lebih
+   sulit. Padahal justru arah itu yang jarang dilatih di kelas.
+
+   Aturan poin sama seperti modul lain dan sengaja terbalik dari kebiasaan:
+   memperbaiki jawaban yang sempat keliru dibayar LEBIH MAHAL daripada
+   tepat sejak awal.
+   ===================================================================== */
+const MISI = [
+  { arah:"baca",  ti:"Baca susunanmu sendiri",
+    de:"Susun kartu sesukamu — <b>minimal satu kotak dan satu karya satuan</b> — lalu pindai dan tulis ekspresinya.",
+    syarat:function(){ return ST.sq >= 1 && ST.ci >= 1; },
+    kurang:"Misi ini butuh minimal <b>satu kotak</b> dan <b>satu karya satuan</b> di arena." },
+  { arah:"susun", t:{a:2,b:0}, ti:"Susun 2n",
+    de:"Tidak ada karya satuan di sini. Berapa kartu kotak, berapa satuan?" },
+  { arah:"susun", t:{a:1,b:4}, ti:"Susun n + 4",
+    de:"Perhatikan: di depan huruf <b>tidak ada angka</b>. Apa artinya untuk jumlah kartunya?" },
+  { arah:"baca",  ti:"Tumpukan besar",
+    de:"Susun <b>tiga kotak atau lebih</b>, lalu tulis ekspresinya.",
+    syarat:function(){ return ST.sq >= 3; },
+    kurang:"Misi ini butuh <b>tiga kotak atau lebih</b> di arena." },
+  { arah:"susun", t:{a:3,b:0}, ti:"Susun 3n",
+    de:"Sekali lagi tanpa satuan — pastikan arenanya benar-benar bersih dari kartu bulat." },
+  { arah:"baca",  ti:"Tanpa satu pun kotak",
+    de:"Susun <b>hanya karya satuan</b>, minimal dua, tanpa kotak sama sekali. Lalu tulis ekspresinya.",
+    syarat:function(){ return ST.sq === 0 && ST.ci >= 2; },
+    kurang:"Misi ini butuh <b>nol kotak</b> dan minimal dua karya satuan." },
+  { arah:"susun", t:{a:4,b:6}, ti:"Susun 4n + 6",
+    de:"Dua bagian sekaligus. Hitung masing-masing terpisah sebelum menaruh kartunya." },
+  { arah:"bos",   t:{a:3,b:5}, ti:"BOS · Susun lalu tuliskan",
+    de:"Susun <b>3n + 5</b> di arena. Setelah kamera membenarkan susunanmu, kamu masih harus " +
+       "<b>menuliskan ekspresinya</b> — dua arah dalam satu misi." }
+];
+const BADGES = [
+  { id:"pembaca",   n:"Pembaca Kartu",   d:"Menerjemahkan susunan benda menjadi simbol aljabar" },
+  { id:"penyusun",  n:"Penyusun Kartu",  d:"Menerjemahkan simbol aljabar menjadi susunan benda" },
+  { id:"satu",      n:"Angka Tak Terlihat", d:"Menangani koefisien 1 dengan benar — n, bukan 1n" },
+  { id:"nol",       n:"Tanpa Kotak",     d:"Mengakui bahwa sebuah bilangan sendirian juga sudah ekspresi" },
+  { id:"tangan",    n:"Tangan Sendiri",  d:"Membetulkan hitungan kamera dengan tombol, tidak menyerah pada tebakannya" },
+  { id:"bangkit",   n:"Bangkit",         d:"Menyelesaikan misi setelah sempat keliru — dibayar paling mahal" },
+  { id:"bolakbalik",n:"Bolak-Balik",     d:"Menuntaskan kedua arah: benda ke simbol, dan simbol ke benda" },
+  { id:"bengkel",   n:"Bengkel Tuntas",  d:"Kedelapan misi diselesaikan" }
+];
+const LEVELS = [ [0,"Calon Perajin"], [40,"Perajin"], [80,"Juru Kartu"], [130,"Ahli Bengkel"] ];
+const XP_MISI = 12, XP_PULIH = 8;
+const MI = { i:0, selesai:{}, xp:0, badges:{}, bebas:false, keliru:0, bosTahap:0, pernahAdj:false };
+
+function levelName(xp){ let n = LEVELS[0][1]; LEVELS.forEach(function(a){ if(xp >= a[0]) n = a[1]; }); return n; }
+function toast(kind, title, desc, medal){
+  const w = document.getElementById("toastWrap"); if(!w) return;
+  while(w.children.length >= 3) w.firstChild.remove();
+  const d = document.createElement("div");
+  d.className = "toast " + kind;
+  d.innerHTML = '<span class="medal">' + medal + '</span><div><div class="tt">' + title +
+    '</div><div class="td">' + desc + "</div></div>";
+  w.appendChild(d);
+  requestAnimationFrame(function(){ d.classList.add("in"); });
+  setTimeout(function(){ d.classList.remove("in"); setTimeout(function(){ d.remove(); }, 380); }, 3000);
+}
+function addXp(n, why, diam){
+  if(n <= 0) return;
+  const before = levelName(MI.xp);
+  MI.xp += n; renderBengkel();
+  if(levelName(MI.xp) !== before){
+    toast("xp", "Peringkat naik: " + levelName(MI.xp), "Terkumpul " + MI.xp + " jejak.", "★"); return;
+  }
+  if(!diam) toast("xp", "+" + n + " jejak", why, "+");
+}
+function grant(id, extra){
+  if(MI.badges[id]) return false;
+  const b = BADGES.find(function(x){ return x.id === id; }); if(!b) return false;
+  MI.badges[id] = true; renderBengkel();
+  toast("", "Lencana: " + b.n, b.d + (extra ? " · +" + extra + " jejak" : ""), b.n[0]);
+  return true;
+}
+function misiAktif(){ return MI.bebas ? null : MISI[MI.i]; }
+function terapkanMisi(){
+  const m = misiAktif();
+  document.getElementById("modeRow").classList.toggle("hide", !MI.bebas);
+  if(!m){
+    document.getElementById("misiBox").innerHTML =
+      '<div class="no">Mode bebas</div><div class="ti">Latihan tanpa misi</div>' +
+      '<div class="de">Pilih arahnya sendiri di bawah. Tidak ada jejak yang diberikan di mode ini — ' +
+      "gunakan untuk mencoba-coba atau untuk demo.</div>";
+    return;
+  }
+  MI.keliru = 0;
+  ST.mode = (m.arah === "bos") ? "susun" : m.arah;
+  MI.bosTahap = 0;
+  document.getElementById("jawabBox").style.display = ST.mode === "baca" ? "" : "none";
+  document.getElementById("susunBox").style.display = ST.mode === "susun" ? "" : "none";
+  document.getElementById("l3title").textContent = ST.mode === "baca" ? "Tulis ekspresinya" : "Periksa susunanmu";
+  document.getElementById("fb-jawab").className = "fb";
+  document.getElementById("misiBox").innerHTML =
+    '<div class="no">Misi ' + (MI.i + 1) + " dari " + MISI.length + " · " +
+    (m.arah === "baca" ? "benda → simbol" : "simbol → benda") + "</div>" +
+    '<div class="ti">' + m.ti + '</div><div class="de">' + m.de + "</div>";
+  if(ST.mode === "susun"){
+    ST.target = { a:m.t.a, b:m.t.b };
+    const h = huruf();
+    document.getElementById("tugas").style.display = "";
+    document.getElementById("tugas").innerHTML = "<b>Tugasmu:</b> susun kartu sehingga mewakili " +
+      '<span class="math" style="font-size:19px">' + (m.t.a === 1 ? "" : m.t.a) + h +
+      (m.t.b ? " + " + m.t.b : "") + "</span>.";
+  }else{
+    ST.target = null;
+    document.getElementById("tugas").style.display = "none";
+  }
+  renderEq();
+}
+function renderBengkel(){
+  const el = function(i){ return document.getElementById(i); };
+  const sel = Object.keys(MI.selesai).length;
+  if(el("xpVal")) el("xpVal").textContent = MI.xp;
+  if(el("xpLv"))  el("xpLv").textContent = levelName(MI.xp);
+  if(el("pjXp"))  el("pjXp").textContent = MI.xp;
+  if(el("pjLv"))  el("pjLv").textContent = levelName(MI.xp);
+  if(el("pjMisi")) el("pjMisi").textContent = sel + "/" + MISI.length;
+  if(el("pjBadge")) el("pjBadge").textContent = Object.keys(MI.badges).length + "/" + BADGES.length;
+  const row = el("misiRow");
+  if(row) row.innerHTML = MISI.map(function(m, i){
+    const st = MI.selesai[i] ? "done" : (i === MI.i && !MI.bebas ? "now" : (i <= MI.i ? "open" : "lock"));
+    return '<span class="misidot" data-s="' + st + '">' + (MI.selesai[i] ? "✓" : (i === 7 ? "B" : i + 1)) + "</span>";
+  }).join("");
+  const grid = el("badgeGrid");
+  if(grid) grid.innerHTML = BADGES.map(function(b){
+    const has = !!MI.badges[b.id];
+    return '<div class="badge ' + (has ? "got" : "locked") + '"><span class="m">' + (has ? b.n[0] : "?") +
+      '</span><div><div class="n">' + b.n + '</div><div class="d">' + b.d + "</div></div></div>";
+  }).join("");
+  simpanBengkel();
+}
+function lulusMisi(){
+  const i = MI.i, m = MISI[i];
+  if(MI.selesai[i]) return;
+  MI.selesai[i] = true;
+  const pulih = MI.keliru > 0;
+  const n = XP_MISI + (pulih ? XP_PULIH : 0);
+  addXp(n, pulih ? "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal."
+                 : "Misi " + (i + 1) + " selesai.");
+  if(pulih) grant("bangkit");
+  if(m.arah === "baca") grant("pembaca");
+  else grant("penyusun");
+  if(i === 2) grant("satu");                       // n + 4, koefisien tak terlihat
+  if(i === 5) grant("nol");                        // tanpa kotak
+  const adaBaca = MISI.some(function(x, k){ return x.arah === "baca" && MI.selesai[k]; });
+  const adaSusun = MISI.some(function(x, k){ return x.arah !== "baca" && MI.selesai[k]; });
+  if(adaBaca && adaSusun) grant("bolakbalik");
+  if(Object.keys(MI.selesai).length === MISI.length) grant("bengkel");
+  renderBengkel();
+  if(MI.i < MISI.length - 1){
+    MI.i++;
+    setTimeout(function(){ terapkanMisi(); ST.sq = 0; ST.ci = 0; ST.scanned = false; renderEq(); }, 1400);
+  }else{
+    document.getElementById("misiBox").innerHTML =
+      '<div class="no">Bengkel tuntas</div><div class="ti">Kedelapan misi selesai</div>' +
+      '<div class="de">Kamu sudah menerjemahkan ke dua arah: dari benda ke simbol, dan dari simbol ke benda. ' +
+      "Arah kedua itu yang biasanya dilewati di kelas.</div>";
+  }
+}
+
+/* ---------- simpan kemajuan ---------- */
+const SIMPAN_KEY = "jejak.modul4.v1";
+let simpanAktif = (function(){
+  try{ localStorage.setItem("__uji","1"); localStorage.removeItem("__uji"); return true; }
+  catch(e){ return false; }
+})();
+function simpanBengkel(){
+  if(!simpanAktif) return;
+  try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, i:MI.i, selesai:MI.selesai,
+    xp:MI.xp, badges:MI.badges, pernahAdj:MI.pernahAdj })); }
+  catch(e){ simpanAktif = false; }
+}
+function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
+function pulihkanBengkel(){
+  if(!simpanAktif) return;
+  let d = null;
+  try{ const raw = localStorage.getItem(SIMPAN_KEY); d = raw ? JSON.parse(raw) : null; }catch(e){ return; }
+  if(!d || d.v !== 1) return;
+  MI.i = d.i || 0; MI.selesai = d.selesai || {}; MI.xp = d.xp || 0;
+  MI.badges = d.badges || {}; MI.pernahAdj = !!d.pernahAdj;
+  const bar = document.getElementById("restoreBar");
+  if(bar){
+    document.getElementById("restoreTxt").innerHTML =
+      "<b>Bengkelmu dipulihkan.</b> " + Object.keys(MI.selesai).length + " dari " + MISI.length +
+      " misi selesai, " + MI.xp + " jejak. Tersimpan di peramban ini saja — bukan di server mana pun.";
+    bar.classList.remove("hide");
+  }
+}
+const AWALAN_SIMPAN = "SMP4";
+function buatKodeSimpan(){
+  const w = new BitTulis();
+  w.put(1, 4); w.put(MI.xp, 12); w.put(MI.i, 4);
+  MISI.forEach(function(m, i){ w.put(MI.selesai[i] ? 1 : 0, 1); });
+  BADGES.forEach(function(b){ w.put(MI.badges[b.id] ? 1 : 0, 1); });
+  w.put(MI.pernahAdj ? 1 : 0, 1);
+  return w.selesai(AWALAN_SIMPAN);
+}
+function pakaiKodeSimpan(teks){
+  const r = BitBaca(teks, AWALAN_SIMPAN);
+  if(!r) return "gagal";
+  if(r.get(4) !== 1) return "versi";
+  MI.xp = r.get(12); MI.i = Math.min(MISI.length - 1, r.get(4));
+  MI.selesai = {}; MISI.forEach(function(m, i){ if(r.get(1)) MI.selesai[i] = true; });
+  MI.badges = {}; BADGES.forEach(function(b){ if(r.get(1)) MI.badges[b.id] = true; });
+  MI.pernahAdj = !!r.get(1);
+  return "ok";
+}
+
+function hud(h){ HUD.innerHTML = h; }
+function fb(id, kind, html, why){
+  const el = $("fb-" + id);
+  el.className = "fb show " + kind;
+  el.innerHTML = html + (why ? '<span class="why">' + why + "</span>" : "");
+}
+
+/* ---------- kartu cetak ---------- */
+(function buildKartu(){
+  let h = "";
+  for(let i = 0; i < 8; i++)  h += '<div class="cut"><div class="sq"></div><i>KOTAK</i></div>';
+  for(let i = 0; i < 16; i++) h += '<div class="cut"><div class="ci"></div><i>SATUAN</i></div>';
+  $("kartuGrid").innerHTML = h;
+})();
+$("btnCetak").addEventListener("click", () => window.print());
+
+/* =====================================================================
+   PENGENAL KARTU
+   Alur: grayscale & perkecil → ambang Otsu → komponen terhubung →
+   klasifikasi bentuk lewat rasio jari-jari tepi terhadap titik berat.
+   Rasio itu tidak berubah kalau kartunya diputar — beda dengan
+   perbandingan kotak pembatas, yang runtuh pada rotasi 45°.
+   ===================================================================== */
+function grayscale(w, h){
+  const src = X.getImageData(0, 0, CV.width, CV.height).data;
+  const g = new Float32Array(w * h);
+  const sx = CV.width / w, sy = CV.height / h;
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){
+    const px = Math.min(CV.width - 1, (x * sx) | 0), py = Math.min(CV.height - 1, (y * sy) | 0);
+    const i = (py * CV.width + px) * 4;
+    g[y * w + x] = 0.299 * src[i] + 0.587 * src[i+1] + 0.114 * src[i+2];
+  }
+  return g;
+}
+function otsu(g){
+  const hist = new Array(256).fill(0);
+  for(let i = 0; i < g.length; i++) hist[Math.max(0, Math.min(255, g[i] | 0))]++;
+  const total = g.length;
+  let sum = 0; for(let t = 0; t < 256; t++) sum += t * hist[t];
+  let sumB = 0, wB = 0, best = 0, thr = 128;
+  for(let t = 0; t < 256; t++){
+    wB += hist[t]; if(!wB) continue;
+    const wF = total - wB; if(!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB, mF = (sum - sumB) / wF;
+    const v = wB * wF * (mB - mF) * (mB - mF);
+    if(v > best){ best = v; thr = t; }
+  }
+  return thr;
+}
+function detectCards(){
+  const w = 260, h = Math.max(60, Math.round(CV.height * w / CV.width));
+  const g = grayscale(w, h);
+  const thr = otsu(g);
+  const dark = new Uint8Array(w * h);
+  for(let i = 0; i < g.length; i++) dark[i] = g[i] < thr ? 1 : 0;
+
+  const lab = new Int32Array(w * h).fill(-1);
+  const out = [];
+  const stack = new Int32Array(w * h);
+  const minA = Math.round(w * h * 0.0016);      // kartu terlalu kecil → derau
+  const maxA = Math.round(w * h * 0.09);        // terlalu besar → bingkai arena / meja
+
+  for(let s = 0; s < w * h; s++){
+    if(!dark[s] || lab[s] >= 0) continue;
+    const id = out.length;
+    let top = 0; stack[top++] = s; lab[s] = id;
+    const px = [];
+    let minx = 1e9, maxx = -1, miny = 1e9, maxy = -1, sxs = 0, sys = 0, touch = false;
+    while(top){
+      const p = stack[--top];
+      const y = (p / w) | 0, x = p - y * w;
+      px.push(p); sxs += x; sys += y;
+      if(x < minx) minx = x; if(x > maxx) maxx = x;
+      if(y < miny) miny = y; if(y > maxy) maxy = y;
+      if(x <= 1 || y <= 1 || x >= w - 2 || y >= h - 2) touch = true;
+      if(x > 0     && dark[p-1] && lab[p-1] < 0){ lab[p-1] = id; stack[top++] = p-1; }
+      if(x < w - 1 && dark[p+1] && lab[p+1] < 0){ lab[p+1] = id; stack[top++] = p+1; }
+      if(y > 0     && dark[p-w] && lab[p-w] < 0){ lab[p-w] = id; stack[top++] = p-w; }
+      if(y < h - 1 && dark[p+w] && lab[p+w] < 0){ lab[p+w] = id; stack[top++] = p+w; }
+    }
+    const area = px.length;
+    if(area < minA || area > maxA || touch){ out.push(null); continue; }
+    const bw = maxx - minx + 1, bh = maxy - miny + 1;
+    const asp = bw / bh;
+    if(asp < 0.55 || asp > 1.8){ out.push(null); continue; }           // bukan kartu
+    const cx = sxs / area, cy = sys / area;
+
+    /* jari-jari titik tepi terhadap titik berat */
+    const rad = [];
+    for(const p of px){
+      const y = (p / w) | 0, x = p - y * w;
+      const edge = (x === 0 || y === 0 || x === w-1 || y === h-1) ||
+        !dark[p-1] || !dark[p+1] || !dark[p-w] || !dark[p+w];
+      if(edge) rad.push(Math.hypot(x - cx, y - cy));
+    }
+    if(rad.length < 12){ out.push(null); continue; }
+    rad.sort((a, b) => a - b);
+    const rlo = rad[Math.floor(rad.length * 0.15)];
+    const rhi = rad[Math.floor(rad.length * 0.90)];
+    if(rlo <= 0){ out.push(null); continue; }
+    const ratio = rhi / rlo;
+    /* Ambang 1,235 adalah titik tengah antara dua sebaran yang diukur pada
+       700 kartu simulasi: lingkaran p95 = 1,181 dan persegi p05 = 1,290.
+       Jaraknya lebar, jadi ambangnya tidak sensitif. */
+    let kind = null;
+    if(ratio < 1.235) kind = "ci";                                      // lingkaran
+    else if(ratio < 1.80) kind = "sq";                                  // persegi
+    if(!kind){ out.push(null); continue; }
+    const sc = CV.width / w;
+    out.push({ kind:kind, ratio:ratio, area:area,
+               x:(minx) * sc, y:(miny) * sc, w:bw * sc, h:bh * sc,
+               cx:cx * sc, cy:cy * sc, r:(rhi + rlo) / 2 * sc });
+  }
+  return out.filter(Boolean);
+}
+
+/* ---------- gambar & lapisan ---------- */
+function overlay(){
+  ST.blobs.forEach(b => {
+    X.lineWidth = Math.max(2.5, CV.width / 220);
+    X.strokeStyle = b.kind === "sq" ? "#e0961f" : "#1a9d92";
+    if(b.kind === "sq") X.strokeRect(b.x - 3, b.y - 3, b.w + 6, b.h + 6);
+    else { X.beginPath(); X.arc(b.cx, b.cy, b.r + 4, 0, 7); X.stroke(); }
+  });
+}
+function repaint(){
+  if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
+  overlay();
+}
+
+/* ---------- sumber: simulasi meja ---------- */
+function simulate(nSq, nCi){
+  stopCam();
+  CV.width = 640; CV.height = 440;
+  X.fillStyle = "#f3efe6"; X.fillRect(0, 0, 640, 440);
+  const gr = X.createLinearGradient(0, 0, 640, 440);                    // bayangan lembut
+  gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,.07)");
+  X.fillStyle = gr; X.fillRect(0, 0, 640, 440);
+  for(let i = 0; i < 2600; i++){
+    X.fillStyle = "rgba(0,0,0," + (Math.random() * 0.035) + ")";
+    X.fillRect(Math.random() * 640, Math.random() * 440, 2, 2);
+  }
+  if(nSq === undefined) nSq = 1 + Math.floor(Math.random() * 4);
+  if(nCi === undefined) nCi = Math.floor(Math.random() * 7);
+
+  const spots = [], R = 30;
+  function place(){
+    for(let t = 0; t < 400; t++){
+      const x = 60 + Math.random() * 520, y = 60 + Math.random() * 320;
+      if(spots.every(s => Math.hypot(s.x - x, s.y - y) > 2.5 * R)){ spots.push({x:x, y:y}); return {x:x, y:y}; }
+    }
+    return null;
+  }
+  X.fillStyle = "#141a1c";
+  const truth = { sq:0, ci:0 };
+  for(let i = 0; i < nSq; i++){
+    const p = place(); if(!p) break;
+    const s = R * (0.85 + Math.random() * 0.3), rot = Math.random() * Math.PI / 2;
+    X.save(); X.translate(p.x, p.y); X.rotate(rot);
+    X.fillRect(-s/2, -s/2, s, s); X.restore(); truth.sq++;
+  }
+  for(let i = 0; i < nCi; i++){
+    const p = place(); if(!p) break;
+    const s = R * (0.8 + Math.random() * 0.3);
+    X.beginPath(); X.arc(p.x, p.y, s/2, 0, 7); X.fill(); truth.ci++;
+  }
+  const snap = new Image();
+  snap.onload = () => { ST.img = snap; };
+  snap.src = CV.toDataURL();
+  ST.truth = truth; ST.blobs = []; ST.scanned = false;
+  hud("Contoh susunan dibuat. Tekan <b>Pindai</b>.");
+  return truth;
+}
+
+/* ---------- kamera ---------- */
+async function startCam(){
+  try{
+    const s = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false });
+    VID.srcObject = s; await VID.play();
+    ST.live = true; ST.img = null; ST.blobs = [];
+    hud("Kamera aktif. Pegang HP <b>lurus ke bawah</b> sekitar 30 cm di atas arena, lalu tekan <b>Pindai</b>.");
+    loop();
+  }catch(e){
+    hud("Kamera tidak bisa dibuka (" + e.name + "). Halaman ini perlu HTTPS. " +
+        "Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.");
+  }
+}
+function loop(){
+  if(!ST.live) return;
+  if(VID.readyState >= 2){
+    const r = VID.videoHeight / VID.videoWidth;
+    CV.width = 640; CV.height = Math.round(640 * r);
+    X.drawImage(VID, 0, 0, CV.width, CV.height);
+    overlay();
+  }
+  requestAnimationFrame(loop);
+}
+function stopCam(){
+  ST.live = false;
+  if(VID.srcObject){ VID.srcObject.getTracks().forEach(t => t.stop()); VID.srcObject = null; }
+}
+
+/* ---------- ekspresi ---------- */
+function huruf(){
+  const v = ($("huruf").value || "n").toLowerCase().replace(/[^a-z]/g, "");
+  return v ? v[0] : "n";
+}
+function eqText(sq, ci){
+  const h = huruf();
+  if(!sq && !ci) return { html:"—", plain:"" };
+  const bits = [];
+  if(sq) bits.push('<span class="v">' + (sq === 1 ? "" : sq) + h + "</span>");
+  if(ci) bits.push('<span class="c">' + ci + "</span>");
+  const plain = (sq ? (sq === 1 ? "" : sq) + h : "") + (sq && ci ? " + " : "") + (ci ? ci : "");
+  return { html:bits.join(" + "), plain:plain };
+}
+function renderEq(){
+  const e = eqText(ST.sq, ST.ci);
+  $("nSq").textContent = ST.sq;
+  $("nCi").textContent = ST.ci;
+  if(ST.mode === "baca"){
+    $("eq").innerHTML = ST.scanned ? "? " : "—";
+    $("eqCap").textContent = ST.scanned
+      ? "Kamera sudah menghitung kartunya. Ekspresinya sengaja belum ditampilkan — kamu dulu yang menulis."
+      : "Belum ada kartu yang terbaca.";
+  }else{
+    $("eq").innerHTML = e.html;
+    $("eqCap").textContent = ST.sq || ST.ci
+      ? "Inilah yang dibaca kamera dari susunanmu."
+      : "Belum ada kartu yang terbaca.";
+  }
+  $("cJawab").classList.toggle("dim", !(ST.sq || ST.ci));
+}
+
+/* ---------- mode ---------- */
+function setMode(m){
+  ST.mode = m;
+  $("mBaca").setAttribute("aria-pressed", m === "baca");
+  $("mSusun").setAttribute("aria-pressed", m === "susun");
+  $("jawabBox").style.display = m === "baca" ? "" : "none";
+  $("susunBox").style.display = m === "susun" ? "" : "none";
+  $("l3title").textContent = m === "baca" ? "Tulis ekspresinya" : "Periksa susunanmu";
+  $("l3ctx").textContent = m === "baca"
+    ? "Kamera sudah menghitung kartunya. Sekarang giliranmu menuliskannya sebagai aljabar — " +
+      "ekspresinya sengaja tidak ditampilkan sebelum kamu mencoba."
+    : "Kamu sudah menyusun kartunya. Sekarang kamera memeriksa apakah susunan itu benar-benar " +
+      "mewakili ekspresi yang diminta.";
+  $("fb-jawab").className = "fb";
+  if(m === "susun") tugasBaru(); else $("tugas").style.display = "none";
+  renderEq();
+}
+function tugasBaru(){
+  const a = 1 + Math.floor(Math.random() * 4);
+  const b = Math.floor(Math.random() * 8);
+  ST.target = { a:a, b:b };
+  const h = huruf();
+  $("tugas").style.display = "";
+  $("tugas").innerHTML = "<b>Tugasmu:</b> susun kartu di arena sehingga mewakili " +
+    '<span class="math" style="font-size:19px">' + (a === 1 ? "" : a) + h + (b ? " + " + b : "") + "</span>. " +
+    "Pikirkan dulu: berapa kartu kotak, berapa kartu satuan?";
+  $("fb-jawab").className = "fb";
+}
+
+/* ---------- pemeriksaan ---------- */
+/* Membaca STRUKTUR ekspresi siswa, bukan mencocokkan teksnya.
+
+   Versi lama membandingkan string jawaban dengan daftar kemungkinan yang
+   disusun memakai huruf dari kotak "Huruf untuk isi satu kotak". Akibatnya
+   siswa yang menulis 2a+5 padahal kotak itu berisi n dinyatakan "belum
+   cocok" — lalu diberi umpan balik konkatenasi, padahal pemodelannya sudah
+   benar. Itu kesalahan yang serius: media ini mendiagnosis salah paham,
+   jadi salah diagnosis lebih merusak daripada sekadar salah menilai.
+
+   Dalam pemodelan matematika huruf memang bebas. Memaksa satu huruf
+   tertentu justru menanamkan M1 — huruf diperlakukan sebagai label tetap,
+   bukan sebagai wakil kuantitas. Yang tidak bebas adalah strukturnya. */
+function bacaEkspresi(s){
+  var m;
+  if((m = /^([0-9]*)([a-z])\+([0-9]+)$/.exec(s)))  return { k:m[1]===""?1:+m[1], h:m[2], c:+m[3], b:"kx+c" };
+  if((m = /^([0-9]+)\+([0-9]*)([a-z])$/.exec(s)))  return { k:m[2]===""?1:+m[2], h:m[3], c:+m[1], b:"c+kx" };
+  if((m = /^([0-9]*)([a-z])$/.exec(s)))            return { k:m[1]===""?1:+m[1], h:m[2], c:0,     b:"kx"   };
+  if((m = /^([0-9]+)$/.exec(s)))                   return { k:0, h:null, c:+m[1],                 b:"c"    };
+  return null;
+}
+/* Dua huruf berbeda, mis. 2a+5b — bagian yang sudah diketahui ikut diberi
+   huruf. Ini salah paham tersendiri, bukan sekadar "belum cocok". */
+function duaHuruf(s){
+  var m = /^([0-9]*)([a-z])\+([0-9]*)([a-z])$/.exec(s);
+  return m ? { k1:m[1]===""?1:+m[1], h1:m[2], k2:m[3]===""?1:+m[3], h2:m[4] } : null;
+}
+
+function cekTulis(){
+  const raw = ($("jwb").value || "").toLowerCase().replace(/\s+/g, "");
+  if(!raw){ fb("jawab","hint","Tulis ekspresinya dulu."); return; }
+  const h = huruf(), a = ST.sq, b = ST.ci;
+  const norm = raw.replace(/·|\*/g, "");
+  const p = bacaEkspresi(norm);
+  const benar = p && p.k === a && p.c === b && (a === 0 || !!p.h);
+
+  if(benar){
+    const m = misiAktif();
+    /* Misi "baca" kadang menuntut susunan tertentu (mis. tiga kotak, atau
+       tanpa kotak sama sekali). Jawaban benar untuk susunan yang salah
+       tidak boleh meluluskan misi — tapi juga tidak boleh dianggap salah. */
+    if(m && m.arah === "baca" && m.syarat && !m.syarat()){
+      fb("jawab","hint","Ekspresimu <b>benar</b> untuk susunan ini — tapi misinya belum terpenuhi. " +
+        m.kurang, "Ubah susunan kartunya, pindai lagi, lalu tulis ulang ekspresinya.");
+      return;
+    }
+    /* Huruf berbeda diterima. Kotak huruf diikutkan supaya sisa sesi
+       memakai huruf pilihan siswa, bukan huruf bawaan. */
+    let catatan = "";
+    if(p.h && p.h !== h){
+      $("huruf").value = p.h;
+      catatan = " Kamu memakai <b>" + p.h + "</b>, bukan " + h + ". Itu tidak apa-apa — " +
+        "hurufnya bebas, asal kamu tahu huruf itu mewakili <i>isi satu kotak</i>. " +
+        "Kotak hurufnya saya ikutkan ke " + p.h + ".";
+    }
+    const e = eqText(a, b);
+    $("eq").innerHTML = e.html;
+    $("eqCap").textContent = "Cocok dengan yang dibaca kamera.";
+    fb("jawab","ok","Tepat. Kamera menghitung <b>" + a + " kotak</b> dan <b>" + b + " ikan satuan</b>, " +
+      "dan ekspresimu memang menyatakan itu." + catatan,
+      "Perhatikan: angka di depan huruf berasal dari <i>banyaknya kotak</i>, bukan dari isi kotak — " +
+      "isi kotak justru yang belum diketahui. Itulah sebabnya keduanya tidak boleh dijumlahkan jadi satu angka.");
+    const mm = misiAktif();
+    if(mm && (mm.arah === "baca" || (mm.arah === "bos" && MI.bosTahap === 1))) lulusMisi();
+    return;
+  }
+
+  MI.keliru++;
+
+  /* M2 — konkatenasi: kedua bagian disatukan jadi satu suku berhuruf. */
+  if(p && p.h && p.c === 0 && p.k === a + b && a && b){
+    const gab = String(a + b) + p.h;
+    fb("jawab","bad","Kamu menyatukan " + a + " kotak dengan " + b + " ikan satuan menjadi " + gab + ".",
+      "<b>M2 — konkatenasi.</b> Uji sendiri: kalau satu kotak berisi 10 ekor, susunanmu berisi " +
+      (a*10 + b) + " ekor, sedangkan " + gab + " memberi " + ((a+b)*10) + ". " +
+      "Ikan satuan tidak ikut berlipat ketika isi kotak bertambah.");
+    return;
+  }
+  /* M1 — variabel sebagai label: kartu kotak dihitung bernilai satu. */
+  if(p && !p.h && p.c === a + b && a){
+    fb("jawab","bad","Kamu menjumlahkan jumlah kartunya. Isi kotak belum diketahui, jadi hasilnya belum bisa " +
+      "berupa satu angka.", "<b>M1 — variabel sebagai label.</b> Kartu kotak bukan bernilai satu; " +
+      "isinya justru yang diwakili huruf.");
+    return;
+  }
+  /* Bagian yang sudah diketahui ikut diberi huruf, mis. 2a + 5b. */
+  const dh = duaHuruf(norm);
+  if(dh && a && b){
+    fb("jawab","bad","Kamu memberi huruf pada <b>kedua</b> bagian: " + norm + ".",
+      "Huruf dipakai hanya untuk yang <i>belum diketahui</i>, yaitu isi satu kotak. " +
+      "Ikan satuan sudah terlihat jelas ada " + b + " ekor — bilangan yang sudah pasti tidak perlu huruf. " +
+      (dh.h1 === dh.h2
+        ? "Lagipula " + dh.k1 + dh.h1 + " + " + dh.k2 + dh.h2 + " berarti " + (dh.k1+dh.k2) + dh.h1 + ", " +
+          "seolah ikan satuan ikut berlipat ketika isi kotak bertambah."
+        : "Dua huruf berbeda juga berarti dua besaran tak diketahui yang berbeda — di sini hanya ada satu."));
+    return;
+  }
+  /* Struktur terbaca, hanya angkanya meleset — sebut bagian mana. */
+  if(p){
+    let d = "";
+    if(p.k !== a) d += "Bagian <b>kotak</b>: kamu menulis " +
+      (p.k === 0 ? "tidak ada suku huruf" : (p.k === 1 ? "" : p.k) + (p.h || h)) +
+      ", padahal kamera membaca " + a + " kotak. ";
+    if(p.c !== b) d += "Bagian <b>ikan satuan</b>: kamu menulis " + p.c + ", padahal terbaca " + b + ". ";
+    fb("jawab","bad", d + "Bentuk tulisannya sudah benar — yang meleset angkanya.",
+      "Baca ulang hitungan kamera di atas. Kalau kamera yang salah hitung, betulkan dengan tombol " +
+      "− dan + dulu, baru tulis lagi.");
+    return;
+  }
+  /* Tidak terbaca sama sekali. */
+  fb("jawab","bad","Tulisanmu belum terbaca sebagai ekspresi aljabar.",
+    "Bentuk yang diharapkan: banyaknya kotak, lalu huruf, lalu tanda + dan banyaknya ikan satuan — " +
+    "misalnya <span class=\"math\">3" + h + " + 4</span>. Huruf apa pun boleh; yang penting satu huruf saja, " +
+    "dan hanya untuk bagian kotak.");
+}
+function cekSusun(){
+  if(!ST.target){ fb("jawab","hint","Ambil tugas dulu."); return; }
+  if(!ST.scanned){ fb("jawab","hint","Pindai dulu arenanya."); return; }
+  const { a, b } = ST.target, h = huruf();
+  if(ST.sq === a && ST.ci === b){
+    fb("jawab","ok","Susunanmu benar. Kamera membaca <b>" + a + " kotak</b> dan <b>" + b + " ikan satuan</b> — " +
+      "persis " + (a === 1 ? "" : a) + h + (b ? " + " + b : "") + ".",
+      "Kamu baru saja menerjemahkan simbol menjadi benda. Arah ini yang biasanya dilewati di kelas: " +
+      "siswa terbiasa membaca simbol, jarang diminta <i>membangunnya</i> dari nol.");
+    const m = misiAktif();
+    if(m && m.arah === "bos" && MI.bosTahap === 0){
+      /* Tahap kedua BOS: susunannya sudah benar, sekarang siswa harus
+         menuliskannya juga. Satu misi, dua arah. */
+      MI.bosTahap = 1;
+      ST.mode = "baca";
+      $("jawabBox").style.display = ""; $("susunBox").style.display = "none";
+      $("l3title").textContent = "Sekarang tuliskan ekspresinya";
+      $("misiBox").innerHTML = '<div class="no">Misi 8 · tahap 2 dari 2</div>' +
+        '<div class="ti">Susunanmu benar — sekarang tuliskan</div>' +
+        '<div class="de">Kamera sudah membenarkan kartunya. Tulis ekspresi yang diwakili susunan itu ' +
+        "di kolom di bawah.</div>";
+      renderEq();
+      return;
+    }
+    if(m) lulusMisi();
+    return;
+  }
+  MI.keliru++;
+  let d = "";
+  if(ST.sq !== a) d += "Kartu <b>kotak</b>: kamu memasang " + ST.sq + ", seharusnya " + a + ". ";
+  if(ST.ci !== b) d += "Kartu <b>ikan satuan</b>: kamu memasang " + ST.ci + ", seharusnya " + b + ". ";
+  let why = "Angka di depan huruf memberi tahu <i>berapa kotak</i>; angka yang berdiri sendiri memberi tahu " +
+    "<i>berapa satuan</i>. Keduanya dibaca terpisah.";
+  if(ST.sq === a + b && ST.ci === 0){
+    why = "<b>M2 — konkatenasi.</b> Kamu memperlakukan " + a + h + " + " + b + " seolah berarti " +
+      (a+b) + " kotak. Angka " + b + " berdiri sendiri, jadi ia satuan — bukan kotak.";
+  }else if(ST.sq === 0 && ST.ci === a + b){
+    why = "<b>M1 — variabel sebagai label.</b> Kamu mengubah semuanya jadi satuan, padahal " + a + h +
+      " justru bagian yang <i>belum</i> diketahui jumlahnya.";
+  }
+  fb("jawab","bad", d.trim(), why);
+}
+
+/* ---------- kabel ---------- */
+$("btnSim").addEventListener("click", () => {
+  simulate(); ST.sq = 0; ST.ci = 0; renderEq();
+  $("fb-pindai").className = "fb"; $("fb-jawab").className = "fb";
+  repaint();
+});
+$("btnCam").addEventListener("click", startCam);
+$("btnFile").addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  stopCam();
+  const im = new Image();
+  im.onload = () => {
+    CV.width = 640; CV.height = Math.round(640 * im.height / im.width);
+    X.drawImage(im, 0, 0, CV.width, CV.height);
+    ST.img = im; ST.blobs = []; ST.scanned = false; ST.sq = 0; ST.ci = 0;
+    hud("Foto dimuat. Tekan <b>Pindai</b>."); renderEq();
+  };
+  im.src = URL.createObjectURL(f);
+});
+$("btnPindai").addEventListener("click", () => {
+  if(!ST.img && !ST.live){ fb("pindai","hint","Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu."); return; }
+  if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
+  else if(ST.live){
+    const c = document.createElement("canvas");
+    c.width = CV.width; c.height = CV.height;
+    c.getContext("2d").drawImage(CV, 0, 0);
+    const snap = new Image(); snap.src = c.toDataURL(); ST.img = snap; stopCam();
+  }
+  const b = detectCards();
+  ST.blobs = b; ST.scanned = true;
+  ST.sq = b.filter(o => o.kind === "sq").length;
+  ST.ci = b.filter(o => o.kind === "ci").length;
+  repaint(); renderEq();
+  if(!b.length){
+    fb("pindai","bad","Tidak ada kartu yang terbaca.",
+      "Biasanya karena cahaya kurang, kartunya bersentuhan, atau bayangan tangan jatuh ke arena. " +
+      "Betulkan saja jumlahnya dengan tombol − dan + di bawah — kamera membantu, bukan penentu.");
+  }else{
+    fb("pindai","ok","Terbaca <b>" + ST.sq + " kotak</b> dan <b>" + ST.ci + " ikan satuan</b>.",
+      "Kalau ada yang keliru terhitung, betulkan dengan tombol − dan + di bawah sebelum lanjut.");
+  }
+  hud("Terbaca " + ST.sq + " kotak, " + ST.ci + " ikan satuan. Kotak ditandai oranye, satuan ditandai hijau.");
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-adj]"); if(!b) return;
+  const [k, d] = b.dataset.adj.split(":");
+  if(k === "sq") ST.sq = Math.max(0, Math.min(12, ST.sq + (+d)));
+  else ST.ci = Math.max(0, Math.min(24, ST.ci + (+d)));
+  ST.scanned = true; renderEq();
+  if(!MI.pernahAdj){ MI.pernahAdj = true; grant("tangan"); addXp(6, "Kamu membetulkan hitungan kamera sendiri.", true); }
+});
+$("btnBebas").addEventListener("click", () => {
+  MI.bebas = !MI.bebas;
+  $("btnBebas").textContent = MI.bebas ? "Kembali ke misi" : "Mode bebas";
+  if(MI.bebas){ setMode("baca"); terapkanMisi(); }
+  else terapkanMisi();
+  renderBengkel();
+});
+$("btnMulaiBaru").addEventListener("click", () => { hapusSimpanan(); location.reload(); });
+$("btnBuatSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  box.textContent = buatKodeSimpan(); box.style.display = "";
+  fb("simpan","ok","Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di " +
+    "perangkat lain dan tekan <b>Pulihkan</b>.");
+});
+$("btnSalinSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  if(box.style.display === "none"){ fb("simpan","hint","Tekan <b>Buat kode simpan</b> dulu."); return; }
+  const t = box.textContent;
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+    fb("simpan","hint","Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(() => fb("simpan","ok","Kode <b>" + t + "</b> tersalin."), gagal);
+  else gagal();
+});
+$("btnPakaiSimpan").addEventListener("click", () => {
+  const v = $("inSimpan").value.trim();
+  if(!v){ fb("simpan","hint","Tempel kode simpannya dulu."); return; }
+  const h = pakaiKodeSimpan(v);
+  if(h === "gagal"){ fb("simpan","bad","Kode itu tidak sah.",
+    "Checksum-nya tidak cocok, jadi kodenya sengaja ditolak daripada memulihkan kemajuan yang keliru."); return; }
+  if(h === "versi"){ fb("simpan","bad","Kode itu dibuat oleh versi media yang berbeda.",
+    "Struktur datanya sudah berubah."); return; }
+  renderBengkel(); terapkanMisi();
+  fb("simpan","ok","Bengkel dipulihkan dari kode. " + Object.keys(MI.selesai).length + " dari " +
+    MISI.length + " misi selesai, " + MI.xp + " jejak.");
+});
+$("mBaca").addEventListener("click", () => setMode("baca"));
+$("mSusun").addEventListener("click", () => setMode("susun"));
+$("huruf").addEventListener("input", () => { renderEq(); if(ST.mode === "susun" && ST.target) tugasBaru(); });
+$("btnCek").addEventListener("click", cekTulis);
+$("btnCekSusun").addEventListener("click", cekSusun);
+$("btnTugasBaru").addEventListener("click", tugasBaru);
+document.addEventListener("keydown", e => {
+  if(e.key === "Enter" && document.activeElement === $("jwb")){ e.preventDefault(); cekTulis(); }
+});
+pulihkanBengkel();          // harus mendahului render pertama
+renderBengkel();
+terapkanMisi();
+renderEq();
+
+/* dipakai berkas pengujian */
+window.__ae = { ST:ST, detectCards:detectCards, simulate:simulate, otsu:otsu, eqText:eqText, setMode:setMode };
+window.__mi = { MI:MI, MISI:MISI, BADGES:BADGES, levelName:levelName, terapkanMisi:terapkanMisi,
+                XP_MISI:XP_MISI, XP_PULIH:XP_PULIH };
+window.__ks = { buat:buatKodeSimpan, pakai:pakaiKodeSimpan };
+window.__snap = () => JSON.stringify({xp:MI.xp, i:MI.i, s:Object.keys(MI.selesai).sort(),
+  b:Object.keys(MI.badges).sort(), pa:MI.pernahAdj});
+window.__kosongkan = () => { MI.xp=0; MI.i=0; MI.selesai={}; MI.badges={}; MI.pernahAdj=false; };
+</script>
+<script>
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();
+</script>
+</body>
+</html>

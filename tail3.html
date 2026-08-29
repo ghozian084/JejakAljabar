@@ -1,0 +1,688 @@
+
+/* =====================================================================
+   JALUR LEVEL
+   Enam unit (satu per kode miskonsepsi) × empat level: tiga latihan
+   bertingkat, lalu satu BOS yang mencampur ketiganya.
+
+   Nyawa sengaja dibuat tidak menghukum. Kekeliruan mengurangi satu
+   nyawa, tapi soal sejenis langsung diberikan lagi — dan kalau kali ini
+   benar, nyawanya kembali. Konsisten dengan seluruh media: yang dihargai
+   adalah pemulihan, bukan ketepatan sejak awal. Nyawa di sini berfungsi
+   sebagai batas kesempatan, bukan sebagai hukuman atas kesalahan.
+   ===================================================================== */
+const UNITS = [
+  { code:"M1", ti:"Rimba Lambang",   de:"Apa sebenarnya yang diwakili sebuah huruf?",          warna:"#a5301a" },
+  { code:"M2", ti:"Jurang Suku",     de:"Kapan dua bagian boleh disatukan — dan kapan tidak.",  warna:"#c1740c" },
+  { code:"M3", ti:"Jembatan Setara", de:"Tanda = itu klaim, bukan perintah menghitung.",        warna:"#14776f" },
+  { code:"M4", ti:"Lorong Dua Ruas", de:"Kenapa “pindah ruas” bukan sebuah penjelasan.",        warna:"#6b4c8a" },
+  { code:"M5", ti:"Arus Terbalik",   de:"Urutan kata dalam soal ≠ urutan tulisan aljabarnya.",  warna:"#8a5407" },
+  { code:"M6", ti:"Gua Berubah",     de:"Satu huruf menampung berapa pun nilainya.",            warna:"#0d5a54" }
+];
+const LVL_LBL = ["Latihan 1","Latihan 2","Latihan 3","BOS"];
+const N_SOAL  = [5, 5, 5, 8];
+const N_NYAWA = [5, 5, 4, 3];
+const XP_LULUS = [10, 12, 15, 30];
+const XP_PULIH = 4;                       // per nyawa yang berhasil direbut kembali
+const XP_ULANG = 4;                       // mengulang level yang sudah lulus
+
+const P = {
+  xp:0, cleared:{}, salahUnit:{}, pulihUnit:{}, mainUnit:{}, openAll:false
+};
+UNITS.forEach(u => { P.salahUnit[u.code] = 0; P.pulihUnit[u.code] = 0; P.mainUnit[u.code] = false; });
+
+
+/* =====================================================================
+   KODE SIMPAN — memindahkan kemajuan antar perangkat
+   Bukan enkripsi. Tujuannya memindahkan, bukan mengamankan: siswa bisa
+   memotretnya, menuliskannya, atau mengirimnya lewat WhatsApp, lalu
+   menempelkannya di HP lain.
+
+   Alfabet Crockford (tanpa I, L, O, U) supaya salah baca tulisan tangan
+   tidak menghasilkan kode lain yang kebetulan sah. Checksum dua karakter
+   bergaya Fletcher — menangkap salah ketik satu karakter maupun dua
+   karakter yang tertukar posisinya.
+   ===================================================================== */
+const B32S = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function BitTulis(){ this.b = []; }
+BitTulis.prototype.put = function(v, n){
+  v = Math.max(0, Math.min(Math.floor(v) || 0, Math.pow(2, n) - 1));
+  for(let i = n - 1; i >= 0; i--) this.b.push(Math.floor(v / Math.pow(2, i)) % 2);
+  return this;
+};
+BitTulis.prototype.selesai = function(awalan){
+  const b = this.b.slice();
+  while(b.length % 5) b.push(0);
+  let s = "";
+  for(let i = 0; i < b.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + b[i + j];
+    s += B32S[v];
+  }
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < s.length; i++){ c1 = (c1 + B32S.indexOf(s[i])) % 32; c2 = (c2 + c1) % 32; }
+  s += B32S[c1] + B32S[c2];
+  return awalan + "-" + (s.match(/.{1,5}/g) || []).join("-");
+};
+
+function BitBaca(teks, awalan){
+  let t = String(teks).toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if(t.indexOf(awalan) !== 0) return null;
+  t = t.slice(awalan.length).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  if(t.length < 4) return null;
+  const isi = t.slice(0, -2), cs = t.slice(-2);
+  if(isi.split("").some(c => B32S.indexOf(c) < 0)) return null;
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < isi.length; i++){ c1 = (c1 + B32S.indexOf(isi[i])) % 32; c2 = (c2 + c1) % 32; }
+  if(B32S[c1] + B32S[c2] !== cs) return null;               // checksum gagal
+  const bits = [];
+  for(let i = 0; i < isi.length; i++){
+    const v = B32S.indexOf(isi[i]);
+    for(let j = 4; j >= 0; j--) bits.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  let pos = 0;
+  return { get:function(n){
+    let v = 0;
+    for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
+    return v;
+  } };
+}
+
+const AWALAN_SIMPAN = "SMP3";
+const CAP4 = 15;                    // riwayat keliru/pulih dipangkas ke 4 bit per unit
+function buatKodeSimpan(){
+  const w = new BitTulis();
+  w.put(1, 4);
+  w.put(P.xp, 12);
+  w.put(P.openAll ? 1 : 0, 1);
+  UNITS.forEach(u => { for(let i = 0; i < 4; i++) w.put(P.cleared[key(u.code, i)] ? 1 : 0, 1); }); // 24 bit
+  UNITS.forEach(u => w.put(P.mainUnit[u.code] ? 1 : 0, 1));
+  UNITS.forEach(u => w.put(Math.min(CAP4, P.salahUnit[u.code] || 0), 4));
+  UNITS.forEach(u => w.put(Math.min(CAP4, P.pulihUnit[u.code] || 0), 4));
+  return w.selesai(AWALAN_SIMPAN);
+}
+function pakaiKodeSimpan(teks){
+  const r = BitBaca(teks, AWALAN_SIMPAN);
+  if(!r) return "gagal";
+  if(r.get(4) !== 1) return "versi";
+  P.xp = r.get(12);
+  P.openAll = !!r.get(1);
+  P.cleared = {};
+  UNITS.forEach(u => { for(let i = 0; i < 4; i++) if(r.get(1)) P.cleared[key(u.code, i)] = true; });
+  UNITS.forEach(u => { P.mainUnit[u.code] = !!r.get(1); });
+  UNITS.forEach(u => { P.salahUnit[u.code] = r.get(4); });
+  UNITS.forEach(u => { P.pulihUnit[u.code] = r.get(4); });
+  return "ok";
+}
+
+/* ---------- SIMPAN KEMAJUAN ----------
+   Dibungkus try/catch di setiap akses: menyentuh localStorage saja sudah
+   bisa melempar SecurityError di Safari mode private atau bila penyimpanan
+   situs diblokir. Kalau gagal, jalur tetap bisa dimainkan — hanya tanpa
+   ingatan, dan mahkota hilang begitu tab ditutup. */
+const SIMPAN_KEY = "jejak.modul3.v1";
+let simpanAktif = (function(){
+  try{ localStorage.setItem("__uji","1"); localStorage.removeItem("__uji"); return true; }
+  catch(e){ return false; }
+})();
+function simpan(){
+  if(!simpanAktif) return;
+  try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, xp:P.xp, cleared:P.cleared,
+    salahUnit:P.salahUnit, pulihUnit:P.pulihUnit, mainUnit:P.mainUnit, openAll:P.openAll })); }
+  catch(e){ simpanAktif = false; }
+}
+function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
+function pulihkan(){
+  if(!simpanAktif) return;
+  let d = null;
+  try{ const raw = localStorage.getItem(SIMPAN_KEY); d = raw ? JSON.parse(raw) : null; }catch(e){ return; }
+  if(!d || d.v !== 1) return;
+  P.xp = d.xp || 0;
+  P.cleared = d.cleared || {};
+  P.salahUnit = d.salahUnit || P.salahUnit;
+  P.pulihUnit = d.pulihUnit || P.pulihUnit;
+  P.mainUnit = d.mainUnit || P.mainUnit;
+  P.openAll = !!d.openAll;
+  const bar = document.getElementById("restoreBar");
+  if(bar){
+    document.getElementById("restoreTxt").innerHTML =
+      "<b>Jalurmu dipulihkan.</b> " + totalCrowns() + " dari 24 mahkota terkumpul, " + P.xp +
+      " jejak. Tersimpan di peramban ini saja — bukan di server mana pun.";
+    bar.classList.remove("hide");
+  }
+  if(P.openAll){
+    const b = document.getElementById("bukaSemua");
+    if(b){ b.textContent = "Semua level terbuka"; b.disabled = true; }
+  }
+}
+
+const $ = id => document.getElementById(id);
+function esc(t){
+  return String(t == null ? "" : t)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function show(sec){
+  ["scMap","scPlay","scEnd","scDone"].forEach(s => $(s).classList.toggle("hide", s !== sec));
+  window.scrollTo({ top:0, behavior:"instant" in window ? "instant" : "auto" });
+}
+function toast(title, desc, medal){
+  const w = $("toastWrap");
+  while(w.children.length >= 3) w.firstChild.remove();
+  const d = document.createElement("div");
+  d.className = "toast";
+  d.innerHTML = '<span class="medal">' + medal + '</span><div><div class="tt">' + title +
+    '</div><div class="td">' + desc + "</div></div>";
+  w.appendChild(d);
+  requestAnimationFrame(() => d.classList.add("in"));
+  setTimeout(() => { d.classList.remove("in"); setTimeout(() => d.remove(), 380); }, 2900);
+}
+const key = (code, i) => code + "-" + i;
+function unitCrowns(code){ return [0,1,2,3].filter(i => P.cleared[key(code, i)]).length; }
+function unitOpen(ui){
+  if(P.openAll || ui === 0) return true;
+  return !!P.cleared[key(UNITS[ui - 1].code, 3)];        // BOS unit sebelumnya
+}
+function lvlOpen(ui, i){
+  if(!unitOpen(ui)) return false;
+  if(P.openAll || i === 0) return true;
+  return !!P.cleared[key(UNITS[ui].code, i - 1)];
+}
+function totalCrowns(){ return UNITS.reduce((a, u) => a + unitCrowns(u.code), 0); }
+function renderStats(){
+  $("stXp").textContent = P.xp;
+  $("stCrown").textContent = totalCrowns() + "/24";
+}
+function renderMap(){
+  let h = "";
+  UNITS.forEach((u, ui) => {
+    const buka = unitOpen(ui), cr = unitCrowns(u.code);
+    h += '<div class="unit"><div class="unitbar' + (buka ? "" : " locked") +
+      '" style="background:' + u.warna + '">' +
+      '<div><div class="no">Unit ' + (ui + 1) + " · " + u.code + "</div>" +
+      '<div class="ti">' + esc(u.ti) + '</div><div class="de">' + esc(u.de) + "</div></div>" +
+      '<div class="cr">' + cr + '/4 mahkota</div></div><div class="path">';
+    for(let i = 0; i < 4; i++){
+      const done = !!P.cleared[key(u.code, i)];
+      const open = lvlOpen(ui, i);
+      const st = done ? "done" : (open ? "open" : "lock");
+      h += '<button class="lvlnode' + (i === 3 ? " bos" : "") + '" data-u="' + ui + '" data-i="' + i +
+        '" data-s="' + st + '"' + (open ? "" : " disabled") + '>' +
+        '<span class="disc">' + (done ? "✓" : (i === 3 ? "BOS" : String(i + 1))) + "</span>" +
+        '<span class="cap">' + LVL_LBL[i] + "<br>" + N_SOAL[i] + " soal</span></button>";
+    }
+    h += "</div></div>";
+  });
+  /* Kalau seluruh BOS sudah lulus, siswa yang kembali ke peta tetap punya
+     jalan menuju ringkasan — tanpa ini, layar tamat hanya bisa dilihat
+     sekali dan hilang begitu ia menekan “kembali ke jalur”. */
+  if(UNITS.every(u => P.cleared[key(u.code, 3)])){
+    h = '<div class="note teal" style="margin-bottom:6px"><b>Keenam unit sudah tamat.</b> ' +
+      '<button id="btnRingkas" class="act small" style="margin-left:8px">Lihat ringkasan &amp; kode</button></div>' + h;
+  }
+  simpan();
+  $("mapBody").innerHTML = h;
+  const br = document.getElementById("btnRingkas");
+  if(br) br.addEventListener("click", cekTamat);
+  renderStats();
+}
+
+/* ---------- satu level ---------- */
+const L = { ui:0, i:0, code:"M1", qs:0, ke:0, nyawa:0, maxNyawa:0,
+            salah:0, pulih:0, kedua:false, cur:null, jawab:false, pilih:-1 };
+
+function buatSoal(){
+  const gens = GEN[L.code];
+  const lvl = L.i === 3 ? Math.floor(Math.random() * 3) : L.i;
+  const it = gens[Math.min(lvl, gens.length - 1)]();
+  it.lvl = lvl;
+  return it;
+}
+function renderHearts(pulse){
+  let h = "";
+  for(let i = 0; i < L.maxNyawa; i++){
+    h += '<svg class="' + (i < L.nyawa ? "" : "off") + '"><use href="#hrt"></use></svg>';
+  }
+  const el = $("hearts");
+  el.innerHTML = h;
+  if(pulse){ el.classList.add("pulse"); setTimeout(() => el.classList.remove("pulse"), 420); }
+}
+function mulaiLevel(ui, i){
+  L.ui = ui; L.i = i; L.code = UNITS[ui].code;
+  L.qs = N_SOAL[i]; L.ke = 0;
+  L.maxNyawa = N_NYAWA[i]; L.nyawa = L.maxNyawa;
+  L.salah = 0; L.pulih = 0; L.kedua = false;
+  P.mainUnit[L.code] = true;
+  $("lvlName").textContent = UNITS[ui].ti + " · " + LVL_LBL[i];
+  show("scPlay");
+  renderHearts(false);
+  soalBaru();
+}
+function soalBaru(){
+  L.cur = buatSoal(); L.jawab = false; L.pilih = -1;
+  $("qCode").textContent = L.kedua ? "kesempatan kedua" : (L.code + " · tingkat " + (L.cur.lvl + 1));
+  $("qCode").classList.toggle("kedua", L.kedua);
+  $("qText").innerHTML = L.cur.q;
+  $("qbar").style.width = (100 * L.ke / L.qs) + "%";
+  const box = $("qInput");
+  if(L.cur.type === "pilih"){
+    box.innerHTML = L.cur.opts.map((o, i) => '<button class="opt" data-opt="' + i + '">' + o + "</button>").join("");
+  }else{
+    box.innerHTML = '<input type="text" id="jwb" class="' + (L.cur.type === "alg" ? "alg" : "") +
+      '" placeholder="' + (L.cur.type === "alg" ? "tulis ekspresinya" : "?") +
+      '" autocomplete="off" aria-label="jawabanmu">';
+    setTimeout(() => { const e = $("jwb"); if(e) e.focus(); }, 40);
+  }
+  $("fb").className = "fb";
+  $("btnCek").classList.remove("hide");
+  $("btnLanjut").classList.add("hide");
+}
+/* Huruf yang dipakai siswa di luar huruf soal. Lihat catatan di cek(). */
+function hurufAsing(raw, sah){
+  const t = prep(raw);
+  if(!t || !SAFE.test(t)) return null;
+  const sahSet = {}, set = {};
+  (sah || []).forEach(function(n){ String(n).split("").forEach(function(c){ sahSet[c] = 1; }); });
+  (t.match(/[a-z]/g) || []).forEach(function(c){ if(!sahSet[c]) set[c] = 1; });
+  const k = Object.keys(set);
+  return k.length ? k : null;
+}
+function cek(){
+  if(L.jawab) return;
+  const it = L.cur;
+  let benar = false, kosong = false;
+  if(it.type === "pilih"){
+    if(L.pilih < 0) kosong = true; else benar = L.pilih === it.ans;
+  }else if(it.type === "num"){
+    const v = numOf($("jwb").value);
+    if(isNaN(v)) kosong = true; else benar = Math.abs(v - it.ans) < 1e-9;
+  }else{
+    const raw = $("jwb").value;
+    if(!raw || !raw.trim()){ kosong = true; }
+    else{
+      /* Huruf di sini TIDAK bebas — huruf berasal dari soal, bukan dari
+         pilihan siswa. Menjawab 5y untuk soal ber-x memang keliru.
+
+         Tetapi sebelumnya jawaban berhuruf lain jatuh ke cabang "salah"
+         yang sama dengan miskonsepsi: nyawa berkurang dan kode M1-M6
+         dicatatkan. Itu salah diagnosis — kita tidak tahu apakah siswa
+         salah paham atau sekadar salah menyalin huruf. Media yang
+         mendiagnosis harus lebih memilih diam daripada menuduh keliru.
+         Jadi: ditolak, tapi tanpa memotong nyawa dan tanpa mencatat kode. */
+      const asing = hurufAsing(raw, it.vars);
+      if(asing){
+        $("fb").className = "fb show hint";
+        $("fb").innerHTML = "<b>Hurufnya belum sama.</b> Kamu memakai " +
+          asing.map(function(c){ return '<span class="math">' + c + "</span>"; }).join(" dan ") +
+          ", sedangkan soal ini memakai " +
+          it.vars.map(function(v){ return '<span class="math">' + v + "</span>"; }).join(" dan ") +
+          '.<span class="why">Berbeda dengan langkah memilih lambang sendiri, di sini hurufnya sudah ' +
+          "ditetapkan soal — huruf lain berarti besaran lain. Tulis ulang dengan huruf soal. " +
+          "Nyawamu tidak berkurang untuk ini.</span>";
+        return;
+      }
+      benar = equiv(raw, it.ans, it.vars);
+    }
+  }
+  if(kosong){
+    $("fb").className = "fb show hint";
+    $("fb").innerHTML = it.type === "pilih" ? "Pilih salah satu dulu." : "Isi jawabanmu dulu.";
+    return;
+  }
+  L.jawab = true;
+
+  if(benar){
+    if(L.kedua){
+      /* Nyawa direbut kembali. Inilah inti mekanik ini: kekeliruan yang
+         langsung diperbaiki tidak meninggalkan bekas. */
+      L.nyawa = Math.min(L.maxNyawa, L.nyawa + 1);
+      L.pulih++; P.pulihUnit[L.code]++;
+      L.kedua = false;
+      renderHearts(true);
+      $("fb").className = "fb show ok";
+      $("fb").innerHTML = "<b>Benar — nyawamu kembali.</b>" +
+        '<span class="why">' + it.why + "</span>";
+    }else{
+      $("fb").className = "fb show ok";
+      $("fb").innerHTML = "<b>Benar.</b>" + '<span class="why">' + it.why + "</span>";
+    }
+    L.ke++;
+  }else{
+    L.nyawa--; L.salah++; P.salahUnit[L.code]++;
+    renderHearts(true);
+    let kunci = it.type === "pilih" ? it.opts[it.ans]
+              : it.type === "num" ? String(it.ans)
+              : '<span class="math">' + it.ans.replace(/\*/g, "").replace(/\//g, " / ") + "</span>";
+    $("fb").className = "fb show bad";
+    $("fb").innerHTML = "<b>Belum tepat.</b> Jawabannya: " + kunci +
+      '<span class="why"><b>' + L.code + " — " + TAXO[L.code].name + ".</b> " + it.why +
+      (L.nyawa > 0 ? " Soal sejenis akan diberikan lagi — jawab benar dan nyawamu kembali."
+                   : " Nyawamu habis. Level ini diulang dari awal.") + "</span>";
+    L.kedua = true;
+  }
+  $("btnCek").classList.add("hide");
+  $("btnLanjut").classList.remove("hide");
+  $("btnLanjut").textContent = (L.nyawa <= 0) ? "Lihat hasil" : (L.ke >= L.qs ? "Selesai →" : "Lanjut →");
+  setTimeout(() => $("btnLanjut").focus(), 40);
+}
+function lanjut(){
+  if(L.nyawa <= 0){ selesaiLevel(false); return; }
+  if(L.ke >= L.qs){ selesaiLevel(true); return; }
+  soalBaru();
+}
+function selesaiLevel(lulus){
+  $("qbar").style.width = "100%";
+  const k = key(L.code, L.i);
+  const pertama = lulus && !P.cleared[k];
+  let dapat = 0;
+  if(lulus){
+    dapat = (pertama ? XP_LULUS[L.i] : XP_ULANG) + L.pulih * XP_PULIH;
+    P.cleared[k] = true;
+    P.xp += dapat;
+  }
+  renderStats();
+
+  $("endBig").innerHTML = lulus
+    ? '<div class="em ok">Lulus</div><div class="sub">' + UNITS[L.ui].ti + " · " + LVL_LBL[L.i] +
+      (pertama ? " — mahkota baru." : " — kamu mengulangnya.") + "</div>"
+    : '<div class="em no">Nyawa habis</div><div class="sub">Level ini belum lulus. Bukan masalah — ' +
+      "soalnya dibangkitkan ulang, jadi percobaan berikutnya tidak akan sama persis.</div>";
+
+  $("endStat").innerHTML =
+    "<div><b>" + L.ke + "/" + L.qs + "</b>soal tuntas</div>" +
+    "<div><b>" + L.salah + "</b>kali keliru</div>" +
+    "<div><b>" + L.pulih + "</b>nyawa direbut kembali</div>" +
+    (lulus ? "<div><b>+" + dapat + "</b>jejak</div>" : "");
+
+  let n = "";
+  if(lulus && L.pulih > 0){
+    n = '<div class="note teal"><b>' + L.pulih + " dari " + L.salah + " kekeliruanmu kamu perbaiki sendiri.</b> " +
+      "Itu bernilai <b>+" + (L.pulih * XP_PULIH) + " jejak</b> tambahan — di jalur ini, memperbaiki dibayar, " +
+      "bukan dihukum.</div>";
+  }else if(lulus && L.salah === 0){
+    n = '<div class="note teal"><b>Tanpa satu pun kekeliruan.</b> Naik ke level berikutnya, ' +
+      "atau langsung coba BOS unit ini kalau sudah terbuka.</div>";
+  }else if(!lulus){
+    n = '<div class="note"><b>Yang perlu kamu tengok lagi: ' + L.code + " — " + esc(TAXO[L.code].name) +
+      ".</b> Kalau kekeliruannya berulang di titik yang sama, mengulang level tidak akan cukup — " +
+      "buka Modul 1 dan kerjakan pos yang menangani kode ini.</div>";
+  }
+  $("endNote").innerHTML = n;
+
+  if(lulus && pertama){
+    toast(L.i === 3 ? "Unit tuntas: " + UNITS[L.ui].ti : "Mahkota baru",
+          "+" + dapat + " jejak · " + totalCrowns() + "/24 mahkota", L.i === 3 ? "★" : "✓");
+  }
+  renderMap();
+  show("scEnd");
+}
+
+/* ---------- akhir jalur ---------- */
+const STAT_LABEL = ["belum teruji", "perlu dikerjakan", "pulih setelah keliru", "sudah kuat"];
+/* Palet status sudah lolos pemeriksaan buta warna (ΔE deutan 15,3 ·
+   penglihatan normal 21,0). Warna tidak pernah berdiri sendiri. */
+const STAT_COLOR = ["#7a848a", "#a5301a", "#d29a05", "#14776f"];
+function statusUnit(code){
+  const bosLulus = !!P.cleared[key(code, 3)];
+  const adaMain = P.mainUnit[code] || unitCrowns(code) > 0;
+  if(!adaMain) return 0;
+  if(!bosLulus) return 1;
+  return P.salahUnit[code] > 0 ? 2 : 3;
+}
+const B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+/* Awalan JLT dan bit sumber = 1 menandai kode ini berasal dari Jalur
+   Latihan. Panel Guru memakai keduanya untuk memisahkannya dari kode
+   konsep Modul 1 — dua-duanya sah, tapi mengukur hal yang berbeda dan
+   tidak boleh dijumlahkan. */
+function packCode(stat, itemMask, att){
+  let v = 0;
+  for(let i = 0; i < 6; i++) v = v * 4 + (stat[i] || 0);
+  let data = ((v * 1024) + (itemMask & 1023)) * 64 + Math.min(63, att);
+  data = data * 4 + 1;                       // bit sumber = 1 (latihan)
+  const ch = [];
+  for(let i = 5; i >= 0; i--) ch.push(B32[Math.floor(data / Math.pow(32, i)) % 32]);
+  let cs = 0;
+  ch.forEach((c, i) => { cs = (cs + (i + 1) * B32.indexOf(c)) % 32; });
+  ch.push(B32[cs]);
+  return "JLT-" + ch.slice(0, 4).join("") + "-" + ch.slice(4).join("");
+}
+function cekTamat(){
+  if(!UNITS.every(u => P.cleared[key(u.code, 3)])) return false;
+  const stat = UNITS.map(u => statusUnit(u.code));
+  const rows = UNITS.map((u, i) => ({ code:u.code, st:stat[i],
+    cr:unitCrowns(u.code), salah:P.salahUnit[u.code], pulih:P.pulihUnit[u.code] }))
+    .sort((a, b) => a.st - b.st || b.salah - a.salah);
+
+  let h = '<div class="kstat">' +
+    "<div><b>" + totalCrowns() + "/24</b>mahkota</div>" +
+    "<div><b>" + P.xp + "</b>jejak</div>" +
+    "<div><b>" + UNITS.reduce((a, u) => a + P.pulihUnit[u.code], 0) + "</b>nyawa direbut kembali</div></div>";
+  h += '<table class="ktab"><tr><th>Unit</th><th>Mahkota</th><th>Keliru</th><th>Dipulihkan</th><th>Status</th></tr>';
+  rows.forEach(r => {
+    h += "<tr><td>" + r.code + "</td><td>" + r.cr + "/4</td><td>" + r.salah + "</td><td>" + r.pulih +
+      '</td><td style="text-align:right"><i class="kdot" style="background:' + STAT_COLOR[r.st] + '"></i>' +
+      STAT_LABEL[r.st] + "</td></tr>";
+  });
+  h += "</table>";
+  h += '<div class="klegend">' + STAT_LABEL.map((l, v) =>
+    '<span><i class="kdot" style="background:' + STAT_COLOR[v] + '"></i>' + l + "</span>").join("") + "</div>";
+  const lemah = rows.filter(r => r.st <= 1);
+  h += lemah.length
+    ? '<div class="note"><b>Masih perlu dikerjakan: ' + lemah.map(r => r.code).join(", ") +
+      ".</b> Menambah jam latihan tidak menghapus salah paham — buka Modul 1 dan kerjakan pos yang menangani kode itu.</div>"
+    : '<div class="note teal"><b>Tidak ada salah paham yang tersisa.</b> Bawa Modul 2 ke depan papan mading, ' +
+      "atau susun kartu di Modul 4.</div>";
+  $("tamatHasil").innerHTML = h;
+
+  let mask = 0;
+  UNITS.forEach((u, i) => { if(P.mainUnit[u.code]) mask |= (1 << i); });
+  const att = UNITS.reduce((a, u) => a + P.salahUnit[u.code] + P.pulihUnit[u.code], 0);
+  $("kodeBox").textContent = packCode(stat, mask, att);
+  $("fb-kode").className = "fb";
+  show("scDone");
+  return true;
+}
+
+/* ---------- kabel ---------- */
+$("mapBody").addEventListener("click", e => {
+  const b = e.target.closest(".lvlnode"); if(!b || b.disabled) return;
+  mulaiLevel(+b.dataset.u, +b.dataset.i);
+});
+$("qInput").addEventListener("click", e => {
+  const b = e.target.closest("[data-opt]"); if(!b || L.jawab) return;
+  L.pilih = +b.dataset.opt;
+  [...$("qInput").children].forEach(c => c.classList.toggle("sel", c === b));
+});
+$("btnCek").addEventListener("click", cek);
+$("btnLanjut").addEventListener("click", lanjut);
+$("btnKeluar").addEventListener("click", () => { renderMap(); show("scMap"); });
+$("btnLagi").addEventListener("click", () => mulaiLevel(L.ui, L.i));
+$("btnKeMap").addEventListener("click", () => { if(!cekTamat()){ renderMap(); show("scMap"); } });
+$("btnKeMap2").addEventListener("click", () => { renderMap(); show("scMap"); });
+$("btnMulaiBaru").addEventListener("click", () => { hapusSimpanan(); location.reload(); });
+$("btnBuatSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  box.textContent = buatKodeSimpan(); box.style.display = "";
+  $("fb-simpan").className = "fb show ok";
+  $("fb-simpan").innerHTML = "Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel " +
+    "di perangkat lain dan tekan <b>Pulihkan</b>.";
+});
+$("btnSalinSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  if(box.style.display === "none"){
+    $("fb-simpan").className = "fb show hint";
+    $("fb-simpan").textContent = "Tekan Buat kode simpan dulu."; return;
+  }
+  const t = box.textContent;
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+    $("fb-simpan").className = "fb show hint";
+    $("fb-simpan").innerHTML = "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+      "tekan lama lalu pilih <b>Copy</b>.";
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(() => {
+      $("fb-simpan").className = "fb show ok";
+      $("fb-simpan").innerHTML = "Kode <b>" + t + "</b> tersalin."; }, gagal);
+  else gagal();
+});
+$("btnPakaiSimpan").addEventListener("click", () => {
+  const v = $("inSimpan").value.trim();
+  const el = $("fb-simpan");
+  if(!v){ el.className = "fb show hint"; el.textContent = "Tempel kode simpannya dulu."; return; }
+  const h = pakaiKodeSimpan(v);
+  if(h === "gagal"){
+    el.className = "fb show bad";
+    el.innerHTML = "<b>Kode itu tidak sah.</b>" +
+      '<span class="why">Checksum-nya tidak cocok, jadi kodenya sengaja ditolak daripada memulihkan ' +
+      "kemajuan yang keliru. Periksa lagi — biasanya ada satu karakter yang tertukar.</span>"; return;
+  }
+  if(h === "versi"){
+    el.className = "fb show bad";
+    el.innerHTML = "<b>Kode itu dibuat oleh versi media yang berbeda.</b>" +
+      '<span class="why">Struktur datanya sudah berubah, jadi memulihkannya justru memberi angka keliru.</span>'; return;
+  }
+  simpan(); renderMap();
+  el.className = "fb show ok";
+  el.innerHTML = "Jalur dipulihkan dari kode. <b>" + totalCrowns() + " dari 24 mahkota</b> dan " +
+    P.xp + " jejak.";
+});
+$("bukaSemua").addEventListener("click", () => {
+  P.openAll = true;
+  $("bukaSemua").textContent = "Semua level terbuka";
+  $("bukaSemua").disabled = true;
+  renderMap();
+});
+$("btnSalin").addEventListener("click", () => {
+  const t = $("kodeBox").textContent;
+  const ok = () => { $("fb-kode").className = "fb show ok";
+    $("fb-kode").innerHTML = "Kode <b>" + t + "</b> tersalin. Tempel di grup WhatsApp kelas."; };
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents($("kodeBox"));
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    $("fb-kode").className = "fb show hint";
+    $("fb-kode").innerHTML = "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+      "tekan lama lalu pilih <b>Copy</b>.";
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, gagal);
+  else gagal();
+});
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter" || $("scPlay").classList.contains("hide")) return;
+  e.preventDefault();
+  if(L.jawab) lanjut(); else cek();
+});
+
+pulihkan();          // harus mendahului render pertama
+renderMap();
+
+/* dipakai berkas pengujian */
+window.__snap = () => JSON.stringify({xp:P.xp, c:Object.keys(P.cleared).sort(),
+  s:P.salahUnit, pu:P.pulihUnit, m:P.mainUnit, oa:P.openAll});
+window.__kosongkan = () => { P.xp=0; P.cleared={}; P.openAll=false;
+  UNITS.forEach(u => { P.salahUnit[u.code]=0; P.pulihUnit[u.code]=0; P.mainUnit[u.code]=false; }); };
+window.__ks = { buat:buatKodeSimpan, pakai:pakaiKodeSimpan };
+window.__lt = { P:P, L:L, UNITS:UNITS, hapusSimpanan:hapusSimpanan, simpan:simpan, GEN:GEN, TAXO:TAXO, equiv:equiv, numOf:numOf, cekTamat:cekTamat,
+                packCode:packCode, statusUnit:statusUnit, mulaiLevel:mulaiLevel,
+                unitOpen:unitOpen, lvlOpen:lvlOpen, key:key, N_SOAL:N_SOAL, N_NYAWA:N_NYAWA,
+                XP_LULUS:XP_LULUS, XP_PULIH:XP_PULIH, cek:cek, lanjut:lanjut, hurufAsing:hurufAsing };
+</script>
+<script>
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();

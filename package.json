@@ -1,0 +1,12 @@
+{
+  "name": "jejak-aljabar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Media pembelajaran aljabar SMP — KMPM 2026",
+  "scripts": {
+    "build": "cat partA.html partB.html partC.html > jejak-aljabar.html && cat head3.html engine.js tail3.html > latihan.html && echo 'build selesai'",
+    "test": "for f in test.js test-ar.js test-latihan.js test-ekspresi.js test-huruf.js test-menu.js test-tema.js; do printf '%-19s ' \"$f\"; node $f | grep '^GAGAL:'; done",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": { "playwright": "^1.47.0", "docx": "^9.0.0" }
+}

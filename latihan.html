@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JEJAK ALJABAR — Modul 3: Jalur Latihan</title>
+<style>
+/* =====================================================================
+   TEMA WARNA
+   Empat tema, masing-masing punya alasan pakai — bukan sekadar pilihan
+   rasa. Seluruh warna media diambil dari variabel di bawah ini, sehingga
+   mengganti tema tidak menyentuh satu pun aturan tata letak.
+
+   Dua hal SENGAJA kebal tema:
+   1. Lembar kartu cetak Modul 4 (#lembar) — kartunya harus hitam pekat di
+      atas kertas putih, karena pengenal kartu bergantung pada kontras itu.
+   2. Blok @media print — mencetak tema gelap memboroskan tinta dan membuat
+      Lembar Kerja PDF sulit dibaca.
+   ===================================================================== */
+:root{
+  --m-sky1:#cfe4f0; --m-sky2:#eaf2ee; --m-h1a:#a9c7c2; --m-h1b:#bfd6cf; --m-h2a:#8fb6ad; --m-h2b:#a7c6ba;
+  --m-h3a:#7ba795; --m-h3b:#94b99f; --m-gunung:#b8ccd6; --m-gunung2:#c3d5dd; --m-awan:#ffffff;
+  --m-rumus:#7d99a6; --m-pohon:#5d8f79; --m-sungai:#9cc3d6; --m-jalur:#e0cfae; --m-jalurGaris:#ffffff;
+
+  /* Kertas — bawaan. Hangat, silaunya rendah, nyaman untuk sesi panjang. */
+  --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+  --line:#e3ddd2; --line-strong:#cfc6b6;
+  --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+  --stage:#26302f; --sky:#dceaf2;
+  /* #c97a10 hanya mencapai kontras 3,35:1 di atas kartu putih — di bawah
+     ambang WCAG AA untuk teks biasa. Digelapkan ke #a8630c (4,71:1).
+     Ini kekeliruan yang sudah ada sejak versi pertama dan baru
+     ketahuan ketika pemeriksa kontras dijalankan untuk keempat tema. */
+  --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd; --amber-hover:#8f5309;
+  --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+  --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+  --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+  --ok:#14776f; --warn:#b8760c; --bad:#b04a33;
+  --r:14px; --shadow:0 1px 2px rgba(31,42,46,.05), 0 8px 24px -14px rgba(31,42,46,.28);
+}
+
+/* Laut — sejuk. Untuk yang silau oleh nada hangat, atau ruang berlampu kuning. */
+html[data-tema="laut"]{
+  --m-sky1:#c3ddec; --m-sky2:#e4eef2; --m-h1a:#9fc0c4; --m-h1b:#b6d0d3; --m-h2a:#83aeb0; --m-h2b:#9cbfc0;
+  --m-h3a:#6e9fa1; --m-h3b:#88b2ad; --m-gunung:#aec6d4; --m-gunung2:#bad0da; --m-awan:#ffffff;
+  --m-rumus:#6f93a4; --m-pohon:#4f8a86; --m-sungai:#8fbdd6; --m-jalur:#dbcfb8; --m-jalurGaris:#ffffff;
+
+  --paper:#f1f6f8; --card:#ffffff; --ink:#15282f; --ink-soft:#4c6570; --ink-mute:#5f7a85;
+  --line:#d6e3e8; --line-strong:#b5ccd4;
+  --surf:#fbfdfe; --surf2:#e8f0f4; --surf3:#dae7ec; --mute:#9db1b9;
+  --stage:#1d2b31; --sky:#d2e6f1;
+  --amber:#a8630c; --amber-bg:#fdf0dc; --amber-ink:#7a4806; --amber-line:#dc9e46; --amber-soft:#f2e0c0; --amber-hover:#9c5c0b;
+  --teal:#0f6f74;  --teal-bg:#dff2f3;  --teal-ink:#0a5155;  --teal-line:#b0d9dc;  --teal-lite:#159aa1;
+  --clay:#a74631;  --clay-bg:#fae8e4;  --clay-ink:#823623;  --clay-line:#e7c8c0;  --heart:#962c17;
+  --plum:#5b4e8b;  --plum-bg:#eceaf7;  --plum-line:#c9c5e5; --plum-lite:#7467a7;
+  --ok:#0f6f74; --warn:#a8630c; --bad:#a74631;
+  --shadow:0 1px 2px rgba(21,40,47,.05), 0 8px 24px -14px rgba(21,40,47,.3);
+}
+
+/* Malam — gelap. Untuk belajar malam, ruang gelap, atau layar yang menyilaukan.
+   Nada aksen dibalik: yang tadinya varian gelap kini varian terang, supaya
+   teks di atas latar berwarna tetap terbaca. */
+html[data-tema="malam"]{
+  --m-sky1:#16242e; --m-sky2:#1b2b2e; --m-h1a:#22353a; --m-h1b:#2a3f42; --m-h2a:#1d3236; --m-h2b:#254045;
+  --m-h3a:#182b2d; --m-h3b:#20383a; --m-gunung:#243740; --m-gunung2:#2b414a; --m-awan:#3a4d55;
+  --m-rumus:#6f8b96; --m-pohon:#2f5f52; --m-sungai:#2c5872; --m-jalur:#4a4132; --m-jalurGaris:#7d6f55;
+
+  --paper:#131a1c; --card:#1c2427; --ink:#e9eff1; --ink-soft:#a4b4b9; --ink-mute:#8b9ba1;
+  --line:#2d3639; --line-strong:#414e52;
+  --surf:#222b2e; --surf2:#283235; --surf3:#303b3f; --mute:#4c585c;
+  --stage:#0c1113; --sky:#1a2933;
+  --amber:#e8a341; --amber-bg:#3a2b13; --amber-ink:#f6c67f; --amber-line:#7d5c23; --amber-soft:#4c3818; --amber-hover:#f2b055;
+  --teal:#40bfb2;  --teal-bg:#0f322f;  --teal-ink:#74dacd;  --teal-line:#1f5d56;  --teal-lite:#55d6c7;
+  --clay:#ec8a70;  --clay-bg:#3a1f19;  --clay-ink:#f6b3a1;  --clay-line:#6d3a2c;  --heart:#f07a5e;
+  --plum:#b79ed8;  --plum-bg:#282034;  --plum-line:#4c3f66; --plum-lite:#c8b2e6;
+  --ok:#40bfb2; --warn:#e8a341; --bad:#ec8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+/* Kontras Tinggi — untuk siswa berpenglihatan rendah, proyektor pucat, atau
+   ruang yang terkena cahaya matahari langsung. Garis dibuat hitam pekat dan
+   bayangan dimatikan supaya batas antarbagian tegas. */
+html[data-tema="kontras"]{
+  --m-sky1:#eef5f9; --m-sky2:#f7fafb; --m-h1a:#d8e4e2; --m-h1b:#e6eeec; --m-h2a:#c4d6d1; --m-h2b:#d4e2dd;
+  --m-h3a:#b0c8bf; --m-h3b:#c2d6cc; --m-gunung:#cfdde4; --m-gunung2:#dde7ec; --m-awan:#ffffff;
+  --m-rumus:#3a5560; --m-pohon:#2c6b52; --m-sungai:#5b93b5; --m-jalur:#cbb894; --m-jalurGaris:#ffffff;
+
+  --paper:#ffffff; --card:#ffffff; --ink:#000000; --ink-soft:#1c1c1c; --ink-mute:#333333;
+  --line:#000000; --line-strong:#000000;
+  --surf:#ffffff; --surf2:#eeeeee; --surf3:#dddddd; --mute:#6b6b6b;
+  --stage:#000000; --sky:#e8f0f5;
+  --amber:#7a4600; --amber-bg:#fff3df; --amber-ink:#5a3300; --amber-line:#7a4600; --amber-soft:#ffe7c2; --amber-hover:#5a3300;
+  --teal:#00564f;  --teal-bg:#dff4f1;  --teal-ink:#003b36;  --teal-line:#00564f;  --teal-lite:#00776d;
+  --clay:#8c2a12;  --clay-bg:#fde9e5;  --clay-ink:#661d0b;  --clay-line:#8c2a12;  --heart:#8c2a12;
+  --plum:#472b73;  --plum-bg:#efe9f8;  --plum-line:#472b73; --plum-lite:#5b3891;
+  --ok:#00564f; --warn:#7a4600; --bad:#8c2a12;
+  --shadow:none;
+}
+
+/* Mencetak selalu memakai tema Kertas, apa pun tema yang sedang dipakai. */
+@media print{
+  html[data-tema]{
+    --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+    --line:#e3ddd2; --line-strong:#cfc6b6;
+    --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+    --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd;
+    --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+    --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+    --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+    --ok:#14776f; --warn:#b8760c; --bad:#b04a33; --shadow:none;
+  }
+}
+
+/* ---------- tombol tema ---------- */
+.temaWrap{position:relative;display:inline-block}
+.temaBtn{
+  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.4;
+}
+.temaBtn:hover{border-color:var(--line-strong);color:var(--ink)}
+.temaBtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.temaMenu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:200;width:252px;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 34px -12px rgba(0,0,0,.35);
+  padding:6px;
+}
+.temaMenu[hidden]{display:none}
+.temaMenu .hd{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+  padding:7px 10px 5px;
+}
+.temaMenu button{
+  display:flex;width:100%;text-align:left;gap:10px;align-items:center;
+  font:inherit;cursor:pointer;background:none;border:0;border-radius:9px;
+  padding:8px 10px;color:var(--ink);
+}
+.temaMenu button:hover{background:var(--surf2)}
+.temaMenu button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.temaMenu button[aria-checked="true"]{background:var(--teal-bg)}
+.temaMenu .sw{
+  flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-strong);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+}
+.temaMenu .sw i{display:block}
+.temaMenu .nm{font-size:13.5px;font-weight:650;line-height:1.25}
+/* Tanda pilihan berupa teks, bukan warna saja — supaya tetap terbaca oleh
+   siswa yang kesulitan membedakan warna. */
+.temaMenu .ket{font-size:11.5px;color:var(--ink-soft);line-height:1.3;display:block;font-weight:400}
+.temaMenu .tick{margin-left:auto;font-weight:700;color:var(--teal)}
+.temabar{display:flex;justify-content:center;margin:16px 0 -2px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.math{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;white-space:nowrap}
+.hide{display:none !important}
+
+header.top{position:sticky;top:0;z-index:40;background:rgba(250,247,242,.95);backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--line)}
+header.top .in{max-width:660px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:750;letter-spacing:-.02em;font-size:15px}
+.brand span{color:var(--amber)}
+.modtag{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;
+  border-radius:999px;background:var(--plum-bg);color:var(--plum)}
+.backlink{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ink-soft);
+  border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px}
+.backlink:hover{background:var(--card);color:var(--ink);border-color:var(--ink)}
+.stats{margin-left:auto;display:flex;gap:8px;align-items:center}
+.stat{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:5px 11px;
+  border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-variant-numeric:tabular-nums}
+.stat .ic{width:15px;height:15px;flex:none}
+.stat.xp{color:var(--teal)} .stat.crown{color:var(--amber)}
+
+.wrap{max-width:660px;margin:0 auto;padding:20px 16px 100px}
+h1{font-size:clamp(22px,5vw,29px);letter-spacing:-.02em;margin:0 0 8px;line-height:1.2}
+.lede{color:var(--ink-soft);font-size:15.5px;margin:0 0 18px}
+
+/* ---------- jalur unit ---------- */
+.unit{margin:30px 0 6px}
+.unitbar{display:flex;gap:13px;align-items:center;padding:14px 17px;border-radius:15px;color:var(--card);
+  box-shadow:0 6px 18px -10px rgba(31,42,46,.5)}
+.unitbar .no{font-size:10.5px;font-weight:700;letter-spacing:.1em;opacity:.85;text-transform:uppercase}
+.unitbar .ti{font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.unitbar .de{font-size:12px;opacity:.9;line-height:1.4;margin-top:2px}
+.unitbar .cr{margin-left:auto;font-size:12.5px;font-weight:700;white-space:nowrap;
+  background:rgba(255,255,255,.2);padding:5px 10px;border-radius:999px}
+.unitbar.locked{background:var(--mute) !important}
+.path{display:flex;flex-direction:column;align-items:center;gap:15px;padding:20px 0 4px}
+.lvlnode{background:none;border:0;padding:0;font:inherit;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:6px;color:inherit;transition:transform .16s}
+.lvlnode:nth-child(2){transform:translateX(78px)}
+.lvlnode:nth-child(4){transform:translateX(-78px)}
+.lvlnode:not(:disabled):hover{transform:translateY(-3px)}
+.lvlnode:nth-child(2):not(:disabled):hover{transform:translateX(78px) translateY(-3px)}
+.lvlnode:nth-child(4):not(:disabled):hover{transform:translateX(-78px) translateY(-3px)}
+.lvlnode .disc{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;
+  border:3px solid var(--line-strong);background:var(--card);color:var(--ink-soft);
+  font-weight:750;font-size:19px;box-shadow:0 4px 0 var(--line-strong);transition:.2s}
+.lvlnode .cap{font-size:11.5px;font-weight:650;color:var(--ink-soft);text-align:center;line-height:1.3}
+.lvlnode[data-s="open"] .disc{border-color:var(--amber);color:var(--amber);box-shadow:0 4px 0 var(--amber-ink),0 0 0 6px var(--amber-bg)}
+.lvlnode[data-s="done"] .disc{background:var(--teal);border-color:var(--teal);color:var(--card);box-shadow:0 4px 0 var(--teal-ink)}
+.lvlnode[data-s="lock"]{cursor:not-allowed}
+.lvlnode[data-s="lock"] .disc{opacity:.4}
+.lvlnode[data-s="lock"] .cap{opacity:.4}
+.lvlnode.bos .disc{width:80px;height:80px;font-size:13px;letter-spacing:.06em}
+.lvlnode[data-s="open"].bos .disc{border-color:var(--clay);color:var(--clay);box-shadow:0 4px 0 var(--clay-ink),0 0 0 6px var(--clay-bg)}
+@media (max-width:480px){
+  .lvlnode:nth-child(2){transform:translateX(58px)}
+  .lvlnode:nth-child(4){transform:translateX(-58px)}
+  .lvlnode .disc{width:60px;height:60px;font-size:17px}
+  .lvlnode.bos .disc{width:70px;height:70px;font-size:12px}
+}
+
+/* ---------- layar bermain ---------- */
+.playbar{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+.playbar .x{background:none;border:0;font-size:23px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:2px 6px}
+.qprog{flex:1;height:13px;background:var(--surf3);border-radius:999px;overflow:hidden}
+.qprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--teal));
+  border-radius:999px;transition:width .35s}
+.hearts{display:flex;gap:3px;align-items:center}
+.hearts svg{width:21px;height:21px;fill:var(--heart);transition:.25s}
+.hearts svg.off{fill:var(--line-strong);transform:scale(.82)}
+.hearts.pulse svg{animation:hb .4s}
+@keyframes hb{0%{transform:scale(1)}45%{transform:scale(1.28)}100%{transform:scale(1)}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:14px 0;
+  box-shadow:var(--shadow)}
+.card h2{font-size:16.5px;margin:0 0 4px}
+.card .ctx{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+  font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.qcode{font-size:10px;font-weight:700;letter-spacing:.07em;padding:3px 7px;border-radius:5px;
+  background:var(--plum-bg);color:var(--plum)}
+.qcode.kedua{background:var(--amber-bg);color:var(--amber)}
+.qtext{font-size:17.5px;line-height:1.55;margin:0 0 15px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:11px 0}
+button.act{font:inherit;font-size:14.5px;font-weight:650;padding:10px 19px;border-radius:11px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--card);cursor:pointer;transition:.15s}
+button.act.ghost{background:transparent;color:var(--ink)}
+button.act.small{font-size:13px;padding:7px 13px}
+button.act:disabled{opacity:.4;cursor:not-allowed}
+input[type=text]{font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--line-strong);
+  border-radius:10px;background:var(--card);color:var(--ink);width:200px}
+input.alg{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;font-size:19px}
+input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,42,46,.09)}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:15px;padding:12px 15px;margin:8px 0;
+  border:1.5px solid var(--line-strong);border-radius:11px;background:var(--card);color:var(--ink);cursor:pointer;
+  transition:.13s;box-shadow:0 2px 0 var(--line-strong)}
+.opt:hover{border-color:var(--ink)}
+.opt.sel{border-color:var(--ink);background:var(--surf2);box-shadow:0 2px 0 var(--ink)}
+.fb{margin-top:12px;padding:13px 15px;border-radius:11px;font-size:14.5px;display:none;line-height:1.6}
+.fb.show{display:block}
+.fb.ok{background:var(--teal-bg);color:var(--teal-ink);border:1px solid var(--teal-line)}
+.fb.bad{background:var(--clay-bg);color:var(--clay-ink);border:1px solid var(--clay-line)}
+.fb.hint{background:var(--amber-bg);color:var(--amber-ink);border:1px solid var(--amber-soft)}
+.fb .why{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed currentColor;font-size:13.5px}
+
+.big{text-align:center;padding:14px 0}
+.big .em{font-size:44px;font-weight:750;letter-spacing:-.03em;line-height:1.1}
+.big .em.ok{color:var(--teal)} .big .em.no{color:var(--clay)}
+.big .sub{font-size:14.5px;color:var(--ink-soft);margin-top:6px;line-height:1.6}
+.kstat{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin:16px 0 4px}
+.kstat div{font-size:12px;color:var(--ink-soft);text-align:center}
+.kstat div b{display:block;font-size:26px;color:var(--ink);font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.note{background:var(--amber-bg);border-left:3px solid var(--amber);padding:12px 14px;border-radius:0 9px 9px 0;
+  font-size:13.5px;margin:14px 0;line-height:1.65}
+.note b{color:var(--amber)}
+.note.teal{background:var(--teal-bg);border-color:var(--teal)} .note.teal b{color:var(--teal)}
+.note.plum{background:var(--plum-bg);border-color:var(--plum)} .note.plum b{color:var(--plum)}
+.kcode{font-family:"SF Mono",Menlo,Consolas,"Courier New",monospace;font-size:clamp(19px,5.4vw,27px);
+  font-weight:700;letter-spacing:.1em;background:var(--surf);border:1.5px dashed var(--line-strong);
+  border-radius:11px;padding:14px 12px;text-align:center;user-select:all;margin:12px 0}
+.ktab{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px}
+.ktab th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+  padding:5px 6px;border-bottom:1px solid var(--line-strong)}
+.ktab th:not(:first-child),.ktab td:not(:first-child){text-align:right}
+.ktab td{padding:6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ktab td:first-child{font-weight:600}
+.kdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px;
+  box-shadow:0 0 0 1px rgba(31,42,46,.18)}
+.klegend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-top:10px}
+.restore{background:var(--teal-bg);border:1px solid var(--teal-line);border-radius:var(--r);padding:12px 16px;
+  margin:14px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--teal-ink);line-height:1.55}
+.restore b{font-weight:700}
+.restore button{margin-left:auto}
+.toastwrap{position:fixed;left:0;right:0;bottom:18px;z-index:90;display:flex;flex-direction:column;
+  align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+@media (min-width:820px){ .toastwrap{left:auto;right:20px;align-items:flex-end;padding:0} }
+.toast{background:var(--ink);color:var(--card);border-radius:12px;padding:12px 17px;max-width:380px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;
+  transform:translateY(14px);opacity:0;transition:.32s cubic-bezier(.2,.8,.3,1)}
+.toast.in{transform:none;opacity:1}
+.toast .medal{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--teal-lite),var(--teal-ink));color:var(--card);font-weight:750;font-size:14px}
+.toast .tt{font-size:14px;font-weight:650;line-height:1.35}
+.toast .td{font-size:12px;opacity:.82;line-height:1.45;margin-top:2px}
+.teacher{text-align:center;margin:22px 0 0}
+.teacher button{font:inherit;font-size:12px;font-weight:600;background:none;border:0;color:var(--ink-soft);
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;
+  color:var(--ink-soft);line-height:1.7}
+</style>
+<script>
+/* Dipasang sebelum halaman dilukis. Kalau tema baru dibaca setelah halaman
+   tampil, pengguna tema Malam akan melihat kedipan putih lebih dulu. */
+(function(){try{var v=localStorage.getItem("jejak.tema.v1");
+if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute("data-tema",v);}catch(e){}})();
+</script>
+</head>
+<body>
+<svg style="display:none"><symbol id="hrt" viewBox="0 0 24 24"><path d="M12 21s-8-5.1-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.9 12 21 12 21z"/></symbol></svg>
+
+<header class="top">
+  <div class="in">
+    <span class="brand">JEJAK <span>ALJABAR</span></span>
+    <span class="modtag">Modul 3 · Jalur Latihan</span>
+    <a class="backlink" href="index.html">☰ Menu</a>
+    <span class="temaWrap noprint" id="temaWrap"></span>
+    <a class="backlink" href="jejak-aljabar.html">← Modul 1</a>
+    <span class="stats">
+      <span class="stat crown" title="mahkota"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18l-1.6-9-4.4 3.6L12 6l-3 6.6L4.6 9z"/></svg><span id="stCrown">0</span></span>
+      <span class="stat xp" title="jejak"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span id="stXp">0</span></span>
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= PETA JALUR ================= -->
+  <section id="scMap">
+    <h1>Satu jalur, satu salah paham.</h1>
+    <p class="lede">Enam unit, masing-masing menyerang <b>satu</b> jenis salah paham. Tiga latihan lalu satu
+      level BOS. Level berikutnya baru terbuka setelah level sebelumnya lulus.</p>
+
+    <div class="note plum">
+      <b>Nyawa di sini bekerja terbalik dari kebanyakan aplikasi.</b> Kalau kamu keliru, satu nyawa hilang —
+      tapi soal serupa langsung diberikan lagi. Jawab benar di kesempatan kedua itu, dan <b>nyawamu kembali</b>.
+      Kekeliruan yang kamu perbaiki sendiri tidak dihukum; justru itu yang paling ingin dilatih.
+    </div>
+
+    <div class="restore hide" id="restoreBar">
+      <span id="restoreTxt"></span>
+      <button class="act small" id="btnMulaiBaru">Mulai dari awal</button>
+    </div>
+
+    <div id="mapBody"></div>
+
+    <div class="card">
+      <h2>Pindah ke perangkat lain</h2>
+      <p class="ctx">Ganti HP, atau pindah ke komputer lab? Buat <b>kode simpan</b>, catat atau kirim ke
+        dirimu sendiri, lalu tempel di perangkat baru. Mahkota dan jejakmu ikut pindah.</p>
+      <div class="row">
+        <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
+        <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+      </div>
+      <div class="kcode" id="simpanBox" style="display:none;font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em">—</div>
+      <div class="row">
+        <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+        <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+      </div>
+      <div class="fb" id="fb-simpan"></div>
+    </div>
+
+    <div class="teacher"><button id="bukaSemua">Buka semua level (untuk guru)</button></div>
+  </section>
+
+  <!-- ================= BERMAIN ================= -->
+  <section id="scPlay" class="hide">
+    <div class="playbar">
+      <button class="x" id="btnKeluar" aria-label="Keluar dari level">×</button>
+      <span class="qprog"><i id="qbar"></i></span>
+      <span class="hearts" id="hearts"></span>
+    </div>
+    <div class="card">
+      <div class="qhead">
+        <span id="lvlName">—</span>
+        <span class="qcode" id="qCode">M1</span>
+      </div>
+      <p class="qtext" id="qText">—</p>
+      <div id="qInput"></div>
+      <div class="row">
+        <button class="act" id="btnCek">Periksa</button>
+        <button class="act ghost small hide" id="btnLanjut">Lanjut →</button>
+      </div>
+      <div class="fb" id="fb"></div>
+    </div>
+  </section>
+
+  <!-- ================= HASIL LEVEL ================= -->
+  <section id="scEnd" class="hide">
+    <div class="card">
+      <div class="big" id="endBig"></div>
+      <div class="kstat" id="endStat"></div>
+      <div id="endNote"></div>
+      <div class="row" style="justify-content:center;margin-top:18px">
+        <button class="act" id="btnLagi">Ulangi level</button>
+        <button class="act ghost" id="btnKeMap">Kembali ke jalur</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAMAT ================= -->
+  <section id="scDone" class="hide">
+    <div class="card">
+      <div class="big"><div class="em ok">Jalur tamat</div>
+        <div class="sub">Keenam unit selesai. Sekarang yang penting bukan berapa mahkota yang kamu kumpulkan,
+          melainkan jenis salah paham mana yang masih menempel.</div></div>
+      <div id="tamatHasil"></div>
+    </div>
+    <div class="card">
+      <h2>Kirim kode ke gurumu</h2>
+      <p class="ctx">Berawalan <b>JLT</b> supaya Panel Guru bisa memisahkannya dari kode konsep Modul 1 —
+        keduanya dibaca panel yang sama, tapi dihitung terpisah karena mengukur hal berbeda.
+        Tidak memuat nama, tidak memuat jawaban.</p>
+      <div class="kcode" id="kodeBox">—</div>
+      <div class="row"><button class="act ghost small" id="btnSalin">Salin</button>
+        <button class="act" id="btnKeMap2">Kembali ke jalur</button></div>
+      <div class="fb" id="fb-kode"></div>
+    </div>
+  </section>
+
+  <footer>
+    <b>JEJAK ALJABAR · Modul 3 — Jalur Latihan (prototipe).</b> Enam unit × empat level. Soal dibangkitkan
+    dari 18 kerangka (6 kode miskonsepsi × 3 tingkat) dengan angka acak, jadi tidak pernah habis dan urutannya
+    tidak bisa dihafal. Pemeriksa jawaban aljabar bekerja numerik di banyak titik uji — <span class="math">2(x+3)</span>
+    dan <span class="math">2x+6</span> sama-sama diterima. Tanpa pustaka luar, tanpa <span class="math">eval</span>,
+    berjalan penuh luring.<br>
+    Simpan berkas ini satu folder dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi.
+  </footer>
+</div>
+<div class="toastwrap" id="toastWrap" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   MESIN ALJABAR — sama seperti Modul 1: pengecekan numerik di banyak
+   titik uji, bukan pencocokan string. Tanpa eval/new Function agar tetap
+   hidup di dalam iframe atau halaman ber-CSP ketat.
+   ===================================================================== */
+function prep(raw){
+  if(raw == null) return "";
+  let t = String(raw).toLowerCase().trim();
+  t = t.replace(/\s+/g, "").replace(/×/g, "*").replace(/÷/g, "/").replace(/,/g, ".").replace(/−/g, "-");
+  t = t.replace(/(\d)(?=[a-z(])/g, "$1*");        // 3x -> 3*x
+  t = t.replace(/\)(?=[\da-z(])/g, ")*");         // )( -> )*(
+  t = t.replace(/([a-z])(?=\()/g, "$1*");         // x( -> x*(
+  t = t.replace(/([a-z])(?=[a-z])/g, "$1*");      // xy -> x*y
+  return t;
+}
+const SAFE = /^[0-9a-z+\-*/().^]*$/;
+function tokenize(src){
+  const out = []; let i = 0;
+  while(i < src.length){
+    const c = src[i];
+    if(c === " "){ i++; continue; }
+    if((c >= "0" && c <= "9") || c === "."){
+      let j = i;
+      while(j < src.length && ((src[j] >= "0" && src[j] <= "9") || src[j] === ".")) j++;
+      const v = parseFloat(src.slice(i, j));
+      if(isNaN(v)) return null;
+      out.push({t:"num", v:v}); i = j; continue;
+    }
+    if(c >= "a" && c <= "z"){ out.push({t:"var", v:c}); i++; continue; }
+    if("+-*/^()".indexOf(c) >= 0){ out.push({t:c}); i++; continue; }
+    return null;
+  }
+  return out;
+}
+function evalTokens(toks, vals){
+  let pos = 0;
+  const eat = t => (toks[pos] && toks[pos].t === t) ? (pos++, true) : false;
+  function primary(){
+    const tk = toks[pos];
+    if(!tk) throw 0;
+    if(tk.t === "num"){ pos++; return tk.v; }
+    if(tk.t === "var"){ pos++; if(!(tk.v in vals)) throw 0; return vals[tk.v]; }
+    if(tk.t === "("){ pos++; const v = expr(); if(!eat(")")) throw 0; return v; }
+    throw 0;
+  }
+  function power(){ const b = primary(); return eat("^") ? Math.pow(b, unary()) : b; }
+  function unary(){ if(eat("-")) return -unary(); if(eat("+")) return unary(); return power(); }
+  function term(){ let v = unary(); for(;;){ if(eat("*")) v *= unary(); else if(eat("/")) v /= unary(); else return v; } }
+  function expr(){ let v = term(); for(;;){ if(eat("+")) v += term(); else if(eat("-")) v -= term(); else return v; } }
+  const r = expr();
+  if(pos !== toks.length) throw 0;
+  return r;
+}
+function evalAt(src, vals){
+  const toks = tokenize(src);
+  if(!toks || !toks.length) return NaN;
+  try{
+    const r = evalTokens(toks, vals);
+    return (typeof r === "number" && isFinite(r)) ? r : NaN;
+  }catch(e){ return NaN; }
+}
+function equiv(a, b, names){
+  const A = prep(a), B = prep(b);
+  if(!A || !SAFE.test(A) || !SAFE.test(B)) return false;
+  const pts = [[2,3],[5,7],[11,4],[-3,6],[0.5,2.25],[9,-2]];
+  let ok = 0;
+  for(const p of pts){
+    const vals = {};
+    names.forEach((n, i) => { vals[n] = p[i % p.length] * (i ? 1.7 : 1) + i; });
+    const x = evalAt(A, vals), y = evalAt(B, vals);
+    if(isNaN(x) || isNaN(y)) return false;
+    if(Math.abs(x - y) > 1e-9 * Math.max(1, Math.abs(y))) return false;
+    ok++;
+  }
+  return ok === pts.length;
+}
+function numOf(raw){
+  const t = prep(raw);
+  if(!t || !SAFE.test(t)) return NaN;
+  return evalAt(t, {});
+}
+
+/* =====================================================================
+   PEMBANGKIT SOAL — 6 kode miskonsepsi × 3 tingkat.
+   Setiap kerangka menghasilkan angka acak, jadi soalnya tidak pernah
+   habis dan urutannya tidak bisa dihafal.
+   ===================================================================== */
+const TAXO = {
+  M1:{ name:"Variabel sebagai label" },
+  M2:{ name:"Konkatenasi / menolak jawaban terbuka" },
+  M3:{ name:"Tanda = sebagai perintah hitung" },
+  M4:{ name:"Pindah ruas tanpa operasi" },
+  M5:{ name:"Urutan pengurangan terbalik" },
+  M6:{ name:"Huruf bernilai tunggal & tetap" }
+};
+const ORDER = ["M1","M2","M3","M4","M5","M6"];
+const HURUF = ["k","n","x","p","m","b","t","y"];
+function ri(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+const GEN = {
+  M1: [
+    () => { const h = pick(HURUF), a = ri(2,7);
+      return { q:"Satu kotak bandeng berisi <b>" + h + "</b> ekor ikan — jumlahnya belum diketahui. " +
+                 "Tulis ekspresi untuk isi <b>" + a + " kotak</b>.",
+               type:"alg", vars:[h], ans:a + "*" + h,
+               why:"Yang dikalikan adalah <i>isi</i> satu kotak, bukan kata “kotak”. " + a + h +
+                    " berarti " + a + " × " + h + "." }; },
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(2,9);
+      return { q:"Kamu membeli <b>" + a + " kotak</b> (isi satu kotak = <b>" + h + "</b> ekor) " +
+                 "ditambah <b>" + b + " ikan satuan</b>. Tulis ekspresi untuk total ikannya.",
+               type:"alg", vars:[h], ans:a + "*" + h + "+" + b,
+               why:"Ikan satuan sudah terhitung, isi kotak belum. Keduanya berdiri berdampingan — " +
+                    "tidak boleh dipaksa menyatu." }; },
+    () => { const a = ri(3,8), h = pick(["m","s","b"]);
+      return { q:"Apa arti <span class='math'>" + a + h + "</span> ?",
+               type:"pilih",
+               opts:[ a + " benda yang namanya diawali huruf " + h,
+                      a + " dikali nilai yang diwakili " + h,
+                      "huruf " + h + " yang diulang " + a + " kali",
+                      a + " ditambah " + h ],
+               ans:1,
+               why:"Huruf dalam aljabar selalu mewakili sebuah <b>bilangan</b>, bukan singkatan nama benda. " +
+                    "Menempelkan angka pada huruf berarti perkalian." }
+    }
+  ],
+  M2: [
+    () => { const h = pick(HURUF), a = ri(2,8), b = ri(2,9);
+      return { q:"Sederhanakan bila bisa: <span class='math'>" + a + h + " + " + b + h + "</span>",
+               type:"alg", vars:[h], ans:(a+b) + "*" + h,
+               why:"Keduanya suku sejenis — sama-sama kelipatan " + h + " — jadi memang boleh digabung." }; },
+    () => { const h = pick(HURUF), a = ri(2,9), b = ri(2,8);
+      return { q:"Sederhanakan bila bisa: <span class='math'>" + a + " + " + b + h + "</span>",
+               type:"alg", vars:[h], ans:a + "+" + b + "*" + h,
+               why:"Ini <b>tidak bisa</b> disederhanakan. " + a + " adalah bilangan yang sudah diketahui, " +
+                    b + h + " belum. Bentuk terbuka seperti ini sudah merupakan jawaban akhir — " +
+                    "tulis ulang apa adanya." }; },
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(2,9), c = ri(2,6), d = ri(2,9);
+      return { q:"Sederhanakan: <span class='math'>" + a + h + " + " + b + " + " + c + h + " + " + d + "</span>",
+               type:"alg", vars:[h], ans:(a+c) + "*" + h + "+" + (b+d),
+               why:"Gabungkan yang sejenis saja: " + a + h + " dengan " + c + h + ", lalu " + b + " dengan " + d +
+                    ". Dua kelompok itu tetap tidak boleh saling digabung." }
+    }
+  ],
+  M3: [
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(2,9), n = ri(2,9);
+      const c = a*n + b;
+      return { q:"Benar atau salah: <span class='math'>" + c + " = " + a + h + " + " + b + "</span> " +
+                 "punya arti yang sama dengan <span class='math'>" + a + h + " + " + b + " = " + c + "</span>.",
+               type:"pilih", opts:["Benar, keduanya sama saja","Salah, jawaban harus selalu di kanan"],
+               ans:0,
+               why:"Tanda = menyatakan bahwa dua ruas <b>bernilai sama</b>. Karena sama, urutannya boleh dibalik. " +
+                    "Kalau = berarti “hasilnya”, membalik urutan jadi terasa aneh — dan itulah salah pahamnya." }; },
+    () => { const a = ri(3,9), b = ri(2,8);
+      return { q:"Diketahui <span class='math'>a = b</span>. Isi titik-titik: " +
+                 "<span class='math'>a + " + a + " = ___ + " + a + "</span>",
+               type:"alg", vars:["b"], ans:"b",
+               why:"Kalau dua hal bernilai sama, keduanya boleh saling menggantikan di mana pun." }; },
+    () => { const a = ri(2,5), b = ri(2,7), n = ri(2,8);
+      const c = a*n + b;
+      return { q:"Manakah pembacaan yang tepat untuk <span class='math'>" + a + "n + " + b + " = " + c + "</span> ?",
+               type:"pilih",
+               opts:["Hitung " + a + "n + " + b + ", hasilnya " + c,
+                     a + "n + " + b + " dan " + c + " adalah dua cara menulis bilangan yang sama",
+                     c + " adalah jawaban dari soal di sebelah kiri"],
+               ans:1,
+               why:"Tanda = bukan perintah menghitung, melainkan pernyataan bahwa kedua ruas senilai. " +
+                    "Dari situlah kita boleh mengerjakan apa pun asal <i>kedua ruas</i> diperlakukan sama." }
+    }
+  ],
+  M4: [
+    () => { const h = pick(HURUF), b = ri(3,15), n = ri(2,14);
+      return { q:"Selesaikan: <span class='math'>" + h + " + " + b + " = " + (n+b) + "</span>. " +
+                 "Berapa nilai <span class='math'>" + h + "</span> ?",
+               type:"num", ans:n,
+               why:"Kurangi <b>kedua ruas</b> dengan " + b + ". Bukan “memindahkan " + b + " lalu ganti tanda” — " +
+                    "yang terjadi sebenarnya adalah operasi yang sama dikenakan pada dua sisi." }; },
+    () => { const h = pick(HURUF), a = ri(2,7), b = ri(2,12), n = ri(2,12);
+      return { q:"Selesaikan: <span class='math'>" + a + h + " + " + b + " = " + (a*n+b) + "</span>. " +
+                 "Berapa nilai <span class='math'>" + h + "</span> ?",
+               type:"num", ans:n,
+               why:"Urutannya kebalikan dari cara rumus itu dibangun: lepas dulu yang <i>terakhir</i> " +
+                    "ditambahkan (−" + b + " di kedua ruas), baru lepas pengalinya (÷" + a + " di kedua ruas)." }; },
+    () => { const a = ri(2,6), b = ri(3,20);
+      return { q:"Ubah rumus <span class='math'>y = " + a + "x + " + b + "</span> menjadi bentuk " +
+                 "<span class='math'>x = …</span> (tulis dalam huruf y).",
+               type:"alg", vars:["y"], ans:"(y-" + b + ")/" + a,
+               why:"Kurangi kedua ruas dengan " + b + ", lalu bagi kedua ruas dengan " + a + ". " +
+                    "Ingat kurungnya: seluruh <span class='math'>y − " + b + "</span> yang dibagi, bukan " + b + " saja." }
+    }
+  ],
+  M5: [
+    () => { const h = pick(HURUF), b = ri(2,15);
+      return { q:"Tulis dalam bentuk aljabar: “<b>" + b + " kurang dari " + h + "</b>”.",
+               type:"alg", vars:[h], ans:h + "-" + b,
+               why:"“" + b + " kurang dari " + h + "” berarti " + h + " dikurangi " + b + ". " +
+                    "Urutan kata dalam bahasa Indonesia terbalik dari urutan tulisannya — di sinilah jebakannya." }; },
+    () => { const h = pick(HURUF), b = ri(1000,9000);
+      return { q:"Harga sebuah barang <span class='math'>" + h + "</span> rupiah. Kamu mendapat potongan " +
+                 "<b>Rp " + b.toLocaleString("id-ID") + "</b>. Tulis ekspresi harga yang kamu bayar.",
+               type:"alg", vars:[h], ans:h + "-" + b,
+               why:"Potongan mengurangi harga, jadi harga yang dikurangi — bukan sebaliknya. " +
+                    "Kalau ditulis terbalik, hasilnya negatif dan tidak masuk akal." }; },
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(3,14);
+      return { q:"Tulis dalam bentuk aljabar: “<b>" + b + " kurang dari " + a + " kali " + h + "</b>”.",
+               type:"alg", vars:[h], ans:a + "*" + h + "-" + b,
+               why:"Kerjakan bertahap: “" + a + " kali " + h + "” dulu → " + a + h +
+                    ", baru “" + b + " kurang dari” itu → " + a + h + " − " + b + "." }
+    }
+  ],
+  M6: [
+    () => { const h = pick(HURUF), a = ri(2,7), b = ri(2,12), v = ri(2,12);
+      return { q:"Jika <span class='math'>" + h + " = " + v + "</span>, berapa nilai " +
+                 "<span class='math'>" + a + h + " + " + b + "</span> ?",
+               type:"num", ans:a*v + b,
+               why:"Nilai " + h + " dititipkan ke dalam ekspresi. Ekspresinya sendiri tidak berubah." }; },
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(2,10), v1 = ri(2,9), v2 = ri(10,20);
+      return { q:"Ekspresi <span class='math'>" + a + h + " + " + b + "</span> dihitung dua kali: " +
+                 "sekali dengan <span class='math'>" + h + " = " + v1 + "</span>, sekali dengan " +
+                 "<span class='math'>" + h + " = " + v2 + "</span>. Berapa <b>selisih</b> kedua hasilnya?",
+               type:"num", ans:Math.abs(a*v2 - a*v1),
+               why:"Yang berubah hanya bagian " + a + h + ". Angka " + b + " tetap, jadi ia tidak menyumbang " +
+                    "selisih sama sekali — selisihnya " + a + " × " + Math.abs(v2-v1) + "." }; },
+    () => { const h = pick(HURUF), a = ri(2,6), b = ri(2,9);
+      return { q:"Benar atau salah: dalam <span class='math'>" + a + h + " + " + b + "</span>, huruf " +
+                 "<span class='math'>" + h + "</span> hanya boleh bernilai satu angka tertentu.",
+               type:"pilih", opts:["Benar, setiap huruf menyimpan satu angka rahasia",
+                                   "Salah, huruf itu menampung berapa pun nilainya"],
+               ans:1,
+               why:"Huruf bukan kotak berisi satu angka rahasia. Ia menampung <i>berapa pun</i> — itulah " +
+                    "sebabnya satu ekspresi bisa dipakai untuk banyak keadaan sekaligus." }
+    }
+  ]
+};
+
+
+/* =====================================================================
+   JALUR LEVEL
+   Enam unit (satu per kode miskonsepsi) × empat level: tiga latihan
+   bertingkat, lalu satu BOS yang mencampur ketiganya.
+
+   Nyawa sengaja dibuat tidak menghukum. Kekeliruan mengurangi satu
+   nyawa, tapi soal sejenis langsung diberikan lagi — dan kalau kali ini
+   benar, nyawanya kembali. Konsisten dengan seluruh media: yang dihargai
+   adalah pemulihan, bukan ketepatan sejak awal. Nyawa di sini berfungsi
+   sebagai batas kesempatan, bukan sebagai hukuman atas kesalahan.
+   ===================================================================== */
+const UNITS = [
+  { code:"M1", ti:"Rimba Lambang",   de:"Apa sebenarnya yang diwakili sebuah huruf?",          warna:"#a5301a" },
+  { code:"M2", ti:"Jurang Suku",     de:"Kapan dua bagian boleh disatukan — dan kapan tidak.",  warna:"#c1740c" },
+  { code:"M3", ti:"Jembatan Setara", de:"Tanda = itu klaim, bukan perintah menghitung.",        warna:"#14776f" },
+  { code:"M4", ti:"Lorong Dua Ruas", de:"Kenapa “pindah ruas” bukan sebuah penjelasan.",        warna:"#6b4c8a" },
+  { code:"M5", ti:"Arus Terbalik",   de:"Urutan kata dalam soal ≠ urutan tulisan aljabarnya.",  warna:"#8a5407" },
+  { code:"M6", ti:"Gua Berubah",     de:"Satu huruf menampung berapa pun nilainya.",            warna:"#0d5a54" }
+];
+const LVL_LBL = ["Latihan 1","Latihan 2","Latihan 3","BOS"];
+const N_SOAL  = [5, 5, 5, 8];
+const N_NYAWA = [5, 5, 4, 3];
+const XP_LULUS = [10, 12, 15, 30];
+const XP_PULIH = 4;                       // per nyawa yang berhasil direbut kembali
+const XP_ULANG = 4;                       // mengulang level yang sudah lulus
+
+const P = {
+  xp:0, cleared:{}, salahUnit:{}, pulihUnit:{}, mainUnit:{}, openAll:false
+};
+UNITS.forEach(u => { P.salahUnit[u.code] = 0; P.pulihUnit[u.code] = 0; P.mainUnit[u.code] = false; });
+
+
+/* =====================================================================
+   KODE SIMPAN — memindahkan kemajuan antar perangkat
+   Bukan enkripsi. Tujuannya memindahkan, bukan mengamankan: siswa bisa
+   memotretnya, menuliskannya, atau mengirimnya lewat WhatsApp, lalu
+   menempelkannya di HP lain.
+
+   Alfabet Crockford (tanpa I, L, O, U) supaya salah baca tulisan tangan
+   tidak menghasilkan kode lain yang kebetulan sah. Checksum dua karakter
+   bergaya Fletcher — menangkap salah ketik satu karakter maupun dua
+   karakter yang tertukar posisinya.
+   ===================================================================== */
+const B32S = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function BitTulis(){ this.b = []; }
+BitTulis.prototype.put = function(v, n){
+  v = Math.max(0, Math.min(Math.floor(v) || 0, Math.pow(2, n) - 1));
+  for(let i = n - 1; i >= 0; i--) this.b.push(Math.floor(v / Math.pow(2, i)) % 2);
+  return this;
+};
+BitTulis.prototype.selesai = function(awalan){
+  const b = this.b.slice();
+  while(b.length % 5) b.push(0);
+  let s = "";
+  for(let i = 0; i < b.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + b[i + j];
+    s += B32S[v];
+  }
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < s.length; i++){ c1 = (c1 + B32S.indexOf(s[i])) % 32; c2 = (c2 + c1) % 32; }
+  s += B32S[c1] + B32S[c2];
+  return awalan + "-" + (s.match(/.{1,5}/g) || []).join("-");
+};
+
+function BitBaca(teks, awalan){
+  let t = String(teks).toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if(t.indexOf(awalan) !== 0) return null;
+  t = t.slice(awalan.length).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  if(t.length < 4) return null;
+  const isi = t.slice(0, -2), cs = t.slice(-2);
+  if(isi.split("").some(c => B32S.indexOf(c) < 0)) return null;
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < isi.length; i++){ c1 = (c1 + B32S.indexOf(isi[i])) % 32; c2 = (c2 + c1) % 32; }
+  if(B32S[c1] + B32S[c2] !== cs) return null;               // checksum gagal
+  const bits = [];
+  for(let i = 0; i < isi.length; i++){
+    const v = B32S.indexOf(isi[i]);
+    for(let j = 4; j >= 0; j--) bits.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  let pos = 0;
+  return { get:function(n){
+    let v = 0;
+    for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
+    return v;
+  } };
+}
+
+const AWALAN_SIMPAN = "SMP3";
+const CAP4 = 15;                    // riwayat keliru/pulih dipangkas ke 4 bit per unit
+function buatKodeSimpan(){
+  const w = new BitTulis();
+  w.put(1, 4);
+  w.put(P.xp, 12);
+  w.put(P.openAll ? 1 : 0, 1);
+  UNITS.forEach(u => { for(let i = 0; i < 4; i++) w.put(P.cleared[key(u.code, i)] ? 1 : 0, 1); }); // 24 bit
+  UNITS.forEach(u => w.put(P.mainUnit[u.code] ? 1 : 0, 1));
+  UNITS.forEach(u => w.put(Math.min(CAP4, P.salahUnit[u.code] || 0), 4));
+  UNITS.forEach(u => w.put(Math.min(CAP4, P.pulihUnit[u.code] || 0), 4));
+  return w.selesai(AWALAN_SIMPAN);
+}
+function pakaiKodeSimpan(teks){
+  const r = BitBaca(teks, AWALAN_SIMPAN);
+  if(!r) return "gagal";
+  if(r.get(4) !== 1) return "versi";
+  P.xp = r.get(12);
+  P.openAll = !!r.get(1);
+  P.cleared = {};
+  UNITS.forEach(u => { for(let i = 0; i < 4; i++) if(r.get(1)) P.cleared[key(u.code, i)] = true; });
+  UNITS.forEach(u => { P.mainUnit[u.code] = !!r.get(1); });
+  UNITS.forEach(u => { P.salahUnit[u.code] = r.get(4); });
+  UNITS.forEach(u => { P.pulihUnit[u.code] = r.get(4); });
+  return "ok";
+}
+
+/* ---------- SIMPAN KEMAJUAN ----------
+   Dibungkus try/catch di setiap akses: menyentuh localStorage saja sudah
+   bisa melempar SecurityError di Safari mode private atau bila penyimpanan
+   situs diblokir. Kalau gagal, jalur tetap bisa dimainkan — hanya tanpa
+   ingatan, dan mahkota hilang begitu tab ditutup. */
+const SIMPAN_KEY = "jejak.modul3.v1";
+let simpanAktif = (function(){
+  try{ localStorage.setItem("__uji","1"); localStorage.removeItem("__uji"); return true; }
+  catch(e){ return false; }
+})();
+function simpan(){
+  if(!simpanAktif) return;
+  try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, xp:P.xp, cleared:P.cleared,
+    salahUnit:P.salahUnit, pulihUnit:P.pulihUnit, mainUnit:P.mainUnit, openAll:P.openAll })); }
+  catch(e){ simpanAktif = false; }
+}
+function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
+function pulihkan(){
+  if(!simpanAktif) return;
+  let d = null;
+  try{ const raw = localStorage.getItem(SIMPAN_KEY); d = raw ? JSON.parse(raw) : null; }catch(e){ return; }
+  if(!d || d.v !== 1) return;
+  P.xp = d.xp || 0;
+  P.cleared = d.cleared || {};
+  P.salahUnit = d.salahUnit || P.salahUnit;
+  P.pulihUnit = d.pulihUnit || P.pulihUnit;
+  P.mainUnit = d.mainUnit || P.mainUnit;
+  P.openAll = !!d.openAll;
+  const bar = document.getElementById("restoreBar");
+  if(bar){
+    document.getElementById("restoreTxt").innerHTML =
+      "<b>Jalurmu dipulihkan.</b> " + totalCrowns() + " dari 24 mahkota terkumpul, " + P.xp +
+      " jejak. Tersimpan di peramban ini saja — bukan di server mana pun.";
+    bar.classList.remove("hide");
+  }
+  if(P.openAll){
+    const b = document.getElementById("bukaSemua");
+    if(b){ b.textContent = "Semua level terbuka"; b.disabled = true; }
+  }
+}
+
+const $ = id => document.getElementById(id);
+function esc(t){
+  return String(t == null ? "" : t)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function show(sec){
+  ["scMap","scPlay","scEnd","scDone"].forEach(s => $(s).classList.toggle("hide", s !== sec));
+  window.scrollTo({ top:0, behavior:"instant" in window ? "instant" : "auto" });
+}
+function toast(title, desc, medal){
+  const w = $("toastWrap");
+  while(w.children.length >= 3) w.firstChild.remove();
+  const d = document.createElement("div");
+  d.className = "toast";
+  d.innerHTML = '<span class="medal">' + medal + '</span><div><div class="tt">' + title +
+    '</div><div class="td">' + desc + "</div></div>";
+  w.appendChild(d);
+  requestAnimationFrame(() => d.classList.add("in"));
+  setTimeout(() => { d.classList.remove("in"); setTimeout(() => d.remove(), 380); }, 2900);
+}
+const key = (code, i) => code + "-" + i;
+function unitCrowns(code){ return [0,1,2,3].filter(i => P.cleared[key(code, i)]).length; }
+function unitOpen(ui){
+  if(P.openAll || ui === 0) return true;
+  return !!P.cleared[key(UNITS[ui - 1].code, 3)];        // BOS unit sebelumnya
+}
+function lvlOpen(ui, i){
+  if(!unitOpen(ui)) return false;
+  if(P.openAll || i === 0) return true;
+  return !!P.cleared[key(UNITS[ui].code, i - 1)];
+}
+function totalCrowns(){ return UNITS.reduce((a, u) => a + unitCrowns(u.code), 0); }
+function renderStats(){
+  $("stXp").textContent = P.xp;
+  $("stCrown").textContent = totalCrowns() + "/24";
+}
+function renderMap(){
+  let h = "";
+  UNITS.forEach((u, ui) => {
+    const buka = unitOpen(ui), cr = unitCrowns(u.code);
+    h += '<div class="unit"><div class="unitbar' + (buka ? "" : " locked") +
+      '" style="background:' + u.warna + '">' +
+      '<div><div class="no">Unit ' + (ui + 1) + " · " + u.code + "</div>" +
+      '<div class="ti">' + esc(u.ti) + '</div><div class="de">' + esc(u.de) + "</div></div>" +
+      '<div class="cr">' + cr + '/4 mahkota</div></div><div class="path">';
+    for(let i = 0; i < 4; i++){
+      const done = !!P.cleared[key(u.code, i)];
+      const open = lvlOpen(ui, i);
+      const st = done ? "done" : (open ? "open" : "lock");
+      h += '<button class="lvlnode' + (i === 3 ? " bos" : "") + '" data-u="' + ui + '" data-i="' + i +
+        '" data-s="' + st + '"' + (open ? "" : " disabled") + '>' +
+        '<span class="disc">' + (done ? "✓" : (i === 3 ? "BOS" : String(i + 1))) + "</span>" +
+        '<span class="cap">' + LVL_LBL[i] + "<br>" + N_SOAL[i] + " soal</span></button>";
+    }
+    h += "</div></div>";
+  });
+  /* Kalau seluruh BOS sudah lulus, siswa yang kembali ke peta tetap punya
+     jalan menuju ringkasan — tanpa ini, layar tamat hanya bisa dilihat
+     sekali dan hilang begitu ia menekan “kembali ke jalur”. */
+  if(UNITS.every(u => P.cleared[key(u.code, 3)])){
+    h = '<div class="note teal" style="margin-bottom:6px"><b>Keenam unit sudah tamat.</b> ' +
+      '<button id="btnRingkas" class="act small" style="margin-left:8px">Lihat ringkasan &amp; kode</button></div>' + h;
+  }
+  simpan();
+  $("mapBody").innerHTML = h;
+  const br = document.getElementById("btnRingkas");
+  if(br) br.addEventListener("click", cekTamat);
+  renderStats();
+}
+
+/* ---------- satu level ---------- */
+const L = { ui:0, i:0, code:"M1", qs:0, ke:0, nyawa:0, maxNyawa:0,
+            salah:0, pulih:0, kedua:false, cur:null, jawab:false, pilih:-1 };
+
+function buatSoal(){
+  const gens = GEN[L.code];
+  const lvl = L.i === 3 ? Math.floor(Math.random() * 3) : L.i;
+  const it = gens[Math.min(lvl, gens.length - 1)]();
+  it.lvl = lvl;
+  return it;
+}
+function renderHearts(pulse){
+  let h = "";
+  for(let i = 0; i < L.maxNyawa; i++){
+    h += '<svg class="' + (i < L.nyawa ? "" : "off") + '"><use href="#hrt"></use></svg>';
+  }
+  const el = $("hearts");
+  el.innerHTML = h;
+  if(pulse){ el.classList.add("pulse"); setTimeout(() => el.classList.remove("pulse"), 420); }
+}
+function mulaiLevel(ui, i){
+  L.ui = ui; L.i = i; L.code = UNITS[ui].code;
+  L.qs = N_SOAL[i]; L.ke = 0;
+  L.maxNyawa = N_NYAWA[i]; L.nyawa = L.maxNyawa;
+  L.salah = 0; L.pulih = 0; L.kedua = false;
+  P.mainUnit[L.code] = true;
+  $("lvlName").textContent = UNITS[ui].ti + " · " + LVL_LBL[i];
+  show("scPlay");
+  renderHearts(false);
+  soalBaru();
+}
+function soalBaru(){
+  L.cur = buatSoal(); L.jawab = false; L.pilih = -1;
+  $("qCode").textContent = L.kedua ? "kesempatan kedua" : (L.code + " · tingkat " + (L.cur.lvl + 1));
+  $("qCode").classList.toggle("kedua", L.kedua);
+  $("qText").innerHTML = L.cur.q;
+  $("qbar").style.width = (100 * L.ke / L.qs) + "%";
+  const box = $("qInput");
+  if(L.cur.type === "pilih"){
+    box.innerHTML = L.cur.opts.map((o, i) => '<button class="opt" data-opt="' + i + '">' + o + "</button>").join("");
+  }else{
+    box.innerHTML = '<input type="text" id="jwb" class="' + (L.cur.type === "alg" ? "alg" : "") +
+      '" placeholder="' + (L.cur.type === "alg" ? "tulis ekspresinya" : "?") +
+      '" autocomplete="off" aria-label="jawabanmu">';
+    setTimeout(() => { const e = $("jwb"); if(e) e.focus(); }, 40);
+  }
+  $("fb").className = "fb";
+  $("btnCek").classList.remove("hide");
+  $("btnLanjut").classList.add("hide");
+}
+/* Huruf yang dipakai siswa di luar huruf soal. Lihat catatan di cek(). */
+function hurufAsing(raw, sah){
+  const t = prep(raw);
+  if(!t || !SAFE.test(t)) return null;
+  const sahSet = {}, set = {};
+  (sah || []).forEach(function(n){ String(n).split("").forEach(function(c){ sahSet[c] = 1; }); });
+  (t.match(/[a-z]/g) || []).forEach(function(c){ if(!sahSet[c]) set[c] = 1; });
+  const k = Object.keys(set);
+  return k.length ? k : null;
+}
+function cek(){
+  if(L.jawab) return;
+  const it = L.cur;
+  let benar = false, kosong = false;
+  if(it.type === "pilih"){
+    if(L.pilih < 0) kosong = true; else benar = L.pilih === it.ans;
+  }else if(it.type === "num"){
+    const v = numOf($("jwb").value);
+    if(isNaN(v)) kosong = true; else benar = Math.abs(v - it.ans) < 1e-9;
+  }else{
+    const raw = $("jwb").value;
+    if(!raw || !raw.trim()){ kosong = true; }
+    else{
+      /* Huruf di sini TIDAK bebas — huruf berasal dari soal, bukan dari
+         pilihan siswa. Menjawab 5y untuk soal ber-x memang keliru.
+
+         Tetapi sebelumnya jawaban berhuruf lain jatuh ke cabang "salah"
+         yang sama dengan miskonsepsi: nyawa berkurang dan kode M1-M6
+         dicatatkan. Itu salah diagnosis — kita tidak tahu apakah siswa
+         salah paham atau sekadar salah menyalin huruf. Media yang
+         mendiagnosis harus lebih memilih diam daripada menuduh keliru.
+         Jadi: ditolak, tapi tanpa memotong nyawa dan tanpa mencatat kode. */
+      const asing = hurufAsing(raw, it.vars);
+      if(asing){
+        $("fb").className = "fb show hint";
+        $("fb").innerHTML = "<b>Hurufnya belum sama.</b> Kamu memakai " +
+          asing.map(function(c){ return '<span class="math">' + c + "</span>"; }).join(" dan ") +
+          ", sedangkan soal ini memakai " +
+          it.vars.map(function(v){ return '<span class="math">' + v + "</span>"; }).join(" dan ") +
+          '.<span class="why">Berbeda dengan langkah memilih lambang sendiri, di sini hurufnya sudah ' +
+          "ditetapkan soal — huruf lain berarti besaran lain. Tulis ulang dengan huruf soal. " +
+          "Nyawamu tidak berkurang untuk ini.</span>";
+        return;
+      }
+      benar = equiv(raw, it.ans, it.vars);
+    }
+  }
+  if(kosong){
+    $("fb").className = "fb show hint";
+    $("fb").innerHTML = it.type === "pilih" ? "Pilih salah satu dulu." : "Isi jawabanmu dulu.";
+    return;
+  }
+  L.jawab = true;
+
+  if(benar){
+    if(L.kedua){
+      /* Nyawa direbut kembali. Inilah inti mekanik ini: kekeliruan yang
+         langsung diperbaiki tidak meninggalkan bekas. */
+      L.nyawa = Math.min(L.maxNyawa, L.nyawa + 1);
+      L.pulih++; P.pulihUnit[L.code]++;
+      L.kedua = false;
+      renderHearts(true);
+      $("fb").className = "fb show ok";
+      $("fb").innerHTML = "<b>Benar — nyawamu kembali.</b>" +
+        '<span class="why">' + it.why + "</span>";
+    }else{
+      $("fb").className = "fb show ok";
+      $("fb").innerHTML = "<b>Benar.</b>" + '<span class="why">' + it.why + "</span>";
+    }
+    L.ke++;
+  }else{
+    L.nyawa--; L.salah++; P.salahUnit[L.code]++;
+    renderHearts(true);
+    let kunci = it.type === "pilih" ? it.opts[it.ans]
+              : it.type === "num" ? String(it.ans)
+              : '<span class="math">' + it.ans.replace(/\*/g, "").replace(/\//g, " / ") + "</span>";
+    $("fb").className = "fb show bad";
+    $("fb").innerHTML = "<b>Belum tepat.</b> Jawabannya: " + kunci +
+      '<span class="why"><b>' + L.code + " — " + TAXO[L.code].name + ".</b> " + it.why +
+      (L.nyawa > 0 ? " Soal sejenis akan diberikan lagi — jawab benar dan nyawamu kembali."
+                   : " Nyawamu habis. Level ini diulang dari awal.") + "</span>";
+    L.kedua = true;
+  }
+  $("btnCek").classList.add("hide");
+  $("btnLanjut").classList.remove("hide");
+  $("btnLanjut").textContent = (L.nyawa <= 0) ? "Lihat hasil" : (L.ke >= L.qs ? "Selesai →" : "Lanjut →");
+  setTimeout(() => $("btnLanjut").focus(), 40);
+}
+function lanjut(){
+  if(L.nyawa <= 0){ selesaiLevel(false); return; }
+  if(L.ke >= L.qs){ selesaiLevel(true); return; }
+  soalBaru();
+}
+function selesaiLevel(lulus){
+  $("qbar").style.width = "100%";
+  const k = key(L.code, L.i);
+  const pertama = lulus && !P.cleared[k];
+  let dapat = 0;
+  if(lulus){
+    dapat = (pertama ? XP_LULUS[L.i] : XP_ULANG) + L.pulih * XP_PULIH;
+    P.cleared[k] = true;
+    P.xp += dapat;
+  }
+  renderStats();
+
+  $("endBig").innerHTML = lulus
+    ? '<div class="em ok">Lulus</div><div class="sub">' + UNITS[L.ui].ti + " · " + LVL_LBL[L.i] +
+      (pertama ? " — mahkota baru." : " — kamu mengulangnya.") + "</div>"
+    : '<div class="em no">Nyawa habis</div><div class="sub">Level ini belum lulus. Bukan masalah — ' +
+      "soalnya dibangkitkan ulang, jadi percobaan berikutnya tidak akan sama persis.</div>";
+
+  $("endStat").innerHTML =
+    "<div><b>" + L.ke + "/" + L.qs + "</b>soal tuntas</div>" +
+    "<div><b>" + L.salah + "</b>kali keliru</div>" +
+    "<div><b>" + L.pulih + "</b>nyawa direbut kembali</div>" +
+    (lulus ? "<div><b>+" + dapat + "</b>jejak</div>" : "");
+
+  let n = "";
+  if(lulus && L.pulih > 0){
+    n = '<div class="note teal"><b>' + L.pulih + " dari " + L.salah + " kekeliruanmu kamu perbaiki sendiri.</b> " +
+      "Itu bernilai <b>+" + (L.pulih * XP_PULIH) + " jejak</b> tambahan — di jalur ini, memperbaiki dibayar, " +
+      "bukan dihukum.</div>";
+  }else if(lulus && L.salah === 0){
+    n = '<div class="note teal"><b>Tanpa satu pun kekeliruan.</b> Naik ke level berikutnya, ' +
+      "atau langsung coba BOS unit ini kalau sudah terbuka.</div>";
+  }else if(!lulus){
+    n = '<div class="note"><b>Yang perlu kamu tengok lagi: ' + L.code + " — " + esc(TAXO[L.code].name) +
+      ".</b> Kalau kekeliruannya berulang di titik yang sama, mengulang level tidak akan cukup — " +
+      "buka Modul 1 dan kerjakan pos yang menangani kode ini.</div>";
+  }
+  $("endNote").innerHTML = n;
+
+  if(lulus && pertama){
+    toast(L.i === 3 ? "Unit tuntas: " + UNITS[L.ui].ti : "Mahkota baru",
+          "+" + dapat + " jejak · " + totalCrowns() + "/24 mahkota", L.i === 3 ? "★" : "✓");
+  }
+  renderMap();
+  show("scEnd");
+}
+
+/* ---------- akhir jalur ---------- */
+const STAT_LABEL = ["belum teruji", "perlu dikerjakan", "pulih setelah keliru", "sudah kuat"];
+/* Palet status sudah lolos pemeriksaan buta warna (ΔE deutan 15,3 ·
+   penglihatan normal 21,0). Warna tidak pernah berdiri sendiri. */
+const STAT_COLOR = ["#7a848a", "#a5301a", "#d29a05", "#14776f"];
+function statusUnit(code){
+  const bosLulus = !!P.cleared[key(code, 3)];
+  const adaMain = P.mainUnit[code] || unitCrowns(code) > 0;
+  if(!adaMain) return 0;
+  if(!bosLulus) return 1;
+  return P.salahUnit[code] > 0 ? 2 : 3;
+}
+const B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+/* Awalan JLT dan bit sumber = 1 menandai kode ini berasal dari Jalur
+   Latihan. Panel Guru memakai keduanya untuk memisahkannya dari kode
+   konsep Modul 1 — dua-duanya sah, tapi mengukur hal yang berbeda dan
+   tidak boleh dijumlahkan. */
+function packCode(stat, itemMask, att){
+  let v = 0;
+  for(let i = 0; i < 6; i++) v = v * 4 + (stat[i] || 0);
+  let data = ((v * 1024) + (itemMask & 1023)) * 64 + Math.min(63, att);
+  data = data * 4 + 1;                       // bit sumber = 1 (latihan)
+  const ch = [];
+  for(let i = 5; i >= 0; i--) ch.push(B32[Math.floor(data / Math.pow(32, i)) % 32]);
+  let cs = 0;
+  ch.forEach((c, i) => { cs = (cs + (i + 1) * B32.indexOf(c)) % 32; });
+  ch.push(B32[cs]);
+  return "JLT-" + ch.slice(0, 4).join("") + "-" + ch.slice(4).join("");
+}
+function cekTamat(){
+  if(!UNITS.every(u => P.cleared[key(u.code, 3)])) return false;
+  const stat = UNITS.map(u => statusUnit(u.code));
+  const rows = UNITS.map((u, i) => ({ code:u.code, st:stat[i],
+    cr:unitCrowns(u.code), salah:P.salahUnit[u.code], pulih:P.pulihUnit[u.code] }))
+    .sort((a, b) => a.st - b.st || b.salah - a.salah);
+
+  let h = '<div class="kstat">' +
+    "<div><b>" + totalCrowns() + "/24</b>mahkota</div>" +
+    "<div><b>" + P.xp + "</b>jejak</div>" +
+    "<div><b>" + UNITS.reduce((a, u) => a + P.pulihUnit[u.code], 0) + "</b>nyawa direbut kembali</div></div>";
+  h += '<table class="ktab"><tr><th>Unit</th><th>Mahkota</th><th>Keliru</th><th>Dipulihkan</th><th>Status</th></tr>';
+  rows.forEach(r => {
+    h += "<tr><td>" + r.code + "</td><td>" + r.cr + "/4</td><td>" + r.salah + "</td><td>" + r.pulih +
+      '</td><td style="text-align:right"><i class="kdot" style="background:' + STAT_COLOR[r.st] + '"></i>' +
+      STAT_LABEL[r.st] + "</td></tr>";
+  });
+  h += "</table>";
+  h += '<div class="klegend">' + STAT_LABEL.map((l, v) =>
+    '<span><i class="kdot" style="background:' + STAT_COLOR[v] + '"></i>' + l + "</span>").join("") + "</div>";
+  const lemah = rows.filter(r => r.st <= 1);
+  h += lemah.length
+    ? '<div class="note"><b>Masih perlu dikerjakan: ' + lemah.map(r => r.code).join(", ") +
+      ".</b> Menambah jam latihan tidak menghapus salah paham — buka Modul 1 dan kerjakan pos yang menangani kode itu.</div>"
+    : '<div class="note teal"><b>Tidak ada salah paham yang tersisa.</b> Bawa Modul 2 ke depan papan mading, ' +
+      "atau susun kartu di Modul 4.</div>";
+  $("tamatHasil").innerHTML = h;
+
+  let mask = 0;
+  UNITS.forEach((u, i) => { if(P.mainUnit[u.code]) mask |= (1 << i); });
+  const att = UNITS.reduce((a, u) => a + P.salahUnit[u.code] + P.pulihUnit[u.code], 0);
+  $("kodeBox").textContent = packCode(stat, mask, att);
+  $("fb-kode").className = "fb";
+  show("scDone");
+  return true;
+}
+
+/* ---------- kabel ---------- */
+$("mapBody").addEventListener("click", e => {
+  const b = e.target.closest(".lvlnode"); if(!b || b.disabled) return;
+  mulaiLevel(+b.dataset.u, +b.dataset.i);
+});
+$("qInput").addEventListener("click", e => {
+  const b = e.target.closest("[data-opt]"); if(!b || L.jawab) return;
+  L.pilih = +b.dataset.opt;
+  [...$("qInput").children].forEach(c => c.classList.toggle("sel", c === b));
+});
+$("btnCek").addEventListener("click", cek);
+$("btnLanjut").addEventListener("click", lanjut);
+$("btnKeluar").addEventListener("click", () => { renderMap(); show("scMap"); });
+$("btnLagi").addEventListener("click", () => mulaiLevel(L.ui, L.i));
+$("btnKeMap").addEventListener("click", () => { if(!cekTamat()){ renderMap(); show("scMap"); } });
+$("btnKeMap2").addEventListener("click", () => { renderMap(); show("scMap"); });
+$("btnMulaiBaru").addEventListener("click", () => { hapusSimpanan(); location.reload(); });
+$("btnBuatSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  box.textContent = buatKodeSimpan(); box.style.display = "";
+  $("fb-simpan").className = "fb show ok";
+  $("fb-simpan").innerHTML = "Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel " +
+    "di perangkat lain dan tekan <b>Pulihkan</b>.";
+});
+$("btnSalinSimpan").addEventListener("click", () => {
+  const box = $("simpanBox");
+  if(box.style.display === "none"){
+    $("fb-simpan").className = "fb show hint";
+    $("fb-simpan").textContent = "Tekan Buat kode simpan dulu."; return;
+  }
+  const t = box.textContent;
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+    $("fb-simpan").className = "fb show hint";
+    $("fb-simpan").innerHTML = "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+      "tekan lama lalu pilih <b>Copy</b>.";
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(() => {
+      $("fb-simpan").className = "fb show ok";
+      $("fb-simpan").innerHTML = "Kode <b>" + t + "</b> tersalin."; }, gagal);
+  else gagal();
+});
+$("btnPakaiSimpan").addEventListener("click", () => {
+  const v = $("inSimpan").value.trim();
+  const el = $("fb-simpan");
+  if(!v){ el.className = "fb show hint"; el.textContent = "Tempel kode simpannya dulu."; return; }
+  const h = pakaiKodeSimpan(v);
+  if(h === "gagal"){
+    el.className = "fb show bad";
+    el.innerHTML = "<b>Kode itu tidak sah.</b>" +
+      '<span class="why">Checksum-nya tidak cocok, jadi kodenya sengaja ditolak daripada memulihkan ' +
+      "kemajuan yang keliru. Periksa lagi — biasanya ada satu karakter yang tertukar.</span>"; return;
+  }
+  if(h === "versi"){
+    el.className = "fb show bad";
+    el.innerHTML = "<b>Kode itu dibuat oleh versi media yang berbeda.</b>" +
+      '<span class="why">Struktur datanya sudah berubah, jadi memulihkannya justru memberi angka keliru.</span>'; return;
+  }
+  simpan(); renderMap();
+  el.className = "fb show ok";
+  el.innerHTML = "Jalur dipulihkan dari kode. <b>" + totalCrowns() + " dari 24 mahkota</b> dan " +
+    P.xp + " jejak.";
+});
+$("bukaSemua").addEventListener("click", () => {
+  P.openAll = true;
+  $("bukaSemua").textContent = "Semua level terbuka";
+  $("bukaSemua").disabled = true;
+  renderMap();
+});
+$("btnSalin").addEventListener("click", () => {
+  const t = $("kodeBox").textContent;
+  const ok = () => { $("fb-kode").className = "fb show ok";
+    $("fb-kode").innerHTML = "Kode <b>" + t + "</b> tersalin. Tempel di grup WhatsApp kelas."; };
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents($("kodeBox"));
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    $("fb-kode").className = "fb show hint";
+    $("fb-kode").innerHTML = "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+      "tekan lama lalu pilih <b>Copy</b>.";
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, gagal);
+  else gagal();
+});
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter" || $("scPlay").classList.contains("hide")) return;
+  e.preventDefault();
+  if(L.jawab) lanjut(); else cek();
+});
+
+pulihkan();          // harus mendahului render pertama
+renderMap();
+
+/* dipakai berkas pengujian */
+window.__snap = () => JSON.stringify({xp:P.xp, c:Object.keys(P.cleared).sort(),
+  s:P.salahUnit, pu:P.pulihUnit, m:P.mainUnit, oa:P.openAll});
+window.__kosongkan = () => { P.xp=0; P.cleared={}; P.openAll=false;
+  UNITS.forEach(u => { P.salahUnit[u.code]=0; P.pulihUnit[u.code]=0; P.mainUnit[u.code]=false; }); };
+window.__ks = { buat:buatKodeSimpan, pakai:pakaiKodeSimpan };
+window.__lt = { P:P, L:L, UNITS:UNITS, hapusSimpanan:hapusSimpanan, simpan:simpan, GEN:GEN, TAXO:TAXO, equiv:equiv, numOf:numOf, cekTamat:cekTamat,
+                packCode:packCode, statusUnit:statusUnit, mulaiLevel:mulaiLevel,
+                unitOpen:unitOpen, lvlOpen:lvlOpen, key:key, N_SOAL:N_SOAL, N_NYAWA:N_NYAWA,
+                XP_LULUS:XP_LULUS, XP_PULIH:XP_PULIH, cek:cek, lanjut:lanjut, hurufAsing:hurufAsing };
+</script>
+<script>
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* =====================================================================
+   TEMA WARNA
+   Empat tema, masing-masing punya alasan pakai — bukan sekadar pilihan
+   rasa. Seluruh warna media diambil dari variabel di bawah ini, sehingga
+   mengganti tema tidak menyentuh satu pun aturan tata letak.
+
+   Dua hal SENGAJA kebal tema:
+   1. Lembar kartu cetak Modul 4 (#lembar) — kartunya harus hitam pekat di
+      atas kertas putih, karena pengenal kartu bergantung pada kontras itu.
+   2. Blok @media print — mencetak tema gelap memboroskan tinta dan membuat
+      Lembar Kerja PDF sulit dibaca.
+   ===================================================================== */
+:root{
+  --m-sky1:#cfe4f0; --m-sky2:#eaf2ee; --m-h1a:#a9c7c2; --m-h1b:#bfd6cf; --m-h2a:#8fb6ad; --m-h2b:#a7c6ba;
+  --m-h3a:#7ba795; --m-h3b:#94b99f; --m-gunung:#b8ccd6; --m-gunung2:#c3d5dd; --m-awan:#ffffff;
+  --m-rumus:#7d99a6; --m-pohon:#5d8f79; --m-sungai:#9cc3d6; --m-jalur:#e0cfae; --m-jalurGaris:#ffffff;
+
+  /* Kertas — bawaan. Hangat, silaunya rendah, nyaman untuk sesi panjang. */
+  --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+  --line:#e3ddd2; --line-strong:#cfc6b6;
+  --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+  --stage:#26302f; --sky:#dceaf2;
+  /* #c97a10 hanya mencapai kontras 3,35:1 di atas kartu putih — di bawah
+     ambang WCAG AA untuk teks biasa. Digelapkan ke #a8630c (4,71:1).
+     Ini kekeliruan yang sudah ada sejak versi pertama dan baru
+     ketahuan ketika pemeriksa kontras dijalankan untuk keempat tema. */
+  --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd; --amber-hover:#8f5309;
+  --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+  --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+  --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+  --ok:#14776f; --warn:#b8760c; --bad:#b04a33;
+  --r:14px; --shadow:0 1px 2px rgba(31,42,46,.05), 0 8px 24px -14px rgba(31,42,46,.28);
+}
+
+/* Laut — sejuk. Untuk yang silau oleh nada hangat, atau ruang berlampu kuning. */
+html[data-tema="laut"]{
+  --m-sky1:#c3ddec; --m-sky2:#e4eef2; --m-h1a:#9fc0c4; --m-h1b:#b6d0d3; --m-h2a:#83aeb0; --m-h2b:#9cbfc0;
+  --m-h3a:#6e9fa1; --m-h3b:#88b2ad; --m-gunung:#aec6d4; --m-gunung2:#bad0da; --m-awan:#ffffff;
+  --m-rumus:#6f93a4; --m-pohon:#4f8a86; --m-sungai:#8fbdd6; --m-jalur:#dbcfb8; --m-jalurGaris:#ffffff;
+
+  --paper:#f1f6f8; --card:#ffffff; --ink:#15282f; --ink-soft:#4c6570; --ink-mute:#5f7a85;
+  --line:#d6e3e8; --line-strong:#b5ccd4;
+  --surf:#fbfdfe; --surf2:#e8f0f4; --surf3:#dae7ec; --mute:#9db1b9;
+  --stage:#1d2b31; --sky:#d2e6f1;
+  --amber:#a8630c; --amber-bg:#fdf0dc; --amber-ink:#7a4806; --amber-line:#dc9e46; --amber-soft:#f2e0c0; --amber-hover:#9c5c0b;
+  --teal:#0f6f74;  --teal-bg:#dff2f3;  --teal-ink:#0a5155;  --teal-line:#b0d9dc;  --teal-lite:#159aa1;
+  --clay:#a74631;  --clay-bg:#fae8e4;  --clay-ink:#823623;  --clay-line:#e7c8c0;  --heart:#962c17;
+  --plum:#5b4e8b;  --plum-bg:#eceaf7;  --plum-line:#c9c5e5; --plum-lite:#7467a7;
+  --ok:#0f6f74; --warn:#a8630c; --bad:#a74631;
+  --shadow:0 1px 2px rgba(21,40,47,.05), 0 8px 24px -14px rgba(21,40,47,.3);
+}
+
+/* Malam — gelap. Untuk belajar malam, ruang gelap, atau layar yang menyilaukan.
+   Nada aksen dibalik: yang tadinya varian gelap kini varian terang, supaya
+   teks di atas latar berwarna tetap terbaca. */
+html[data-tema="malam"]{
+  --m-sky1:#16242e; --m-sky2:#1b2b2e; --m-h1a:#22353a; --m-h1b:#2a3f42; --m-h2a:#1d3236; --m-h2b:#254045;
+  --m-h3a:#182b2d; --m-h3b:#20383a; --m-gunung:#243740; --m-gunung2:#2b414a; --m-awan:#3a4d55;
+  --m-rumus:#6f8b96; --m-pohon:#2f5f52; --m-sungai:#2c5872; --m-jalur:#4a4132; --m-jalurGaris:#7d6f55;
+
+  --paper:#131a1c; --card:#1c2427; --ink:#e9eff1; --ink-soft:#a4b4b9; --ink-mute:#8b9ba1;
+  --line:#2d3639; --line-strong:#414e52;
+  --surf:#222b2e; --surf2:#283235; --surf3:#303b3f; --mute:#4c585c;
+  --stage:#0c1113; --sky:#1a2933;
+  --amber:#e8a341; --amber-bg:#3a2b13; --amber-ink:#f6c67f; --amber-line:#7d5c23; --amber-soft:#4c3818; --amber-hover:#f2b055;
+  --teal:#40bfb2;  --teal-bg:#0f322f;  --teal-ink:#74dacd;  --teal-line:#1f5d56;  --teal-lite:#55d6c7;
+  --clay:#ec8a70;  --clay-bg:#3a1f19;  --clay-ink:#f6b3a1;  --clay-line:#6d3a2c;  --heart:#f07a5e;
+  --plum:#b79ed8;  --plum-bg:#282034;  --plum-line:#4c3f66; --plum-lite:#c8b2e6;
+  --ok:#40bfb2; --warn:#e8a341; --bad:#ec8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+/* Kontras Tinggi — untuk siswa berpenglihatan rendah, proyektor pucat, atau
+   ruang yang terkena cahaya matahari langsung. Garis dibuat hitam pekat dan
+   bayangan dimatikan supaya batas antarbagian tegas. */
+html[data-tema="kontras"]{
+  --m-sky1:#eef5f9; --m-sky2:#f7fafb; --m-h1a:#d8e4e2; --m-h1b:#e6eeec; --m-h2a:#c4d6d1; --m-h2b:#d4e2dd;
+  --m-h3a:#b0c8bf; --m-h3b:#c2d6cc; --m-gunung:#cfdde4; --m-gunung2:#dde7ec; --m-awan:#ffffff;
+  --m-rumus:#3a5560; --m-pohon:#2c6b52; --m-sungai:#5b93b5; --m-jalur:#cbb894; --m-jalurGaris:#ffffff;
+
+  --paper:#ffffff; --card:#ffffff; --ink:#000000; --ink-soft:#1c1c1c; --ink-mute:#333333;
+  --line:#000000; --line-strong:#000000;
+  --surf:#ffffff; --surf2:#eeeeee; --surf3:#dddddd; --mute:#6b6b6b;
+  --stage:#000000; --sky:#e8f0f5;
+  --amber:#7a4600; --amber-bg:#fff3df; --amber-ink:#5a3300; --amber-line:#7a4600; --amber-soft:#ffe7c2; --amber-hover:#5a3300;
+  --teal:#00564f;  --teal-bg:#dff4f1;  --teal-ink:#003b36;  --teal-line:#00564f;  --teal-lite:#00776d;
+  --clay:#8c2a12;  --clay-bg:#fde9e5;  --clay-ink:#661d0b;  --clay-line:#8c2a12;  --heart:#8c2a12;
+  --plum:#472b73;  --plum-bg:#efe9f8;  --plum-line:#472b73; --plum-lite:#5b3891;
+  --ok:#00564f; --warn:#7a4600; --bad:#8c2a12;
+  --shadow:none;
+}
+
+/* Mencetak selalu memakai tema Kertas, apa pun tema yang sedang dipakai. */
+@media print{
+  html[data-tema]{
+    --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+    --line:#e3ddd2; --line-strong:#cfc6b6;
+    --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+    --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd;
+    --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+    --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+    --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+    --ok:#14776f; --warn:#b8760c; --bad:#b04a33; --shadow:none;
+  }
+}
+
+/* ---------- tombol tema ---------- */
+.temaWrap{position:relative;display:inline-block}
+.temaBtn{
+  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.4;
+}
+.temaBtn:hover{border-color:var(--line-strong);color:var(--ink)}
+.temaBtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.temaMenu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:200;width:252px;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 34px -12px rgba(0,0,0,.35);
+  padding:6px;
+}
+.temaMenu[hidden]{display:none}
+.temaMenu .hd{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+  padding:7px 10px 5px;
+}
+.temaMenu button{
+  display:flex;width:100%;text-align:left;gap:10px;align-items:center;
+  font:inherit;cursor:pointer;background:none;border:0;border-radius:9px;
+  padding:8px 10px;color:var(--ink);
+}
+.temaMenu button:hover{background:var(--surf2)}
+.temaMenu button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.temaMenu button[aria-checked="true"]{background:var(--teal-bg)}
+.temaMenu .sw{
+  flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-strong);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+}
+.temaMenu .sw i{display:block}
+.temaMenu .nm{font-size:13.5px;font-weight:650;line-height:1.25}
+/* Tanda pilihan berupa teks, bukan warna saja — supaya tetap terbaca oleh
+   siswa yang kesulitan membedakan warna. */
+.temaMenu .ket{font-size:11.5px;color:var(--ink-soft);line-height:1.3;display:block;font-weight:400}
+.temaMenu .tick{margin-left:auto;font-weight:700;color:var(--teal)}
+.temabar{display:flex;justify-content:center;margin:16px 0 -2px}

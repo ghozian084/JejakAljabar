@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JEJAK ALJABAR — Modul AR: Pindai &amp; Ukur</title>
+<style>
+/* =====================================================================
+   TEMA WARNA
+   Empat tema, masing-masing punya alasan pakai — bukan sekadar pilihan
+   rasa. Seluruh warna media diambil dari variabel di bawah ini, sehingga
+   mengganti tema tidak menyentuh satu pun aturan tata letak.
+
+   Dua hal SENGAJA kebal tema:
+   1. Lembar kartu cetak Modul 4 (#lembar) — kartunya harus hitam pekat di
+      atas kertas putih, karena pengenal kartu bergantung pada kontras itu.
+   2. Blok @media print — mencetak tema gelap memboroskan tinta dan membuat
+      Lembar Kerja PDF sulit dibaca.
+   ===================================================================== */
+:root{
+  --m-sky1:#cfe4f0; --m-sky2:#eaf2ee; --m-h1a:#a9c7c2; --m-h1b:#bfd6cf; --m-h2a:#8fb6ad; --m-h2b:#a7c6ba;
+  --m-h3a:#7ba795; --m-h3b:#94b99f; --m-gunung:#b8ccd6; --m-gunung2:#c3d5dd; --m-awan:#ffffff;
+  --m-rumus:#7d99a6; --m-pohon:#5d8f79; --m-sungai:#9cc3d6; --m-jalur:#e0cfae; --m-jalurGaris:#ffffff;
+
+  /* Kertas — bawaan. Hangat, silaunya rendah, nyaman untuk sesi panjang. */
+  --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+  --line:#e3ddd2; --line-strong:#cfc6b6;
+  --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+  --stage:#26302f; --sky:#dceaf2;
+  /* #c97a10 hanya mencapai kontras 3,35:1 di atas kartu putih — di bawah
+     ambang WCAG AA untuk teks biasa. Digelapkan ke #a8630c (4,71:1).
+     Ini kekeliruan yang sudah ada sejak versi pertama dan baru
+     ketahuan ketika pemeriksa kontras dijalankan untuk keempat tema. */
+  --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd; --amber-hover:#8f5309;
+  --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+  --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+  --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+  --ok:#14776f; --warn:#b8760c; --bad:#b04a33;
+  --r:14px; --shadow:0 1px 2px rgba(31,42,46,.05), 0 8px 24px -14px rgba(31,42,46,.28);
+}
+
+/* Laut — sejuk. Untuk yang silau oleh nada hangat, atau ruang berlampu kuning. */
+html[data-tema="laut"]{
+  --m-sky1:#c3ddec; --m-sky2:#e4eef2; --m-h1a:#9fc0c4; --m-h1b:#b6d0d3; --m-h2a:#83aeb0; --m-h2b:#9cbfc0;
+  --m-h3a:#6e9fa1; --m-h3b:#88b2ad; --m-gunung:#aec6d4; --m-gunung2:#bad0da; --m-awan:#ffffff;
+  --m-rumus:#6f93a4; --m-pohon:#4f8a86; --m-sungai:#8fbdd6; --m-jalur:#dbcfb8; --m-jalurGaris:#ffffff;
+
+  --paper:#f1f6f8; --card:#ffffff; --ink:#15282f; --ink-soft:#4c6570; --ink-mute:#5f7a85;
+  --line:#d6e3e8; --line-strong:#b5ccd4;
+  --surf:#fbfdfe; --surf2:#e8f0f4; --surf3:#dae7ec; --mute:#9db1b9;
+  --stage:#1d2b31; --sky:#d2e6f1;
+  --amber:#a8630c; --amber-bg:#fdf0dc; --amber-ink:#7a4806; --amber-line:#dc9e46; --amber-soft:#f2e0c0; --amber-hover:#9c5c0b;
+  --teal:#0f6f74;  --teal-bg:#dff2f3;  --teal-ink:#0a5155;  --teal-line:#b0d9dc;  --teal-lite:#159aa1;
+  --clay:#a74631;  --clay-bg:#fae8e4;  --clay-ink:#823623;  --clay-line:#e7c8c0;  --heart:#962c17;
+  --plum:#5b4e8b;  --plum-bg:#eceaf7;  --plum-line:#c9c5e5; --plum-lite:#7467a7;
+  --ok:#0f6f74; --warn:#a8630c; --bad:#a74631;
+  --shadow:0 1px 2px rgba(21,40,47,.05), 0 8px 24px -14px rgba(21,40,47,.3);
+}
+
+/* Malam — gelap. Untuk belajar malam, ruang gelap, atau layar yang menyilaukan.
+   Nada aksen dibalik: yang tadinya varian gelap kini varian terang, supaya
+   teks di atas latar berwarna tetap terbaca. */
+html[data-tema="malam"]{
+  --m-sky1:#16242e; --m-sky2:#1b2b2e; --m-h1a:#22353a; --m-h1b:#2a3f42; --m-h2a:#1d3236; --m-h2b:#254045;
+  --m-h3a:#182b2d; --m-h3b:#20383a; --m-gunung:#243740; --m-gunung2:#2b414a; --m-awan:#3a4d55;
+  --m-rumus:#6f8b96; --m-pohon:#2f5f52; --m-sungai:#2c5872; --m-jalur:#4a4132; --m-jalurGaris:#7d6f55;
+
+  --paper:#131a1c; --card:#1c2427; --ink:#e9eff1; --ink-soft:#a4b4b9; --ink-mute:#8b9ba1;
+  --line:#2d3639; --line-strong:#414e52;
+  --surf:#222b2e; --surf2:#283235; --surf3:#303b3f; --mute:#4c585c;
+  --stage:#0c1113; --sky:#1a2933;
+  --amber:#e8a341; --amber-bg:#3a2b13; --amber-ink:#f6c67f; --amber-line:#7d5c23; --amber-soft:#4c3818; --amber-hover:#f2b055;
+  --teal:#40bfb2;  --teal-bg:#0f322f;  --teal-ink:#74dacd;  --teal-line:#1f5d56;  --teal-lite:#55d6c7;
+  --clay:#ec8a70;  --clay-bg:#3a1f19;  --clay-ink:#f6b3a1;  --clay-line:#6d3a2c;  --heart:#f07a5e;
+  --plum:#b79ed8;  --plum-bg:#282034;  --plum-line:#4c3f66; --plum-lite:#c8b2e6;
+  --ok:#40bfb2; --warn:#e8a341; --bad:#ec8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+/* Kontras Tinggi — untuk siswa berpenglihatan rendah, proyektor pucat, atau
+   ruang yang terkena cahaya matahari langsung. Garis dibuat hitam pekat dan
+   bayangan dimatikan supaya batas antarbagian tegas. */
+html[data-tema="kontras"]{
+  --m-sky1:#eef5f9; --m-sky2:#f7fafb; --m-h1a:#d8e4e2; --m-h1b:#e6eeec; --m-h2a:#c4d6d1; --m-h2b:#d4e2dd;
+  --m-h3a:#b0c8bf; --m-h3b:#c2d6cc; --m-gunung:#cfdde4; --m-gunung2:#dde7ec; --m-awan:#ffffff;
+  --m-rumus:#3a5560; --m-pohon:#2c6b52; --m-sungai:#5b93b5; --m-jalur:#cbb894; --m-jalurGaris:#ffffff;
+
+  --paper:#ffffff; --card:#ffffff; --ink:#000000; --ink-soft:#1c1c1c; --ink-mute:#333333;
+  --line:#000000; --line-strong:#000000;
+  --surf:#ffffff; --surf2:#eeeeee; --surf3:#dddddd; --mute:#6b6b6b;
+  --stage:#000000; --sky:#e8f0f5;
+  --amber:#7a4600; --amber-bg:#fff3df; --amber-ink:#5a3300; --amber-line:#7a4600; --amber-soft:#ffe7c2; --amber-hover:#5a3300;
+  --teal:#00564f;  --teal-bg:#dff4f1;  --teal-ink:#003b36;  --teal-line:#00564f;  --teal-lite:#00776d;
+  --clay:#8c2a12;  --clay-bg:#fde9e5;  --clay-ink:#661d0b;  --clay-line:#8c2a12;  --heart:#8c2a12;
+  --plum:#472b73;  --plum-bg:#efe9f8;  --plum-line:#472b73; --plum-lite:#5b3891;
+  --ok:#00564f; --warn:#7a4600; --bad:#8c2a12;
+  --shadow:none;
+}
+
+/* Mencetak selalu memakai tema Kertas, apa pun tema yang sedang dipakai. */
+@media print{
+  html[data-tema]{
+    --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+    --line:#e3ddd2; --line-strong:#cfc6b6;
+    --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+    --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd;
+    --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+    --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+    --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+    --ok:#14776f; --warn:#b8760c; --bad:#b04a33; --shadow:none;
+  }
+}
+
+/* ---------- tombol tema ---------- */
+.temaWrap{position:relative;display:inline-block}
+.temaBtn{
+  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.4;
+}
+.temaBtn:hover{border-color:var(--line-strong);color:var(--ink)}
+.temaBtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.temaMenu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:200;width:252px;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 34px -12px rgba(0,0,0,.35);
+  padding:6px;
+}
+.temaMenu[hidden]{display:none}
+.temaMenu .hd{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+  padding:7px 10px 5px;
+}
+.temaMenu button{
+  display:flex;width:100%;text-align:left;gap:10px;align-items:center;
+  font:inherit;cursor:pointer;background:none;border:0;border-radius:9px;
+  padding:8px 10px;color:var(--ink);
+}
+.temaMenu button:hover{background:var(--surf2)}
+.temaMenu button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.temaMenu button[aria-checked="true"]{background:var(--teal-bg)}
+.temaMenu .sw{
+  flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-strong);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+}
+.temaMenu .sw i{display:block}
+.temaMenu .nm{font-size:13.5px;font-weight:650;line-height:1.25}
+/* Tanda pilihan berupa teks, bukan warna saja — supaya tetap terbaca oleh
+   siswa yang kesulitan membedakan warna. */
+.temaMenu .ket{font-size:11.5px;color:var(--ink-soft);line-height:1.3;display:block;font-weight:400}
+.temaMenu .tick{margin-left:auto;font-weight:700;color:var(--teal)}
+.temabar{display:flex;justify-content:center;margin:16px 0 -2px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.math{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;white-space:nowrap}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 90px}
+h1{font-size:clamp(23px,5vw,31px);letter-spacing:-.02em;margin:0 0 8px;line-height:1.18}
+.lede{color:var(--ink-soft);font-size:16px;margin:0 0 16px}
+.pillrow{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+.card h2{font-size:16px;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 .step{font-size:10px;font-weight:700;letter-spacing:.09em;padding:3px 7px;border-radius:5px;background:var(--plum-bg);color:var(--plum)}
+.card .ctx{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0}
+button.act{font:inherit;font-size:14px;font-weight:600;padding:8px 15px;border-radius:9px;border:1.5px solid var(--ink);
+  background:var(--ink);color:var(--card);cursor:pointer;transition:.15s}
+button.act.ghost{background:transparent;color:var(--ink)}
+button.act.small{font-size:13px;padding:6px 11px}
+button.act:disabled{opacity:.4;cursor:not-allowed}
+input[type=text],input[type=number]{font:inherit;font-size:16px;padding:9px 11px;border:1.5px solid var(--line-strong);
+  border-radius:9px;background:var(--card);color:var(--ink);width:100px}
+input:focus{outline:0;border-color:var(--ink)}
+.stage{position:relative;background:var(--stage);border-radius:12px;overflow:hidden;line-height:0}
+.stage canvas{width:100%;height:auto;display:block;touch-action:none}
+video{display:none}
+.hud{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(31,42,46,.86);color:var(--card);
+  border-radius:9px;padding:9px 12px;font-size:12.5px;line-height:1.45;backdrop-filter:blur(6px)}
+.hud b{color:var(--amber-soft)}
+.fb{margin-top:10px;padding:11px 13px;border-radius:9px;font-size:14px;display:none;line-height:1.55}
+.fb.show{display:block}
+.fb.ok{background:var(--teal-bg);color:var(--teal-ink);border:1px solid var(--teal-line)}
+.fb.bad{background:var(--clay-bg);color:var(--clay-ink);border:1px solid var(--clay-line)}
+.fb.hint{background:var(--amber-bg);color:var(--amber-ink);border:1px solid var(--amber-soft)}
+.fb .diag{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed currentColor;font-size:13px}
+.model{background:linear-gradient(var(--surf2),var(--surf2));border:1px solid var(--line-strong);border-radius:11px;
+  padding:14px 16px;margin:12px 0;text-align:center}
+.model .eq{font-family:Palatino,Georgia,serif;font-size:clamp(19px,4.6vw,26px);font-style:italic;margin:3px 0}
+.model .eq .p{color:var(--amber);font-weight:600}
+.model .eq .l{color:var(--teal);font-weight:600}
+.model .cap{font-size:12px;color:var(--ink-soft);font-style:normal;font-family:inherit}
+.saw{font-size:13.5px;background:var(--plum-bg);border-left:3px solid var(--plum);padding:11px 13px;
+  border-radius:0 8px 8px 0;margin:12px 0}
+.saw b{color:var(--plum)}
+.note{background:var(--amber-bg);border-left:3px solid var(--amber);padding:11px 13px;border-radius:0 8px 8px 0;font-size:13.5px;margin:12px 0}
+.note b{color:var(--amber)}
+.note.teal{background:var(--teal-bg);border-color:var(--teal)}
+.note.teal b{color:var(--teal)}
+.dim{opacity:.45;pointer-events:none}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;margin-left:6px}
+.chip.p{background:var(--amber-bg);color:var(--amber)}
+.chip.l{background:var(--teal-bg);color:var(--teal)}
+table.rt{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+table.rt td{padding:6px 4px;border-bottom:1px solid var(--line)}
+table.rt td:last-child{text-align:right;font-family:Palatino,Georgia,serif}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+header.top{position:sticky;top:0;z-index:40;background:rgba(250,247,242,.94);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+header.top .in{max-width:760px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:750;letter-spacing:-.02em;font-size:15px}
+.brand span{color:var(--amber)}
+.modtag{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;
+  border-radius:999px;background:var(--plum-bg);color:var(--plum)}
+.backlink{margin-left:auto;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ink-soft);
+  border:1px solid var(--line-strong);border-radius:999px;padding:6px 13px;transition:.15s}
+.backlink:hover{background:var(--card);color:var(--ink);border-color:var(--ink)}
+.handoff{background:linear-gradient(135deg,var(--plum-bg),var(--teal-bg));border:1px solid var(--plum-line);border-radius:var(--r);
+  padding:18px;margin:18px 0;display:flex;gap:15px;align-items:flex-start;flex-wrap:wrap}
+.handoff .icon{font-size:27px;line-height:1}
+.handoff .body{flex:1;min-width:220px}
+.handoff .t{font-weight:650;font-size:15.5px;margin-bottom:4px}
+.handoff .d{font-size:13.5px;color:var(--ink-soft);line-height:1.65}
+.handoff a.go{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:14px;font-weight:600;
+  text-decoration:none;background:var(--ink);color:var(--card);padding:8px 15px;border-radius:9px}
+
+.restore{background:var(--teal-bg);border:1px solid var(--teal-line);border-radius:var(--r);padding:12px 16px;
+  margin:14px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--teal-ink);line-height:1.55}
+.restore b{font-weight:700}
+.restore button{margin-left:auto}
+.hide{display:none !important}
+/* ---------- lapisan ekspedisi ---------- */
+.xpchip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:5px 12px;
+  border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);white-space:nowrap}
+.xpchip b{color:var(--ink);font-variant-numeric:tabular-nums}
+.xpchip .lv{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--amber)}
+.trail{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:20px 0 8px;padding-top:4px}
+.trail .rail,.trail .railfill{position:absolute;top:32px;height:4px;border-radius:3px}
+.trail .rail{left:12.5%;right:12.5%;background:var(--line-strong)}
+.trail .railfill{left:12.5%;width:0;background:linear-gradient(90deg,var(--amber),var(--teal));transition:width .55s cubic-bezier(.4,0,.2,1)}
+.node{position:relative;background:none;border:0;padding:0 4px;font:inherit;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:inherit}
+.node .dot{width:56px;height:56px;border-radius:50%;background:var(--card);border:3px solid var(--line-strong);
+  display:grid;place-items:center;font-weight:750;font-size:20px;color:var(--ink-soft);
+  transition:.25s;position:relative;z-index:1;font-variant-numeric:tabular-nums}
+.node .lbl{font-size:12.5px;font-weight:650;line-height:1.25;text-align:center}
+.node .sub{font-size:10.5px;color:var(--ink-soft);text-align:center;line-height:1.3}
+.node[data-state="now"] .dot{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 6px rgba(31,42,46,.07)}
+.node[data-state="done"] .dot{background:var(--teal);border-color:var(--teal);color:var(--card)}
+.node[data-state="lock"]{cursor:not-allowed}
+.node[data-state="lock"] .dot,.node[data-state="lock"] .lbl,.node[data-state="lock"] .sub{opacity:.42}
+.toastwrap{position:fixed;left:0;right:0;bottom:18px;z-index:90;display:flex;flex-direction:column;
+  align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+@media (min-width:860px){ .toastwrap{left:auto;right:20px;align-items:flex-end;padding:0} }
+.toast{background:var(--ink);color:var(--card);border-radius:12px;padding:12px 17px;max-width:390px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;
+  transform:translateY(14px);opacity:0;transition:.32s cubic-bezier(.2,.8,.3,1)}
+.toast.in{transform:none;opacity:1}
+.toast .medal{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--amber-line),var(--amber-hover));color:var(--card);font-weight:750;font-size:15px}
+.toast .tt{font-size:14px;font-weight:650;line-height:1.35}
+.toast .td{font-size:12px;opacity:.82;line-height:1.45;margin-top:2px}
+.toast.xp .medal{background:linear-gradient(150deg,var(--teal-lite),var(--teal-ink))}
+.kstat{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0 4px}
+.kstat div{font-size:12px;color:var(--ink-soft)}
+.kstat div b{display:block;font-size:25px;color:var(--ink);font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin-top:12px}
+.badge{border:1px solid var(--line);border-radius:11px;padding:12px;display:flex;gap:10px;align-items:flex-start;background:var(--card)}
+.badge.locked{opacity:.45;background:var(--surf)}
+.badge .m{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:750;
+  font-size:13px;background:var(--line);color:var(--ink-soft)}
+.badge.got .m{background:linear-gradient(150deg,var(--amber-line),var(--amber-hover));color:var(--card)}
+.badge .n{font-size:12.5px;font-weight:650;line-height:1.3}
+.badge .d{font-size:11px;color:var(--ink-soft);line-height:1.45;margin-top:2px}
+@media (max-width:560px){
+  .node .dot{width:46px;height:46px;font-size:17px}
+  .trail .rail,.trail .railfill{top:27px}
+  .node .lbl{font-size:11px}
+  .node .sub{display:none}
+}
+</style>
+<script>
+/* Dipasang sebelum halaman dilukis. Kalau tema baru dibaca setelah halaman
+   tampil, pengguna tema Malam akan melihat kedipan putih lebih dulu. */
+(function(){try{var v=localStorage.getItem("jejak.tema.v1");
+if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute("data-tema",v);}catch(e){}})();
+</script>
+</head>
+<body>
+<header class="top">
+  <div class="in">
+    <span class="brand">JEJAK <span>ALJABAR</span></span>
+    <span class="modtag">Modul 2 · Di luar kelas</span>
+    <a class="backlink" href="index.html">☰ Menu</a>
+    <span class="temaWrap noprint" id="temaWrap"></span>
+    <a class="backlink" href="jejak-aljabar.html">← Modul 1 · Kelas</a>
+    <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Pemula Lapangan</span><b id="xpVal">0</b> jejak</span>
+  </div>
+</header>
+<div class="wrap">
+  <h1>Pindai dulu, ukur sendiri.</h1>
+  <p class="lede">Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>.
+     Justru di celah itulah aljabar dibutuhkan.</p>
+  <div class="pillrow">
+    <span class="pill">Deteksi bangun tanpa penanda cetak</span>
+    <span class="pill">Tanpa pustaka luar · tanpa internet</span>
+    <span class="pill">Dikerjakan di depan papan yang sebenarnya</span>
+  </div>
+  <div class="restore hide" id="restoreBar">
+    <span id="restoreTxt"></span>
+    <button class="act ghost small" id="btnMulaiBaru">Mulai dari awal</button>
+  </div>
+
+  <div class="note">
+    <b>Lanjutan dari Modul 1.</b> Di kelas, lebar papan sudah diberikan kepadamu (80 cm) dan kamu tinggal
+    menyusun <span class="math">2p + 160</span>. Di sini tidak ada angka yang diberikan — <b>keduanya</b>
+    belum diketahui, dan kamu sendiri yang harus mengukurnya.
+  </div>
+
+  <nav class="trail" id="trail" aria-label="Peta ekspedisi">
+    <span class="rail"></span><span class="railfill" id="railfill"></span>
+    <button class="node" data-go="cScan" data-state="now"><span class="dot" data-dot="cScan">1</span>
+      <span class="lbl">Pindai</span><span class="sub" data-st="cScan">belum</span></button>
+    <button class="node" data-go="cModel" data-state="lock"><span class="dot" data-dot="cModel">2</span>
+      <span class="lbl">Model</span><span class="sub" data-st="cModel">belum</span></button>
+    <button class="node" data-go="cMeasure" data-state="lock"><span class="dot" data-dot="cMeasure">3</span>
+      <span class="lbl">Ukur</span><span class="sub" data-st="cMeasure">belum</span></button>
+    <button class="node" data-go="cSub" data-state="lock"><span class="dot" data-dot="cSub">4</span>
+      <span class="lbl">Keliling</span><span class="sub" data-st="cSub">belum</span></button>
+  </nav>
+
+  <div class="card" id="cScan">
+    <h2><span class="step">LANGKAH 1</span> Arahkan ke papan mading</h2>
+    <p class="ctx">Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas,
+      pakai <b>Contoh simulasi</b> atau unggah foto.</p>
+    <div class="row">
+      <button class="act" id="btnCam">Nyalakan kamera</button>
+      <button class="act ghost small" id="btnSim">Contoh simulasi</button>
+      <button class="act ghost small" id="btnFile">Unggah foto</button>
+      <input type="file" id="file" accept="image/*" style="display:none">
+    </div>
+    <div class="stage">
+      <video id="vid" playsinline muted></video>
+      <canvas id="cv" width="640" height="480"></canvas>
+      <div class="hud" id="hud">Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.</div>
+    </div>
+    <div class="row">
+      <button class="act small" id="btnDetect">Deteksi bangun</button>
+      <button class="act ghost small" id="btnLock" disabled>Kunci &amp; buat model</button>
+      <span style="font-size:12.5px;color:var(--ink-soft)">Sudut bisa digeser dengan jari.</span>
+    </div>
+    <div class="fb" id="fb-det"></div>
+  </div>
+
+  <div class="card dim" id="cModel">
+    <h2><span class="step">LANGKAH 2</span> Model yang dibuat kamera</h2>
+    <p class="ctx">Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.</p>
+    <div class="saw" id="saw">—</div>
+    <div class="model">
+      <div class="eq" id="eqK">—</div>
+      <div class="eq" id="eqL" style="font-size:.85em">—</div>
+      <div class="cap">Kamera berhenti di sini. Dua huruf itu belum punya nilai.</div>
+    </div>
+    <div class="note teal">
+      <b>Kenapa kamera tidak sekalian mengukurnya?</b> Satu kamera tidak bisa membedakan papan kecil yang dekat
+      dari papan besar yang jauh — keduanya menghasilkan gambar yang persis sama. Yang bisa diketahui kamera hanyalah
+      <b>perbandingan</b> antar sisi, bukan panjang sebenarnya. Panjang sebenarnya harus datang dari meteranmu.
+    </div>
+  </div>
+
+  <div class="card dim" id="cMeasure">
+    <h2><span class="step">LANGKAH 3</span> Sekarang giliranmu mengukur</h2>
+    <p class="ctx">Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.</p>
+    <div class="row">
+      <span><span class="math">p</span><span class="chip p">sisi panjang</span> =</span>
+      <input type="number" id="inP" placeholder="cm" min="1" step="0.1"><span>cm</span>
+    </div>
+    <div class="row">
+      <span><span class="math">l</span><span class="chip l">sisi lebar</span> =</span>
+      <input type="number" id="inL" placeholder="cm" min="1" step="0.1"><span>cm</span>
+    </div>
+    <div class="row"><button class="act" id="btnCheck">Periksa hasil ukur</button></div>
+    <div class="fb" id="fb-ukur"></div>
+    <table class="rt" id="rt" style="display:none"></table>
+  </div>
+
+  <div class="card dim" id="cSub">
+    <h2><span class="step">LANGKAH 4</span> Masukkan ke model</h2>
+    <p class="ctx">Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.</p>
+    <div class="row">
+      <span>Keliling =</span>
+      <input type="number" id="inK" placeholder="cm" step="0.1"><span>cm</span>
+      <button class="act small" id="btnK">Periksa</button>
+    </div>
+    <div class="fb" id="fb-k"></div>
+    <div class="note">
+      <b>Uji ulang.</b> Pindai papan lain — pintu kelas, jendela, ubin lantai, meja guru. Rumusnya akan
+      keluar sama persis, karena strukturnya sama. Yang berbeda hanya hasil ukuranmu.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Bekal Ekspedisi</h2>
+    <p class="ctx">Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang
+      sempat meleset dibayar lebih mahal daripada tepat sejak awal.</b> Lencana diberikan untuk cara kerja,
+      bukan untuk angka.</p>
+    <div class="kstat">
+      <div><b id="pjXp">0</b>jejak terkumpul</div>
+      <div><b id="pjLv">—</b>peringkat</div>
+      <div><b id="pjBadge">0/8</b>lencana</div>
+    </div>
+    <div class="badgegrid" id="badgeGrid"></div>
+
+    <h2 style="margin-top:24px">Pindah ke perangkat lain</h2>
+    <p class="ctx">Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.</p>
+    <div class="row">
+      <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
+      <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+    </div>
+    <div id="simpanBox" style="display:none;font-family:Menlo,Consolas,monospace;font-weight:700;
+      font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em;background:#fffdf9;border:1.5px dashed var(--line-strong);
+      border-radius:11px;padding:13px;text-align:center;user-select:all;margin:10px 0">—</div>
+    <div class="row">
+      <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+      <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+    </div>
+    <div class="fb" id="fb-simpan"></div>
+  </div>
+
+  <div class="handoff">
+    <div class="icon">🏫</div>
+    <div class="body">
+      <div class="t">Kembali ke Modul 1 · Di dalam kelas</div>
+      <div class="d">Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan,
+        berdebat dengan teman sebaya AI, dan peta miskonsepsi. Dikerjakan sebelum turun ke lapangan.</div>
+      <a class="go" href="jejak-aljabar.html">← Buka Modul 1</a>
+    </div>
+  </div>
+
+  <footer>
+    <b>JEJAK ALJABAR · Modul 2 — Pindai &amp; Ukur (prototipe).</b> Detektor bangun ditulis sendiri: Sobel → ambang persentil →
+    transformasi Hough berbobot arah gradien → pemilihan dua pasang garis → perpotongan.
+    Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak. Satu berkas, jalan luring.<br>
+    Simpan berkas ini dalam <b>satu folder</b> dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi.
+    Kamera membutuhkan HTTPS atau localhost — dari berkas lokal, pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.
+  </footer>
+
+  <div class="toastwrap" id="toastWrap" aria-live="polite"></div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   Detektor bangun segi empat — tanpa pustaka luar.
+   Alur: grayscale & perkecil → Sobel → ambang persentil →
+   Hough berbobot arah gradien → 2 pasang garis dominan → 4 titik potong.
+   ===================================================================== */
+const CV = document.getElementById("cv"), X = CV.getContext("2d", {willReadFrequently:true});
+const VID = document.getElementById("vid"), HUD = document.getElementById("hud");
+const ST = { img:null, quad:null, locked:false, ratio:null, skew:0, live:false, drag:-1 };
+
+/* =====================================================================
+   LAPISAN EKSPEDISI
+   Aturan hadiahnya sama dengan Modul 1 dan sengaja terbalik dari kebiasaan:
+   memperbaiki hasil yang sempat meleset dibayar LEBIH MAHAL daripada tepat
+   sejak awal. Lencana diberikan untuk cara kerja — berdiri tegak lurus,
+   membetulkan sudut dengan tangan sendiri — bukan untuk ketepatan angka.
+   ===================================================================== */
+const G = { xp:0, badges:{}, done:{}, gagalUkur:0, gagalKeliling:0, pernahGeser:false };
+
+
+/* =====================================================================
+   KODE SIMPAN — memindahkan kemajuan antar perangkat
+   Bukan enkripsi. Tujuannya memindahkan, bukan mengamankan: siswa bisa
+   memotretnya, menuliskannya, atau mengirimnya lewat WhatsApp, lalu
+   menempelkannya di HP lain.
+
+   Alfabet Crockford (tanpa I, L, O, U) supaya salah baca tulisan tangan
+   tidak menghasilkan kode lain yang kebetulan sah. Checksum dua karakter
+   bergaya Fletcher — menangkap salah ketik satu karakter maupun dua
+   karakter yang tertukar posisinya.
+   ===================================================================== */
+const B32S = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function BitTulis(){ this.b = []; }
+BitTulis.prototype.put = function(v, n){
+  v = Math.max(0, Math.min(Math.floor(v) || 0, Math.pow(2, n) - 1));
+  for(let i = n - 1; i >= 0; i--) this.b.push(Math.floor(v / Math.pow(2, i)) % 2);
+  return this;
+};
+BitTulis.prototype.selesai = function(awalan){
+  const b = this.b.slice();
+  while(b.length % 5) b.push(0);
+  let s = "";
+  for(let i = 0; i < b.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + b[i + j];
+    s += B32S[v];
+  }
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < s.length; i++){ c1 = (c1 + B32S.indexOf(s[i])) % 32; c2 = (c2 + c1) % 32; }
+  s += B32S[c1] + B32S[c2];
+  return awalan + "-" + (s.match(/.{1,5}/g) || []).join("-");
+};
+
+function BitBaca(teks, awalan){
+  let t = String(teks).toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if(t.indexOf(awalan) !== 0) return null;
+  t = t.slice(awalan.length).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  if(t.length < 4) return null;
+  const isi = t.slice(0, -2), cs = t.slice(-2);
+  if(isi.split("").some(c => B32S.indexOf(c) < 0)) return null;
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < isi.length; i++){ c1 = (c1 + B32S.indexOf(isi[i])) % 32; c2 = (c2 + c1) % 32; }
+  if(B32S[c1] + B32S[c2] !== cs) return null;               // checksum gagal
+  const bits = [];
+  for(let i = 0; i < isi.length; i++){
+    const v = B32S.indexOf(isi[i]);
+    for(let j = 4; j >= 0; j--) bits.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  let pos = 0;
+  return { get:function(n){
+    let v = 0;
+    for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
+    return v;
+  } };
+}
+
+const AWALAN_SIMPAN = "SMP2";
+function buatKodeSimpan(){
+  const w = new BitTulis();
+  w.put(1, 4);
+  w.put(G.xp, 12);
+  STEPS.forEach(function(k){ w.put(G.done[k] ? 1 : 0, 1); });
+  BADGES.forEach(function(b){ w.put(G.badges[b.id] ? 1 : 0, 1); });
+  w.put(G.gagalUkur, 4); w.put(G.gagalKeliling, 4);
+  w.put(G.pernahGeser ? 1 : 0, 1);
+  return w.selesai(AWALAN_SIMPAN);
+}
+function pakaiKodeSimpan(teks){
+  const r = BitBaca(teks, AWALAN_SIMPAN);
+  if(!r) return "gagal";
+  if(r.get(4) !== 1) return "versi";
+  G.xp = r.get(12);
+  G.done = {}; STEPS.forEach(function(k){ if(r.get(1)) G.done[k] = true; });
+  G.badges = {}; BADGES.forEach(function(b){ if(r.get(1)) G.badges[b.id] = true; });
+  G.gagalUkur = r.get(4); G.gagalKeliling = r.get(4);
+  G.pernahGeser = !!r.get(1);
+  return "ok";
+}
+
+/* ---------- SIMPAN KEMAJUAN ----------
+   Dibungkus try/catch di setiap akses: menyentuh localStorage saja sudah
+   bisa melempar SecurityError di Safari mode private atau bila penyimpanan
+   situs diblokir. Kalau gagal, modul tetap jalan penuh — tanpa ingatan. */
+const SIMPAN_KEY = "jejak.modul2.v1";
+let simpanAktif = (function(){
+  try{ localStorage.setItem("__uji","1"); localStorage.removeItem("__uji"); return true; }
+  catch(e){ return false; }
+})();
+function simpan(){
+  if(!simpanAktif) return;
+  try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, xp:G.xp, badges:G.badges, done:G.done,
+    gagalUkur:G.gagalUkur, gagalKeliling:G.gagalKeliling, pernahGeser:G.pernahGeser })); }
+  catch(e){ simpanAktif = false; }
+}
+function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
+function pulihkan(){
+  if(!simpanAktif) return;
+  let d = null;
+  try{ const raw = localStorage.getItem(SIMPAN_KEY); d = raw ? JSON.parse(raw) : null; }catch(e){ return; }
+  if(!d || d.v !== 1) return;
+  G.xp = d.xp || 0; G.badges = d.badges || {}; G.done = d.done || {};
+  G.gagalUkur = d.gagalUkur || 0; G.gagalKeliling = d.gagalKeliling || 0;
+  G.pernahGeser = !!d.pernahGeser;
+  const bar = document.getElementById("restoreBar");
+  if(bar){
+    const n = STEPS.filter(k => G.done[k]).length;
+    document.getElementById("restoreTxt").innerHTML =
+      "<b>Ekspedisimu dipulihkan.</b> " + n + " dari 4 tahap selesai, " + G.xp + " jejak terkumpul. " +
+      "Tersimpan di peramban ini saja — bukan di server mana pun.";
+    bar.classList.remove("hide");
+  }
+}
+const STEPS = ["cScan","cModel","cMeasure","cSub"];
+const STEP_LBL = { cScan:"Pindai", cModel:"Model", cMeasure:"Ukur", cSub:"Keliling" };
+const XP_STEP = { cScan:12, cModel:15, cMeasure:20, cSub:18 };
+const XP_PULIH = 10;
+const BADGES = [
+  { id:"pemindai", n:"Pemindai",         d:"Mengunci bangun papan dari gambar kamera" },
+  { id:"tangan",   n:"Tangan Sendiri",   d:"Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera" },
+  { id:"tegak",    n:"Berdiri Tegak",    d:"Memindai dari sudut yang cukup tegak lurus terhadap papan" },
+  { id:"struktur", n:"Pembaca Struktur", d:"Menerima model yang dibangun dari bentuk, bukan dari ukuran" },
+  { id:"meteran",  n:"Pemegang Meteran", d:"Hasil ukurmu cocok dengan perbandingan yang dilihat kamera" },
+  { id:"teliti",   n:"Teliti",           d:"Mengukur ulang setelah hasil pertamamu tidak masuk akal" },
+  { id:"keliling", n:"Penutup Keliling", d:"Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri" },
+  { id:"tuntas",   n:"Ekspedisi Tuntas", d:"Keempat tahap lapangan diselesaikan dalam satu perjalanan" }
+];
+const LEVELS = [ [0,"Pemula Lapangan"], [30,"Pemindai"], [70,"Juru Ukur"], [110,"Ahli Ekspedisi"] ];
+function levelName(xp){ let n = LEVELS[0][1]; LEVELS.forEach(function(a){ if(xp >= a[0]) n = a[1]; }); return n; }
+function toast(kind, title, desc, medal){
+  const w = document.getElementById("toastWrap"); if(!w) return;
+  while(w.children.length >= 3) w.firstChild.remove();
+  const d = document.createElement("div");
+  d.className = "toast " + kind;
+  d.innerHTML = '<span class="medal">' + medal + '</span><div><div class="tt">' + title +
+    '</div><div class="td">' + desc + "</div></div>";
+  w.appendChild(d);
+  requestAnimationFrame(function(){ d.classList.add("in"); });
+  setTimeout(function(){ d.classList.remove("in"); setTimeout(function(){ d.remove(); }, 380); }, 3000);
+}
+function addXp(n, why, diam){
+  if(n <= 0) return;
+  const before = levelName(G.xp);
+  G.xp += n; renderGame();
+  const after = levelName(G.xp);
+  if(after !== before){ toast("xp", "Peringkat naik: " + after, "Terkumpul " + G.xp + " jejak.", "★"); return; }
+  if(!diam) toast("xp", "+" + n + " jejak", why, "+");
+}
+function grant(id, extra){
+  if(G.badges[id]) return false;
+  const b = BADGES.find(function(x){ return x.id === id; }); if(!b) return false;
+  G.badges[id] = true; renderGame();
+  toast("", "Lencana: " + b.n, b.d + (extra ? " · +" + extra + " jejak" : ""), b.n[0]);
+  return true;
+}
+function stepDone(id, pulih, badgeId){
+  if(G.done[id]) return;
+  G.done[id] = true;
+  const n = (XP_STEP[id] || 10) + (pulih ? XP_PULIH : 0);
+  const adaLencana = badgeId && !G.badges[badgeId];
+  addXp(n, pulih ? "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal."
+                 : "Tahap " + STEP_LBL[id] + " selesai.", adaLencana);
+  if(badgeId) grant(badgeId, n);
+  renderGame();
+  if(STEPS.every(function(k){ return G.done[k]; })) grant("tuntas");
+}
+function renderGame(){
+  simpan();
+  const el = function(i){ return document.getElementById(i); };
+  const lv = levelName(G.xp), got = Object.keys(G.badges).length;
+  if(el("xpVal")) el("xpVal").textContent = G.xp;
+  if(el("xpLv"))  el("xpLv").textContent = lv;
+  if(el("pjXp"))  el("pjXp").textContent = G.xp;
+  if(el("pjLv"))  el("pjLv").textContent = lv;
+  if(el("pjBadge")) el("pjBadge").textContent = got + "/" + BADGES.length;
+  const grid = el("badgeGrid");
+  if(grid) grid.innerHTML = BADGES.map(function(b){
+    const has = !!G.badges[b.id];
+    return '<div class="badge ' + (has ? "got" : "locked") + '"><span class="m">' + (has ? b.n[0] : "?") +
+      '</span><div><div class="n">' + b.n + '</div><div class="d">' + b.d + "</div></div></div>";
+  }).join("");
+  const n = STEPS.filter(function(k){ return G.done[k]; }).length;
+  const rf = el("railfill"); if(rf) rf.style.width = (75 * n / STEPS.length) + "%";
+  const sekarang = STEPS.find(function(k){ return !G.done[k]; }) || STEPS[STEPS.length - 1];
+  STEPS.forEach(function(k, i){
+    const node = document.querySelector('[data-go="' + k + '"]');
+    const sub = document.querySelector('[data-st="' + k + '"]');
+    const dot = document.querySelector('[data-dot="' + k + '"]');
+    if(!node) return;
+    const buka = i === 0 || G.done[STEPS[i - 1]];
+    node.dataset.state = G.done[k] ? "done" : (k === sekarang && buka ? "now" : (buka ? "open" : "lock"));
+    node.disabled = !buka;
+    if(sub) sub.textContent = G.done[k] ? "selesai" : (buka ? "giliranmu" : "terkunci");
+    if(dot) dot.textContent = G.done[k] ? "✓" : String(i + 1);
+  });
+}
+document.addEventListener("click", function(e){
+  const b = e.target.closest("[data-go]"); if(!b || b.disabled) return;
+  const t = document.getElementById(b.dataset.go);
+  if(t) t.scrollIntoView({ behavior:"smooth", block:"start" });
+});
+
+function hud(html){ HUD.innerHTML = html; }
+function fb(id, kind, html, diag){
+  const el = document.getElementById("fb-" + id);
+  el.className = "fb show " + kind;
+  el.innerHTML = html + (diag ? '<span class="diag">' + diag + "</span>" : "");
+}
+function undim(id){ document.getElementById(id).classList.remove("dim"); }
+
+/* ---------- sumber gambar ---------- */
+function drawSource(){
+  if(ST.live && VID.readyState >= 2){
+    const r = VID.videoHeight / VID.videoWidth;
+    CV.width = 640; CV.height = Math.round(640 * r);
+    X.drawImage(VID, 0, 0, CV.width, CV.height);
+  }else if(ST.img){
+    X.drawImage(ST.img, 0, 0, CV.width, CV.height);
+  }
+  overlay();
+  if(ST.live) requestAnimationFrame(drawSource);
+}
+function overlay(){
+  const q = ST.quad; if(!q) return;
+  const pair = sidePairs(q);
+  X.lineWidth = Math.max(3, CV.width / 160); X.lineCap = "round";
+  const cols = ["#e0961f", "#1a9d92", "#e0961f", "#1a9d92"];   // p, l, p, l
+  for(let i = 0; i < 4; i++){
+    X.strokeStyle = cols[i];
+    X.beginPath(); X.moveTo(q[i].x, q[i].y); X.lineTo(q[(i+1)%4].x, q[(i+1)%4].y); X.stroke();
+  }
+  for(let i = 0; i < 4; i++){
+    X.beginPath(); X.arc(q[i].x, q[i].y, Math.max(7, CV.width/70), 0, 7);
+    X.fillStyle = "#fff"; X.fill(); X.strokeStyle = "#26302f"; X.lineWidth = 2.5; X.stroke();
+  }
+  // label sisi
+  X.font = "bold " + Math.max(15, CV.width/28) + "px Palatino, Georgia, serif";
+  X.textAlign = "center"; X.textBaseline = "middle";
+  const labs = ["p", "l", "p", "l"];
+  for(let i = 0; i < 4; i++){
+    const a = q[i], b = q[(i+1)%4], mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    X.fillStyle = "rgba(31,42,46,.82)";
+    X.beginPath(); X.arc(mx, my, Math.max(13, CV.width/42), 0, 7); X.fill();
+    X.fillStyle = cols[i]; X.fillText(labs[i], mx, my + 1);
+  }
+  void pair;
+}
+
+/* ---------- sumber: simulasi prosedural ---------- */
+function simulate(){
+  stopCam();
+  CV.width = 640; CV.height = 480;
+  const g = X.createLinearGradient(0, 0, 0, 480);
+  g.addColorStop(0, "#cfc7b6"); g.addColorStop(1, "#b8ae9b");
+  X.fillStyle = g; X.fillRect(0, 0, 640, 480);
+  for(let i = 0; i < 5200; i++){                       // tekstur dinding
+    X.fillStyle = "rgba(0,0,0," + (Math.random()*0.05) + ")";
+    X.fillRect(Math.random()*640, Math.random()*480, 2, 2);
+  }
+  X.fillStyle = "rgba(0,0,0,.10)"; X.fillRect(0, 430, 640, 50);   // garis lantai
+
+  // papan dengan perspektif ringan & acak
+  const cx = 320 + (Math.random()-.5)*36, cy = 232 + (Math.random()-.5)*26;
+  const hw = 168 + Math.random()*54, hh = 108 + Math.random()*40;
+  const sk = (Math.random()-.5)*0.20, ro = (Math.random()-.5)*0.10;
+  const pts = [[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([x,y]) => {
+    const s = 1 + sk * (x/hw);                       // penyusutan satu sisi
+    let X0 = x, Y0 = y * s;
+    const c = Math.cos(ro), si = Math.sin(ro);
+    return {x: cx + X0*c - Y0*si, y: cy + X0*si + Y0*c};
+  });
+  X.save();
+  X.beginPath(); X.moveTo(pts[0].x, pts[0].y);
+  for(let i = 1; i < 4; i++) X.lineTo(pts[i].x, pts[i].y);
+  X.closePath();
+  X.fillStyle = "#1f6f4a"; X.fill();                 // papan hijau
+  X.strokeStyle = "#5a3b1c"; X.lineWidth = 11; X.stroke();   // bingkai kayu
+  X.clip();
+  for(let i = 0; i < 16; i++){                       // tempelan kertas
+    X.fillStyle = ["#f4f1e8","#f7e9c9","#e9f0f6"][i % 3];
+    X.fillRect(cx - hw + 22 + (i%4)*((2*hw-56)/4), cy - hh + 20 + Math.floor(i/4)*((2*hh-46)/4), 46, 32);
+  }
+  X.restore();
+  ST.img = null; ST.quad = null; ST.locked = false;
+  const snap = new Image();
+  snap.onload = () => { ST.img = snap; };
+  snap.src = CV.toDataURL();
+  ST.truth = pts;                                    // hanya untuk pengujian
+  hud("Contoh simulasi dibuat. Tekan <b>Deteksi bangun</b>.");
+}
+
+/* ---------- kamera ---------- */
+async function startCam(){
+  try{
+    const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}}, audio:false});
+    VID.srcObject = s; await VID.play();
+    ST.live = true; ST.img = null; ST.quad = null; ST.locked = false;
+    hud("Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.");
+    drawSource();
+  }catch(e){
+    hud("Kamera tidak bisa dibuka (" + e.name + "). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.");
+  }
+}
+function stopCam(){
+  ST.live = false;
+  if(VID.srcObject){ VID.srcObject.getTracks().forEach(t => t.stop()); VID.srcObject = null; }
+}
+
+/* ---------- inti penglihatan ---------- */
+function grayscale(w, h){
+  const src = X.getImageData(0, 0, CV.width, CV.height).data;
+  const g = new Float32Array(w * h);
+  const sx = CV.width / w, sy = CV.height / h;
+  for(let y = 0; y < h; y++){
+    for(let x = 0; x < w; x++){
+      const px = Math.min(CV.width - 1, (x * sx) | 0), py = Math.min(CV.height - 1, (y * sy) | 0);
+      const i = (py * CV.width + px) * 4;
+      g[y * w + x] = 0.299 * src[i] + 0.587 * src[i+1] + 0.114 * src[i+2];
+    }
+  }
+  // blur kotak 3x3 untuk meredam derau.
+  // Penting: salin dulu seluruh isi g, supaya piksel batas tidak tertinggal
+  // bernilai nol — kalau tertinggal, ia menjadi tepi palsu sekuat apa pun
+  // dan detektor akan mengunci bingkai gambar alih-alih bendanya.
+  const b = Float32Array.from(g);
+  for(let y = 1; y < h-1; y++) for(let x = 1; x < w-1; x++){
+    let s = 0;
+    for(let j = -1; j <= 1; j++) for(let i = -1; i <= 1; i++) s += g[(y+j)*w + x+i];
+    b[y*w + x] = s / 9;
+  }
+  return b;
+}
+function detectQuad(){
+  const w = 200, h = Math.max(40, Math.round(CV.height * w / CV.width));
+  const g = grayscale(w, h);
+  const mag = new Float32Array(w*h), ang = new Float32Array(w*h);
+  const M = 3;                       // abaikan pita tepi gambar
+  for(let y = M; y < h-M; y++) for(let x = M; x < w-M; x++){
+    const i = y*w + x;
+    const gx = -g[i-w-1] - 2*g[i-1] - g[i+w-1] + g[i-w+1] + 2*g[i+1] + g[i+w+1];
+    const gy = -g[i-w-1] - 2*g[i-w] - g[i-w+1] + g[i+w-1] + 2*g[i+w] + g[i+w+1];
+    mag[i] = Math.hypot(gx, gy);
+    ang[i] = Math.atan2(gy, gx);                      // arah normal tepi
+  }
+  // ambang persentil: ambil 8% piksel tepi terkuat
+  const inner = [];
+  for(let y = M; y < h-M; y++) for(let x = M; x < w-M; x++) inner.push(mag[y*w+x]);
+  inner.sort((a,b) => b-a);
+  const thr = inner[Math.floor(inner.length * 0.08)] || 1;
+
+  const TH = 180, rhoMax = Math.ceil(Math.hypot(w, h)), RH = 2*rhoMax + 1;
+  const acc = new Float32Array(TH * RH);
+  for(let y = M; y < h-M; y++) for(let x = M; x < w-M; x++){
+    const i = y*w + x; if(mag[i] < thr) continue;
+    let t0 = Math.round((ang[i] * 180 / Math.PI + 360) % 180);
+    for(let d = -4; d <= 4; d++){                     // hanya sekitar arah gradien
+      const t = (t0 + d + 180) % 180, a = t * Math.PI / 180;
+      const rho = Math.round(x * Math.cos(a) + y * Math.sin(a)) + rhoMax;
+      if(rho >= 0 && rho < RH) acc[t*RH + rho] += mag[i] * (1 - Math.abs(d)/6);
+    }
+  }
+  // puncak dengan penekanan non-maksimum
+  const peaks = [];
+  for(let t = 0; t < TH; t++) for(let r = 2; r < RH-2; r++){
+    const v = acc[t*RH + r]; if(v <= 0) continue;
+    let best = true;
+    for(let dt = -2; dt <= 2 && best; dt++) for(let dr = -6; dr <= 6; dr++){
+      if(!dt && !dr) continue;
+      const tt = (t + dt + TH) % TH, rr = r + dr;
+      if(rr < 0 || rr >= RH) continue;
+      if(acc[tt*RH + rr] > v){ best = false; break; }
+    }
+    if(best) peaks.push({t:t, rho:r - rhoMax, v:v});
+  }
+  peaks.sort((a,b) => b.v - a.v);
+  if(peaks.length < 4) return null;
+
+  /* Menemukan garis saja tidak cukup. Setiap pasangan garis diuji ulang:
+     apakah keempat sisi hipotesis benar-benar ditopang piksel tepi?
+     Tanpa tahap ini, detektor gampang mengunci tempelan kertas di dalam
+     papan atau garis lantai di belakangnya. */
+  const angDist = (a,b) => { let d = Math.abs(a-b) % 180; return d > 90 ? 180 - d : d; };
+  const top = peaks.slice(0, 44);
+  const base = top[0].t;
+  const A = top.filter(p => angDist(p.t, base) < 28).slice(0, 9);
+  const B = top.filter(p => angDist(p.t, base) >= 55).slice(0, 9);
+  if(A.length < 2 || B.length < 2) return null;
+  const minSep = Math.min(w, h) * 0.20;
+
+  const cross = (l1, l2) => {
+    const a1 = l1.t*Math.PI/180, a2 = l2.t*Math.PI/180;
+    const det = Math.cos(a1)*Math.sin(a2) - Math.sin(a1)*Math.cos(a2);
+    if(Math.abs(det) < 1e-6) return null;
+    return {
+      x: (l1.rho*Math.sin(a2) - l2.rho*Math.sin(a1)) / det,
+      y: (l2.rho*Math.cos(a1) - l1.rho*Math.cos(a2)) / det
+    };
+  };
+  function support(a, b){                       // seberapa nyata sisi ini
+    const N = 26; let hit = 0;
+    for(let k = 0; k <= N; k++){
+      const x = a.x + (b.x-a.x)*k/N, y = a.y + (b.y-a.y)*k/N;
+      let ok = false;
+      for(let dy = -2; dy <= 2 && !ok; dy++) for(let dx = -2; dx <= 2; dx++){
+        const xx = Math.round(x+dx), yy = Math.round(y+dy);
+        if(xx < M || yy < M || xx >= w-M || yy >= h-M) continue;
+        if(mag[yy*w + xx] >= thr){ ok = true; break; }
+      }
+      if(ok) hit++;
+    }
+    return hit / (N+1);
+  }
+  let best = null;
+  for(let i = 0; i < A.length; i++) for(let j = i+1; j < A.length; j++){
+    if(Math.abs(A[i].rho - A[j].rho) < minSep) continue;
+    for(let m = 0; m < B.length; m++) for(let n = m+1; n < B.length; n++){
+      if(Math.abs(B[m].rho - B[n].rho) < minSep) continue;
+      const pts = []; let bad = false;
+      for(const u of [A[i], A[j]]){
+        for(const v of [B[m], B[n]]){
+          const q = cross(u, v);
+          if(!q || q.x < -w*0.2 || q.x > w*1.2 || q.y < -h*0.2 || q.y > h*1.2){ bad = true; break; }
+          pts.push(q);
+        }
+        if(bad) break;
+      }
+      if(bad || pts.length !== 4) continue;
+      const mx = (pts[0].x+pts[1].x+pts[2].x+pts[3].x)/4, my = (pts[0].y+pts[1].y+pts[2].y+pts[3].y)/4;
+      pts.sort((u,v) => Math.atan2(u.y-my, u.x-mx) - Math.atan2(v.y-my, v.x-mx));
+      const ar = polyArea(pts);
+      if(ar < w*h*0.05 || ar > w*h*0.90) continue;
+      const sd = [dist(pts[0],pts[1]), dist(pts[1],pts[2]), dist(pts[2],pts[3]), dist(pts[3],pts[0])];
+      const sk = Math.max(Math.abs(sd[0]-sd[2])/Math.max(sd[0],sd[2]),
+                          Math.abs(sd[1]-sd[3])/Math.max(sd[1],sd[3]));
+      if(sk > 0.45) continue;
+      let sup = 0;
+      for(let k = 0; k < 4; k++) sup += support(pts[k], pts[(k+1)%4]);
+      sup /= 4;
+      const score = Math.pow(sup, 4) * ar;                  // sisi nyata jauh lebih penting daripada luas
+      if(!best || score > best.score) best = {pts:pts, score:score, sup:sup};
+    }
+  }
+  if(!best || best.sup < 0.55) return null;
+  const sc = CV.width / w;
+  const quad = best.pts.map(q => ({x:q.x*sc, y:q.y*sc}));
+  const area = polyArea(quad), full = CV.width * CV.height;
+  if(area < full*0.05 || area > full*0.93) return null;
+  return quad;
+}
+function polyArea(q){
+  let s = 0;
+  for(let i = 0; i < 4; i++){ const a = q[i], b = q[(i+1)%4]; s += a.x*b.y - b.x*a.y; }
+  return Math.abs(s)/2;
+}
+const dist = (a,b) => Math.hypot(a.x-b.x, a.y-b.y);
+function sidePairs(q){
+  const s = [dist(q[0],q[1]), dist(q[1],q[2]), dist(q[2],q[3]), dist(q[3],q[0])];
+  const pair1 = (s[0]+s[2])/2, pair2 = (s[1]+s[3])/2;
+  const skew = Math.max(Math.abs(s[0]-s[2])/Math.max(s[0],s[2]), Math.abs(s[1]-s[3])/Math.max(s[1],s[3]));
+  return {pair1:pair1, pair2:pair2, skew:skew, sides:s};
+}
+
+/* ---------- interaksi ---------- */
+function evPt(e){
+  const r = CV.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return {x:(t.clientX - r.left) * CV.width / r.width, y:(t.clientY - r.top) * CV.height / r.height};
+}
+CV.addEventListener("pointerdown", e => {
+  if(!ST.quad || ST.locked) return;
+  const p = evPt(e); let best = -1, bd = 1e9;
+  ST.quad.forEach((q,i) => { const d = dist(q,p); if(d < bd){ bd = d; best = i; } });
+  if(bd < CV.width/9){ ST.drag = best; CV.setPointerCapture(e.pointerId); }
+});
+CV.addEventListener("pointermove", e => {
+  if(ST.drag < 0) return;
+  ST.quad[ST.drag] = evPt(e);
+  if(!ST.live){ if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height); overlay(); }
+});
+CV.addEventListener("pointerup", () => {
+  if(ST.drag >= 0 && !G.pernahGeser){
+    G.pernahGeser = true;
+    grant("tangan"); addXp(8, "Kamu membetulkan sudutnya sendiri.", true);
+  }
+  ST.drag = -1;
+});
+
+/* ---------- alur ---------- */
+document.getElementById("btnCam").onclick = startCam;
+document.getElementById("btnSim").onclick = () => { simulate(); resetFlow(); };
+document.getElementById("btnFile").onclick = () => document.getElementById("file").click();
+document.getElementById("file").onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  stopCam();
+  const im = new Image();
+  im.onload = () => {
+    const r = im.height / im.width;
+    CV.width = 640; CV.height = Math.round(640*r);
+    X.drawImage(im, 0, 0, CV.width, CV.height);
+    ST.img = im; ST.quad = null; ST.locked = false;
+    hud("Foto dimuat. Tekan <b>Deteksi bangun</b>.");
+    resetFlow();
+  };
+  im.src = URL.createObjectURL(f);
+};
+function resetFlow(){
+  ["cModel","cMeasure","cSub"].forEach(i => document.getElementById(i).classList.add("dim"));
+  ["fb-det","fb-ukur","fb-k"].forEach(i => document.getElementById(i).className = "fb");
+  document.getElementById("rt").style.display = "none";
+  document.getElementById("btnLock").disabled = true;
+}
+document.getElementById("btnDetect").onclick = () => {
+  if(!ST.img && !ST.live){ fb("det","hint","Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu."); return; }
+  if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
+  const q = detectQuad();
+  if(!q){
+    ST.quad = [
+      {x:CV.width*.22, y:CV.height*.24},{x:CV.width*.78, y:CV.height*.24},
+      {x:CV.width*.78, y:CV.height*.76},{x:CV.width*.22, y:CV.height*.76}
+    ];
+    overlay();
+    fb("det","hint","Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. " +
+      "Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci.");
+    document.getElementById("btnLock").disabled = false;
+    return;
+  }
+  ST.quad = q; overlay();
+  const sp = sidePairs(q);
+  ST.skew = sp.skew;
+  fb("det","ok","Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci." +
+    (sp.skew > 0.25 ? "" : ""), sp.skew > 0.25
+      ? "<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya (" +
+        Math.round(sp.skew*100) + "%). Kamu memotret terlalu menyerong, jadi perbandingan sisinya belum bisa dipercaya. " +
+        "Berdirilah lebih tegak lurus menghadap papan."
+      : "Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan " + Math.round(sp.skew*100) + "%).");
+  if(sp.skew <= 0.25) grant("tegak");
+  stepDone("cScan", false, "pemindai");
+  document.getElementById("btnLock").disabled = false;
+};
+document.getElementById("btnLock").onclick = () => {
+  if(!ST.quad) return;
+  ST.locked = true; stopCam();
+  if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
+  overlay();
+  const sp = sidePairs(ST.quad);
+  const long = Math.max(sp.pair1, sp.pair2), short = Math.min(sp.pair1, sp.pair2);
+  ST.ratio = long / short; ST.skew = sp.skew;
+
+  document.getElementById("saw").innerHTML =
+    "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. " +
+    "Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — " +
+    "bukan empat. Karena itu cukup dua huruf.";
+  document.getElementById("eqK").innerHTML =
+    'K = <span class="p">p</span> + <span class="l">l</span> + <span class="p">p</span> + <span class="l">l</span> ' +
+    '= 2<span class="p">p</span> + 2<span class="l">l</span>';
+  document.getElementById("eqL").innerHTML = 'L = <span class="p">p</span> × <span class="l">l</span>';
+  undim("cModel"); undim("cMeasure");
+  stepDone("cScan", false, "pemindai");
+  stepDone("cModel", false, "struktur");
+  hud("Model terkunci. Perbandingan sisi yang terbaca kamera: <b>" + ST.ratio.toFixed(2) + " : 1</b>. " +
+      "Ukuran sebenarnya belum diketahui.");
+  document.getElementById("inP").focus();
+};
+
+document.getElementById("btnCheck").onclick = () => {
+  const p = parseFloat(document.getElementById("inP").value);
+  const l = parseFloat(document.getElementById("inL").value);
+  if(!(p > 0) || !(l > 0)){ fb("ukur","hint","Isi kedua ukuran dengan angka positif, dalam cm."); return; }
+  if(!ST.ratio){ fb("ukur","hint","Kunci modelnya dulu di Langkah 2."); return; }
+  const rUkur = Math.max(p,l) / Math.min(p,l);
+  const beda = Math.abs(rUkur - ST.ratio) / ST.ratio;
+  const tol = ST.skew > 0.25 ? 0.35 : 0.22;
+  const rt = document.getElementById("rt");
+  rt.style.display = "";
+  rt.innerHTML =
+    "<tr><td>Perbandingan menurut kamera</td><td>" + ST.ratio.toFixed(2) + " : 1</td></tr>" +
+    "<tr><td>Perbandingan menurut ukuranmu</td><td>" + rUkur.toFixed(2) + " : 1</td></tr>" +
+    "<tr><td>Selisih</td><td>" + Math.round(beda*100) + "%</td></tr>";
+
+  if(beda <= tol){
+    fb("ukur","ok","Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — " +
+      "dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya.",
+      "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> " +
+      "Tanpa salah satunya, keliling papan ini tidak bisa dihitung.");
+    ST.p = p; ST.l = l;
+    undim("cSub");
+    if(G.gagalUkur > 0) grant("teliti");
+    stepDone("cMeasure", G.gagalUkur > 0, "meteran");
+  }else{
+    G.gagalUkur++;
+    fb("ukur","bad","Belum cocok. Menurut gambar, sisi panjang kira-kira <b>" + ST.ratio.toFixed(2) +
+      "×</b> sisi lebar, tapi hasil ukuranmu memberi <b>" + rUkur.toFixed(2) + "×</b>.",
+      "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; " +
+      "(2) <span class=\"math\">p</span> dan <span class=\"math\">l</span> tertukar; " +
+      "(3) pengukurannya perlu diulang." +
+      (ST.skew > 0.25 ? " Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya." : ""));
+  }
+};
+document.getElementById("btnK").onclick = () => {
+  if(!ST.p){ fb("k","hint","Selesaikan Langkah 3 dulu."); return; }
+  const want = 2*ST.p + 2*ST.l;
+  const got = parseFloat(document.getElementById("inK").value);
+  if(!(got > 0)){ fb("k","hint","Isi dengan sebuah angka."); return; }
+  if(Math.abs(got - want) < 0.6){
+    fb("k","ok","Benar — <b>" + want.toFixed(1) + " cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; " +
+      "yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.");
+      stepDone("cSub", G.gagalKeliling > 0, "keliling");
+  }else if(G.gagalKeliling++, Math.abs(got - (ST.p + ST.l)) < 0.6){
+    fb("k","bad","Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.",
+      "Terdeteksi M2 — sebagian struktur bangun terlewat.");
+  }else if(Math.abs(got - ST.p*ST.l) < 0.6){
+    fb("k","bad","Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.");
+  }else{
+    fb("k","bad","Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.");
+  }
+};
+
+/* dipakai oleh berkas pengujian */
+pulihkan();          // harus mendahului render pertama
+renderGame();
+document.getElementById("btnMulaiBaru").addEventListener("click", function(){ hapusSimpanan(); location.reload(); });
+document.getElementById("btnBuatSimpan").addEventListener("click", function(){
+  const box = document.getElementById("simpanBox");
+  box.textContent = buatKodeSimpan(); box.style.display = "";
+  fb("simpan","ok","Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di " +
+    "perangkat lain dan tekan <b>Pulihkan</b>.");
+});
+document.getElementById("btnSalinSimpan").addEventListener("click", function(){
+  const box = document.getElementById("simpanBox");
+  if(box.style.display === "none"){ fb("simpan","hint","Tekan <b>Buat kode simpan</b> dulu."); return; }
+  const t = box.textContent;
+  const gagal = function(){
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+    fb("simpan","hint","Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(function(){ fb("simpan","ok","Kode <b>" + t + "</b> tersalin."); }, gagal);
+  else gagal();
+});
+document.getElementById("btnPakaiSimpan").addEventListener("click", function(){
+  const v = document.getElementById("inSimpan").value.trim();
+  if(!v){ fb("simpan","hint","Tempel kode simpannya dulu."); return; }
+  const h = pakaiKodeSimpan(v);
+  if(h === "gagal"){ fb("simpan","bad","Kode itu tidak sah.",
+    "Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru."); return; }
+  if(h === "versi"){ fb("simpan","bad","Kode itu dibuat oleh versi media yang berbeda.",
+    "Struktur datanya sudah berubah."); return; }
+  renderGame();
+  fb("simpan","ok","Ekspedisi dipulihkan dari kode. " + STEPS.filter(function(k){ return G.done[k]; }).length +
+    " dari 4 tahap selesai, " + G.xp + " jejak.");
+});
+window.__ar = {ST:ST, detectQuad:detectQuad, sidePairs:sidePairs, simulate:simulate, polyArea:polyArea};
+window.__snap = function(){ return JSON.stringify({xp:G.xp, b:Object.keys(G.badges).sort(),
+  d:Object.keys(G.done).sort(), gu:G.gagalUkur, gk:G.gagalKeliling, pg:G.pernahGeser}); };
+window.__kosongkan = function(){ G.xp=0; G.badges={}; G.done={}; G.gagalUkur=0; G.gagalKeliling=0; G.pernahGeser=false; };
+window.__ks = {buat:buatKodeSimpan, pakai:pakaiKodeSimpan};
+window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PULIH, levelName:levelName};
+</script>
+<script>
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();
+</script>
+</body>
+</html>

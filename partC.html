@@ -1,0 +1,1764 @@
+<script>
+"use strict";
+/* =====================================================================
+   JEJAK ALJABAR — draft v0.1
+   Semua state disimpan di memori saja (tidak ada penyimpanan browser).
+   ===================================================================== */
+
+/* ---------- 1. TAKSONOMI MISKONSEPSI ---------------------------------
+   Objek tunggal ini adalah fondasi bersama untuk DUA hal:
+   (a) mesin diagnostik yang mengklasifikasi jawaban, dan
+   (b) Budi, teman sebaya AI, yang MEMERANKAN miskonsepsi ini.
+   Satu taksonomi, dua muka. Ini juga yang menjadi isi BAB II.        */
+const TAXO = {
+  M1:{name:"Variabel sebagai label",        ex:"3k dibaca “3 kotak”, bukan 3 × isi satu kotak"},
+  M2:{name:"Konkatenasi / menolak jawaban terbuka", ex:"2 + 3n disederhanakan menjadi 5n"},
+  M3:{name:"Tanda = sebagai perintah hitung", ex:"“=” dibaca “hasilnya”, bukan “senilai dengan”"},
+  M4:{name:"Pindah ruas tanpa operasi",     ex:"suku dipindah sambil ganti tanda, tanpa alasan"},
+  M5:{name:"Urutan pengurangan terbalik",   ex:"“5 kurang dari y” ditulis 5 − y"},
+  M6:{name:"Huruf bernilai tunggal & tetap", ex:"n dianggap satu angka rahasia, bukan yang bervariasi"}
+};
+const ORDER = ["M1","M2","M3","M4","M5","M6"];
+
+/* ---------- 2. STATE ------------------------------------------------- */
+const S = {
+  letter:"n",            // variabel pilihan siswa
+  nBox:2, nLoose:5,
+  subVal:12,             // isi kotak setelah dibuka
+  flags:{},              // Mx -> 'flag' | 'work' | 'clear'
+  done:{},               // id item -> true
+  q11ok:false
+};
+const KEY_ITEMS = ["q11","q12","q13","q15","q14","scale","q22","q23","budi_eq","budi_konkat"];
+
+/* =====================================================================
+   SIMPAN KEMAJUAN
+   localStorage dibungkus try/catch di SETIAP akses. Di Safari mode
+   private, di peramban yang memblokir penyimpanan situs, dan pada
+   sebagian konteks iframe, sekadar menyentuh localStorage sudah melempar
+   SecurityError. Kalau itu terjadi media tetap jalan penuh — hanya
+   kehilangan ingatannya. Tidak ada satu pun fitur yang bergantung padanya.
+   ===================================================================== */
+const SIMPAN_KEY = "jejak.modul1.v1";
+let simpanAktif = (function(){
+  try{ localStorage.setItem("__uji", "1"); localStorage.removeItem("__uji"); return true; }
+  catch(e){ return false; }
+})();
+const CAP_LOG = 300;                       // batas agar simpanan tidak membengkak
+function ambilState(){
+  return { v:1,
+    letter:S.letter, nBox:S.nBox, nLoose:S.nLoose, subVal:S.subVal,
+    flags:S.flags, done:S.done, q11ok:S.q11ok,
+    xp:G.xp, badges:G.badges, seenBangkit:G.seenBangkit, openAll:G.openAll,
+    log:LOG.slice(-CAP_LOG), blog:BLOG.slice(-CAP_LOG),
+    schist:SC.hist.slice(-60), sctrapped:SC.trapped,
+    nama:(document.getElementById("idNama") || {}).value || "",
+    kelas:(document.getElementById("idKelas") || {}).value || "" };
+}
+function simpan(){
+  if(!simpanAktif) return;
+  try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify(ambilState())); }
+  catch(e){ simpanAktif = false; }     // kuota penuh atau ditolak — berhenti mencoba
+}
+function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
+function muatState(){
+  if(!simpanAktif) return null;
+  try{
+    const raw = localStorage.getItem(SIMPAN_KEY);
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    /* Versi tidak cocok berarti struktur datanya sudah berubah. Lebih baik
+       mulai bersih daripada memulihkan kemajuan yang salah tafsir. */
+    if(!d || d.v !== 1) return null;
+    return d;
+  }catch(e){ return null; }
+}
+
+
+/* =====================================================================
+   KODE SIMPAN — memindahkan kemajuan antar perangkat
+   Bukan enkripsi. Tujuannya memindahkan, bukan mengamankan: siswa bisa
+   memotretnya, menuliskannya, atau mengirimnya lewat WhatsApp, lalu
+   menempelkannya di HP lain.
+
+   Alfabet Crockford (tanpa I, L, O, U) supaya salah baca tulisan tangan
+   tidak menghasilkan kode lain yang kebetulan sah. Checksum dua karakter
+   bergaya Fletcher — menangkap salah ketik satu karakter maupun dua
+   karakter yang tertukar posisinya.
+   ===================================================================== */
+const B32S = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function BitTulis(){ this.b = []; }
+BitTulis.prototype.put = function(v, n){
+  v = Math.max(0, Math.min(Math.floor(v) || 0, Math.pow(2, n) - 1));
+  for(let i = n - 1; i >= 0; i--) this.b.push(Math.floor(v / Math.pow(2, i)) % 2);
+  return this;
+};
+BitTulis.prototype.selesai = function(awalan){
+  const b = this.b.slice();
+  while(b.length % 5) b.push(0);
+  let s = "";
+  for(let i = 0; i < b.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + b[i + j];
+    s += B32S[v];
+  }
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < s.length; i++){ c1 = (c1 + B32S.indexOf(s[i])) % 32; c2 = (c2 + c1) % 32; }
+  s += B32S[c1] + B32S[c2];
+  return awalan + "-" + (s.match(/.{1,5}/g) || []).join("-");
+};
+
+function BitBaca(teks, awalan){
+  let t = String(teks).toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if(t.indexOf(awalan) !== 0) return null;
+  t = t.slice(awalan.length).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  if(t.length < 4) return null;
+  const isi = t.slice(0, -2), cs = t.slice(-2);
+  if(isi.split("").some(c => B32S.indexOf(c) < 0)) return null;
+  let c1 = 0, c2 = 0;
+  for(let i = 0; i < isi.length; i++){ c1 = (c1 + B32S.indexOf(isi[i])) % 32; c2 = (c2 + c1) % 32; }
+  if(B32S[c1] + B32S[c2] !== cs) return null;               // checksum gagal
+  const bits = [];
+  for(let i = 0; i < isi.length; i++){
+    const v = B32S.indexOf(isi[i]);
+    for(let j = 4; j >= 0; j--) bits.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  let pos = 0;
+  return { get:function(n){
+    let v = 0;
+    for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
+    return v;
+  } };
+}
+
+const HURUF26 = "abcdefghijklmnopqrstuvwxyz";
+const AWALAN_SIMPAN = "SMP1";
+function buatKodeSimpan(){
+  const w = new BitTulis();
+  w.put(1, 4);                                              // versi tata letak
+  w.put(Math.max(0, HURUF26.indexOf(S.letter)), 5);
+  w.put(S.q11ok ? 1 : 0, 1);
+  w.put(G.openAll ? 1 : 0, 1);
+  w.put(G.xp, 12);
+  KEY_ITEMS.forEach(k => w.put(S.done[k] ? 1 : 0, 1));      // 10 bit
+  ORDER.forEach(c => w.put({flag:1, work:2, clear:3}[S.flags[c]] || 0, 2));
+  ORDER.forEach(c => w.put(G.seenBangkit[c] ? 1 : 0, 1));
+  BADGES.forEach(b => w.put(G.badges[b.id] ? 1 : 0, 1));    // 13 bit
+  return w.selesai(AWALAN_SIMPAN);
+}
+function pakaiKodeSimpan(teks){
+  const r = BitBaca(teks, AWALAN_SIMPAN);
+  if(!r) return "gagal";
+  if(r.get(4) !== 1) return "versi";
+  S.letter = HURUF26[r.get(5)] || "n";
+  S.q11ok = !!r.get(1);
+  G.openAll = !!r.get(1);
+  G.xp = r.get(12);
+  S.done = {}; KEY_ITEMS.forEach(k => { if(r.get(1)) S.done[k] = true; });
+  S.flags = {};
+  ORDER.forEach(c => { const v = r.get(2); if(v) S.flags[c] = ["", "flag", "work", "clear"][v]; });
+  G.seenBangkit = {}; ORDER.forEach(c => { if(r.get(1)) G.seenBangkit[c] = true; });
+  G.badges = {}; BADGES.forEach(b => { if(r.get(1)) G.badges[b.id] = true; });
+  return "ok";
+}
+
+/* =====================================================================
+   LAPISAN PETUALANGAN
+   Aturan pokoknya sengaja dibalik dari kebiasaan: MEMPERBAIKI jawaban
+   yang sempat keliru dibayar LEBIH MAHAL daripada benar sejak awal.
+   Kalau poin diberikan untuk "benar", seluruh argumen media ini —
+   bahwa yang penting jenis kekeliruan, bukan skor — runtuh sendiri.
+   ===================================================================== */
+const G = { xp:0, badges:{}, openAll:false, seenBangkit:{} };
+const XP_ITEM = { q11:10, q12:12, q13:10, q14:20, q15:12,
+                  scale:18, q22:12, q23:15, budi_eq:25, budi_konkat:25 };
+const XP_PULIH = 8;                     // tambahan karena sempat keliru lalu diperbaiki
+const XP_BANGKIT = 12;                  // satu kode miskonsepsi berhasil dilepaskan
+
+const BADGES = [
+  { id:"nama",     on:"q11",          n:"Pemberi Nama",     d:"Memberi lambang pada kuantitas yang belum diketahui" },
+  { id:"utuh",     on:"q12",          n:"Penjaga Struktur", d:"Membiarkan ekspresi berhenti terbuka, tidak dipaksa menyatu" },
+  { id:"rahasia",  on:"q13",          n:"Bukan Angka Rahasia", d:"Membuktikan satu huruf menampung berapa pun nilainya" },
+  { id:"suara",    on:"q14",          n:"Juru Bicara",      d:"Menjelaskan dengan kalimat sendiri, bukan dengan rumus" },
+  { id:"ukur",     on:"q15",          n:"Pengukur Papan",   d:"Menyusun keliling dari sisi yang belum diketahui" },
+  { id:"ruas",     on:"scale",        n:"Kedua Ruas",       d:"Mengisolasi n lewat operasi, bukan lewat memindahkan suku" },
+  { id:"anggar",   on:"q22",          n:"Bendahara Mading", d:"Memisahkan biaya tetap dari biaya per satuan" },
+  { id:"balik",    on:"q23",          n:"Pembalik Rumus",   d:"Membaca satu rumus dari dua arah" },
+  { id:"runding",  on:"budi_eq",      n:"Perunding",        d:"Meyakinkan Budi soal arti tanda sama dengan" },
+  { id:"runding2", on:"budi_konkat",  n:"Perunding Ulung",  d:"Meyakinkan Budi soal 2 + 3n" },
+  { id:"bangkit",  on:null,           n:"Bangkit",          d:"Melepaskan sendiri salah paham yang sempat kamu pegang" },
+  { id:"jebakan",  on:null,           n:"Tahu Jebakan",     d:"Sempat menyentuh jebakan “pindah ruas”, lalu tetap menuntaskannya" },
+  { id:"bersih",   on:null,           n:"Peta Bersih",      d:"Tidak ada satu pun kode yang tersisa berstatus perlu dikerjakan" }
+];
+const LEVELS = [ [0,"Penjelajah Baru"], [45,"Penjelajah"], [95,"Perintis Jejak"], [155,"Ahli Jejak"] ];
+function levelName(xp){
+  let n = LEVELS[0][1];
+  LEVELS.forEach(([t, l]) => { if(xp >= t) n = l; });
+  return n;
+}
+/* Satu kejadian = satu pesan. Kalau poin dan lencana jatuh bersamaan,
+   keduanya digabung — tumpukan notifikasi menutupi isi dan justru
+   mengalihkan perhatian dari umpan balik yang sedang dibaca siswa. */
+function toast(kind, title, desc, medal){
+  const w = document.getElementById("toastWrap"); if(!w) return;
+  while(w.children.length >= 3) w.firstChild.remove();
+  const d = document.createElement("div");
+  d.className = "toast " + kind;
+  d.innerHTML = '<span class="medal">' + medal + '</span><div><div class="tt">' + title +
+    '</div><div class="td">' + desc + "</div></div>";
+  w.appendChild(d);
+  requestAnimationFrame(() => d.classList.add("in"));
+  setTimeout(() => { d.classList.remove("in"); setTimeout(() => d.remove(), 380); }, 3000);
+}
+function addXp(n, why, diam){
+  if(n <= 0) return 0;
+  const before = levelName(G.xp);
+  G.xp += n;
+  renderGame();
+  const after = levelName(G.xp);
+  if(after !== before){ toast("xp", "Peringkat naik: " + after, "Terkumpul " + G.xp + " jejak.", "★"); return n; }
+  if(!diam) toast("xp", "+" + n + " jejak", why, "+");
+  return n;
+}
+function grant(id, extra){
+  if(G.badges[id]) return false;
+  const b = BADGES.find(x => x.id === id); if(!b) return false;
+  G.badges[id] = true;
+  renderGame();
+  toast("", "Lencana: " + b.n, b.d + (extra ? " · +" + extra + " jejak" : ""), b.n[0]);
+  return true;
+}
+function renderGame(){
+  const el = id => document.getElementById(id);
+  const lv = levelName(G.xp), got = Object.keys(G.badges).length;
+  if(el("xpVal")) el("xpVal").textContent = G.xp;
+  if(el("xpLv"))  el("xpLv").textContent = lv;
+  if(el("pjXp"))  el("pjXp").textContent = G.xp;
+  if(el("pjLv"))  el("pjLv").textContent = lv;
+  if(el("pjBadge")) el("pjBadge").textContent = got + "/" + BADGES.length;
+  const grid = el("badgeGrid");
+  if(grid) grid.innerHTML = BADGES.map(b => {
+    const has = !!G.badges[b.id];
+    return '<div class="badge ' + (has ? "got" : "locked") + '"><span class="m">' +
+      (has ? b.n[0] : "?") + '</span><div><div class="n">' + b.n +
+      '</div><div class="d">' + b.d + "</div></div></div>";
+  }).join("");
+}
+
+function mark(code, level){
+  const rank = {flag:1, work:2, clear:3};
+  const cur = S.flags[code];
+  if(!cur){ S.flags[code] = level; }
+  else if(level === "flag"){ S.flags[code] = "flag"; }          // temuan baru selalu menang
+  else if(rank[level] > rank[cur] && cur !== "flag"){ S.flags[code] = level; }
+  else if(cur === "flag" && level === "clear"){ S.flags[code] = "work"; } // sempat salah lalu benar
+  renderMap();
+  /* Melepaskan salah paham yang sempat dipegang — inilah yang paling
+     ingin dihargai media ini, jadi ia berdiri sendiri sebagai hadiah. */
+  if(S.flags[code] === "work" && !G.seenBangkit[code]){
+    G.seenBangkit[code] = true;
+    const baruLencana = !G.badges.bangkit;
+    addXp(XP_BANGKIT, "Kamu melepaskan sendiri " + code + " yang tadi sempat kamu pegang.", baruLencana);
+    if(!grant("bangkit", XP_BANGKIT) && false){ /* pesan sudah keluar lewat addXp */ }
+  }
+  if(ORDER.every(c => S.flags[c] && S.flags[c] !== "flag")) grant("bersih");
+}
+function complete(id){
+  const baru = !S.done[id];
+  setTimeout(simpan, 0);
+  S.done[id] = true;
+  renderProgress();
+  if(!baru) return;
+  const pernahKeliru = LOG.some(r => r.id === id && r.kind === "bad") ||
+                       (id === "scale" && SC.trapped);
+  const dasar = (XP_ITEM[id] || 10) + (pernahKeliru ? XP_PULIH : 0);
+  const b = BADGES.find(x => x.on === id);
+  const adaLencana = b && !G.badges[b.id];
+  addXp(dasar,
+        pernahKeliru ? "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal."
+                     : "Kegiatan selesai.",
+        adaLencana);                                   // digabung ke pesan lencana
+  if(b) grant(b.id, dasar);
+  if(id === "scale" && SC.trapped) grant("jebakan");
+}
+
+/* ---------- 3. MESIN ALJABAR ----------------------------------------
+   Pengecekan dilakukan secara NUMERIK di banyak titik uji, bukan dengan
+   mencocokkan string. Akibatnya 2(p+2) dan 2p+4 sama-sama diterima.   */
+function prep(raw){
+  if(raw == null) return "";
+  let t = String(raw).toLowerCase().trim();
+  t = t.replace(/\s+/g,"").replace(/,/g,".");
+  t = t.replace(/[×·✕]/g,"*").replace(/[÷:]/g,"/").replace(/[–—−]/g,"-");
+  t = t.replace(/\^/g,"**");
+  t = t.replace(/(\d)(?=[a-z(])/g,"$1*");     // 3n -> 3*n ; 2( -> 2*(
+  t = t.replace(/\)(?=[\da-z(])/g,")*");      // )( -> )*(
+  t = t.replace(/([a-z])(?=\()/g,"$1*");      // n( -> n*(
+  t = t.replace(/([a-z])(?=[a-z])/g,"$1*");   // ab -> a*b
+  return t;
+}
+const SAFE = /^[0-9a-z+\-*/().]*$/;
+
+/* Huruf mana saja yang dipakai siswa, di luar yang seharusnya.
+
+   Dipakai untuk membedakan dua hal yang selama ini tercampur: siswa yang
+   salah memodelkan, dan siswa yang memodelkan dengan benar tetapi memakai
+   huruf lain. Keduanya sebelumnya jatuh ke pesan "belum cocok" yang sama,
+   sehingga siswa yang benar dituduh keliru. Dalam pemodelan matematika
+   huruf itu bebas; yang tidak bebas adalah strukturnya. Memaksa satu huruf
+   tertentu justru menanamkan M1 — huruf diperlakukan sebagai label tetap. */
+function hurufAsing(raw, sah){
+  const t = prep(raw);
+  if(!t || !SAFE.test(t)) return null;
+  const set = {}, sahSet = {};
+  (sah || []).forEach(n => { String(n).split("").forEach(c => sahSet[c] = 1); });
+  (t.match(/[a-z]/g) || []).forEach(c => { if(!sahSet[c]) set[c] = 1; });
+  const k = Object.keys(set);
+  return k.length ? k : null;
+}
+/* Menukar huruf asing menjadi huruf yang sah, hanya kalau siswa memakai
+   TEPAT SATU huruf lain secara konsisten. Dua huruf berbeda berarti dua
+   besaran tak diketahui — itu memang keliru dan harus tetap dinilai keliru. */
+function samakanHuruf(raw, ke){
+  const a = hurufAsing(raw, [ke]);
+  if(!a || a.length !== 1) return null;
+  return { teks: String(raw).toLowerCase().replace(new RegExp(a[0], "g"), ke), dari: a[0] };
+}
+
+/* Penilai ekspresi ditulis sendiri (tokenizer + recursive descent).
+   TIDAK memakai eval / new Function — supaya media tetap hidup di dalam
+   iframe atau halaman ber-Content-Security-Policy ketat, yang justru
+   lazim dipakai LMS sekolah dan panel pratinjau. */
+function tokenize(src){
+  const out = []; let i = 0;
+  while(i < src.length){
+    const c = src[i];
+    if(c === " "){ i++; continue; }
+    if(c >= "0" && c <= "9" || c === "."){
+      let j = i; while(j < src.length && (src[j] >= "0" && src[j] <= "9" || src[j] === ".")) j++;
+      const v = parseFloat(src.slice(i, j));
+      if(isNaN(v)) return null;
+      out.push({t:"num", v:v}); i = j; continue;
+    }
+    if(c >= "a" && c <= "z"){ out.push({t:"var", v:c}); i++; continue; }
+    if("+-*/^()".indexOf(c) >= 0){ out.push({t:c}); i++; continue; }
+    return null;
+  }
+  return out;
+}
+function evalTokens(toks, vals){
+  let pos = 0;
+  const eat = t => (toks[pos] && toks[pos].t === t) ? (pos++, true) : false;
+  function primary(){
+    const tk = toks[pos];
+    if(!tk) throw 0;
+    if(tk.t === "num"){ pos++; return tk.v; }
+    if(tk.t === "var"){ pos++; if(!(tk.v in vals)) throw 0; return vals[tk.v]; }
+    if(tk.t === "("){ pos++; const v = expr(); if(!eat(")")) throw 0; return v; }
+    throw 0;
+  }
+  function power(){ const b = primary(); return eat("^") ? Math.pow(b, unary()) : b; }
+  function unary(){ if(eat("-")) return -unary(); if(eat("+")) return unary(); return power(); }
+  function term(){ let v = unary(); for(;;){ if(eat("*")) v *= unary(); else if(eat("/")) v /= unary(); else return v; } }
+  function expr(){ let v = term(); for(;;){ if(eat("+")) v += term(); else if(eat("-")) v -= term(); else return v; } }
+  const r = expr();
+  if(pos !== toks.length) throw 0;
+  return r;
+}
+function evalAt(src, names, vals){
+  const toks = tokenize(src);
+  if(!toks || !toks.length) return NaN;
+  try{
+    const r = evalTokens(toks, vals);
+    return (typeof r === "number" && isFinite(r)) ? r : NaN;
+  }catch(e){ return NaN; }
+}
+/** Apakah jawaban siswa ekuivalen dengan target, untuk semua nilai uji? */
+function equiv(student, target, names){
+  const A = prep(student), B = prep(target);
+  if(!A || !SAFE.test(A)) return false;
+  const pts = [[2,3],[5,7],[11,4],[6,9],[13,2],[8,5],[3,10]];
+  let tested = 0;
+  for(const p of pts){
+    const vals = {};
+    names.forEach((n,i) => vals[n] = p[i % p.length] * (i ? 1.7 : 1) + i);
+    const a = evalAt(A, names, vals), b = evalAt(B, names, vals);
+    if(isNaN(a) || isNaN(b)) continue;
+    if(Math.abs(a - b) > 1e-7 * Math.max(1, Math.abs(b))) return false;
+    tested++;
+  }
+  return tested >= 3;
+}
+function numOf(raw){
+  const t = prep(raw);
+  if(!t || !SAFE.test(t)) return NaN;
+  return evalAt(t, [], {});
+}
+function fmtNum(x){
+  if(!isFinite(x)) return "?";
+  if(Math.abs(x - Math.round(x)) < 1e-9) return String(Math.round(x));
+  return (Math.round(x * 100) / 100).toString();
+}
+
+/* ---------- 4. UMPAN BALIK ------------------------------------------- */
+/* Setiap percobaan dicatat, bukan hanya yang terakhir. Bagi guru, jawaban
+   keliru justru data yang paling berguna — di situ miskonsepsinya terlihat. */
+const LOG = [], BLOG = [];
+const LABELS = {
+  q11:"1.1 Beri nama pada yang belum dihitung",
+  q12:"1.2 Susun belanjaanmu",
+  q13:"1.3 Sampai di rumah, kotaknya dibuka",
+  q14:"1.4 Jelaskan dengan kalimatmu sendiri",
+  q15:"1.5 Sekarang tengok dinding kelasmu",
+  q22:"2.2 Anggaran mading — banyak lembar kertas",
+  q23:"2.2 Anggaran mading — rumus terbalik"
+};
+function plain(h){
+  const d = document.createElement("div");
+  d.innerHTML = String(h == null ? "" : h);
+  return (d.textContent || "").replace(/\s+/g, " ").trim();
+}
+function say(id, kind, html, diagCode){
+  const el = document.getElementById("fb-" + id);
+  if(!el) return;
+  el.className = "fb show " + kind;
+  let extra = "";
+  if(diagCode){
+    extra = '<span class="diag"><b>Terdeteksi ' + diagCode + " — " + TAXO[diagCode].name +
+            ".</b> Pola ini dicatat di Peta Miskonsepsi.</span>";
+  }
+  el.innerHTML = html + extra;
+  setTimeout(simpan, 0);
+
+  /* Umpan balik menjanjikan pola ini "dicatat di Peta Miskonsepsi", jadi memang
+     harus dicatat di sini — bukan hanya ditampilkan. */
+  if(diagCode && kind === "bad") mark(diagCode, "flag");
+
+  const src = document.getElementById(id);
+  const ans = (src && "value" in src) ? String(src.value).trim() : "";
+  if(kind === "hint" && !ans) return;              // "isi dulu" bukan percobaan
+  LOG.push({id:id, ans:ans, kind:kind, fb:plain(html), code:diagCode || ""});
+}
+
+/* ---------- 5. POS 1 : KOTAK BANDENG --------------------------------- */
+const tray = document.getElementById("tray");
+function renderTray(){
+  let h = "";
+  for(let i = 0; i < S.nBox; i++) h += '<div class="box3d" title="kotak tersegel — isi belum diketahui">' + S.letter + "</div>";
+  for(let i = 0; i < S.nLoose; i++) h += '<div class="fish" title="ikan satuan"></div>';
+  tray.innerHTML = h || '<span style="color:var(--ink-soft);font-size:13px">keranjang kosong</span>';
+  document.getElementById("nBox").textContent = S.nBox;
+  document.getElementById("nLoose").textContent = S.nLoose;
+}
+document.querySelectorAll("[data-adj]").forEach(b => {
+  b.addEventListener("click", () => {
+    const [what, d] = b.dataset.adj.split(":");
+    const delta = parseInt(d, 10);
+    if(what === "box") S.nBox = Math.max(0, Math.min(5, S.nBox + delta));
+    else S.nLoose = Math.max(0, Math.min(9, S.nLoose + delta));
+    renderTray();
+    document.getElementById("reveal").classList.remove("show");
+    const fb = document.getElementById("fb-q12"); if(fb) fb.className = "fb";
+    updateSub();
+  });
+});
+document.getElementById("openBox").addEventListener("click", () => {
+  const v = 8 + Math.floor(Math.random() * 13);          // 8..20, berbeda tiap kali
+  S.subVal = v;
+  const total = S.nBox * v + S.nLoose;
+  const r = document.getElementById("reveal");
+  r.classList.add("show");
+  r.innerHTML = "Kotak dibuka — ternyata isinya <span class=\"big\">" + v + "</span> ekor. " +
+    "Jadi kali ini <span class=\"math\">" + S.letter + " = " + v + "</span>, dan totalnya <b>" + total + "</b> ekor.<br>" +
+    "<span style=\"font-size:12.5px;opacity:.85\">Tekan lagi — isinya akan berbeda. Huruf <span class=\"math\">" +
+    S.letter + "</span> tidak menyimpan satu angka rahasia; ia menampung <i>berapa pun</i> isinya.</span>";
+  mark("M6", "clear");
+  updateSub();
+});
+function updateSub(){
+  const el = document.getElementById("subVal");
+  if(el) el.textContent = S.subVal;
+  const fb = document.getElementById("fb-q13"); if(fb) fb.className = "fb";
+}
+
+/* --- pengecekan Pos 1 --- */
+const CHECK = {};
+
+CHECK.q11 = () => {
+  const raw = (document.getElementById("q11").value || "").trim();
+  if(!raw){ say("q11","hint","Isi dulu satu huruf."); return; }
+  if(/^\d+$/.test(raw)){
+    say("q11","bad","Angka justru yang sedang tidak kita ketahui. Kita butuh <i>lambang</i> untuk menampungnya.","M6"); return;
+  }
+  if(raw.length > 1){
+    say("q11","bad","Gunakan <b>satu</b> huruf saja. Menulis “kotak” atau “bandeng” membuat lambang itu terbaca sebagai " +
+      "singkatan sebuah benda — padahal yang diwakilinya adalah <i>banyaknya</i> ikan, sebuah bilangan.","M1"); return;
+  }
+  if(!/^[a-z]$/i.test(raw)){ say("q11","bad","Pakai huruf a–z."); return; }
+  S.letter = raw.toLowerCase();
+  S.q11ok = true;
+  renderTray();
+  say("q11","ok","Bagus. Mulai sekarang <span class=\"math\">" + S.letter + "</span> berarti <b>banyaknya ikan</b> " +
+    "di dalam satu kotak — sebuah bilangan, bukan nama benda.");
+  mark("M1","clear");
+  complete("q11");
+  document.getElementById("lock13").textContent = "";
+};
+
+CHECK.q12 = () => {
+  const raw = document.getElementById("q12").value;
+  if(!S.q11ok){ say("q12","hint","Selesaikan langkah 1.1 dulu — kita belum punya huruf untuk dipakai."); return; }
+  if(!raw || !raw.trim()){ say("q12","hint","Tulis ekspresinya dulu."); return; }
+  const V = S.letter;
+  const target = S.nBox + "*" + V + "+" + S.nLoose;
+
+  if(equiv(raw, target, [V])){
+    say("q12","ok","Tepat. <span class=\"math\">" + (S.nBox === 1 ? "" : S.nBox) + V + (S.nLoose ? " + " + S.nLoose : "") +
+      "</span> — bagian yang belum diketahui dan bagian yang sudah diketahui berdiri berdampingan, tidak dipaksa menyatu.");
+    mark("M2","clear"); complete("q12"); return;
+  }
+  /* --- pencocokan ke pola salah yang sudah didefinisikan --- */
+  const konkat = (S.nBox + S.nLoose) + "*" + V;                       // 2n+5 -> 7n
+  if(equiv(raw, konkat, [V])){
+    say("q12","bad","Kamu menjumlahkan <b>" + S.nBox + "</b> dengan <b>" + S.nLoose + "</b> lalu membawa hurufnya. " +
+      "Coba uji: kalau satu kotak berisi 10 ekor, jawabanmu memberi " + ((S.nBox + S.nLoose) * 10) +
+      " ekor — padahal kamu hanya punya " + (S.nBox * 10 + S.nLoose) + " ekor. " +
+      "Ikan satuan tidak ikut berlipat ketika isi kotak bertambah.","M2"); return;
+  }
+  if(equiv(raw, String(S.nBox + S.nLoose), [V])){
+    say("q12","bad","Kamu memperlakukan satu kotak seolah berisi satu ekor. Padahal isi satu kotak itulah yang " +
+      "belum diketahui — dan jumlahnya bisa berapa pun.","M1"); return;
+  }
+  if(equiv(raw, S.nBox + "*" + V + "-" + S.nLoose, [V])){
+    say("q12","bad","Tandanya terbalik. Ikan satuan itu kamu <i>bawa pulang juga</i>, bukan kamu berikan pada orang lain.","M5"); return;
+  }
+  if(equiv(raw, S.nBox + "*" + V, [V])){
+    say("q12","bad","Ikan satuannya belum masuk hitungan. Ada " + S.nLoose + " ekor lagi di luar kotak."); return;
+  }
+  if(!SAFE.test(prep(raw))){
+    say("q12","hint","Tulis memakai huruf, angka, dan tanda + − × ÷ ( ) saja."); return;
+  }
+  /* Huruf lain, struktur benar: diterima. Lihat catatan pada hurufAsing(). */
+  const sm = samakanHuruf(raw, V);
+  if(sm && equiv(sm.teks, S.nBox + "*" + V + "+" + S.nLoose, [V])){
+    say("q12","ok","Benar. Kamu memakai huruf <span class=\"math\">" + sm.dari + "</span>, sedangkan di langkah 1.1 " +
+      "kamu memilih <span class=\"math\">" + V + "</span> — hurufnya bebas, jadi ini tidak salah. " +
+      "Tapi sekali sebuah huruf dipilih, pakailah huruf itu terus supaya pembacamu tidak bingung." +
+      '<span class="diag">Yang membuat ekspresi ini benar bukan hurufnya, melainkan strukturnya: ' + S.nBox +
+      " kelompok berisi jumlah yang sama, ditambah " + S.nLoose + " ekor yang berdiri sendiri.</span>");
+    mark("M2","clear"); complete("q12"); return;
+  }
+  if(sm){
+    say("q12","bad","Kamu memakai huruf <span class=\"math\">" + sm.dari + "</span>, bukan " +
+      "<span class=\"math\">" + V + "</span> yang kamu pilih di langkah 1.1. Hurufnya sendiri boleh berbeda — " +
+      "tetapi ekspresimu memang belum cocok, bahkan setelah hurufnya disamakan." +
+      '<span class="diag">Hitung dua bagian secara terpisah: berapa ikan <i>di dalam kotak</i>, ' +
+      "lalu berapa yang <i>di luar</i>.</span>"); return;
+  }
+  say("q12","bad","Belum cocok. Hitung dua bagian secara terpisah: berapa ikan yang ada <i>di dalam kotak</i>, " +
+    "lalu berapa yang <i>di luar kotak</i>. Jumlahkan keduanya tanpa menyatukannya.");
+};
+
+CHECK.q13 = () => {
+  if(!S.q11ok){ say("q13","hint","Selesaikan langkah 1.1 dulu."); return; }
+  const want = S.nBox * S.subVal + S.nLoose;
+  const got = numOf(document.getElementById("q13").value);
+  if(isNaN(got)){ say("q13","hint","Isi dengan sebuah angka."); return; }
+  if(Math.abs(got - want) < 1e-9){
+    say("q13","ok","Benar — " + want + " ekor. Perhatikan: ekspresimu tidak berubah sama sekali. " +
+      "Yang berubah hanya nilai yang <i>dititipkan</i> ke dalam <span class=\"math\">" + S.letter + "</span>. " +
+      "Itulah alasan huruf lebih berguna daripada angka.");
+    mark("M6","clear"); complete("q13"); return;
+  }
+  if(Math.abs(got - (S.nBox + S.nLoose) * S.subVal) < 1e-9){
+    say("q13","bad","Kamu mengalikan ikan satuan dengan isi kotak juga. Yang berlipat hanya isi kotak.","M2"); return;
+  }
+  if(Math.abs(got - S.subVal) < 1e-9){
+    say("q13","bad","Itu isi <b>satu</b> kotak. Ada " + S.nBox + " kotak, ditambah " + S.nLoose + " ikan satuan."); return;
+  }
+  say("q13","bad","Belum tepat. Ganti setiap <span class=\"math\">" + S.letter + "</span> pada ekspresimu dengan " +
+    S.subVal + ", lalu hitung.");
+};
+
+/* --- 1.4 : klasifikasi jawaban terbuka (mesin aturan, offline) --- */
+function tokens(t){
+  return " " + String(t || "").toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu," ").replace(/\s+/g," ").trim() + " ";
+}
+function hasAny(t, list){ return list.some(w => t.indexOf(" " + w + " ") >= 0 || t.indexOf(w) >= 0); }
+
+CHECK.q14 = () => {
+  const raw = document.getElementById("q14").value || "";
+  if(raw.trim().length < 8){
+    say("q14","hint","Tulis minimal satu kalimat utuh — mesin diagnostik butuh alasanmu, bukan satu kata."); return;
+  }
+  const t = tokens(raw);
+  /* Pertanyaannya sengaja TIDAK berbentuk benar/salah. Versi lama meminta
+     siswa menilai pernyataan “3k artinya 3 kotak”, padahal kalimat itu
+     ambigu: kalau k = banyak ikan dalam satu kotak, “isi 3 kotak” justru
+     bacaan yang benar. Yang dinilai sekarang hanya isi penjelasannya. */
+  const adaKali = hasAny(t, ["kali","dikali","perkalian","dikalikan","kelipatan","tiga kali","sebanyak 3","sebanyak tiga"]);
+  const adaIsi  = hasAny(t, ["isi","isinya","banyak ikan","banyaknya ikan","jumlah ikan","ikan dalam","ikan di dalam",
+                             "dalam kotak","dalam satu kotak","dalam 1 kotak","per kotak","tiap kotak","setiap kotak","satu kotak"]);
+  const tigaKotak = hasAny(t, ["3 kotak","tiga kotak"]);
+  const adaLabel  = hasAny(t, ["singkatan","nama benda","k artinya kotak","k adalah kotak","k itu kotak",
+                               "lambang kotak","huruf kotak"]);
+
+  if(adaLabel && !adaKali && !adaIsi){
+    say("q14","bad","Jawabanmu memperlakukan huruf <span class=\"math\">k</span> sebagai singkatan kata “kotak”. " +
+      "Kalau begitu <span class=\"math\">3k</span> berarti “kotak, kotak, kotak” — dan itu tidak bisa dihitung. " +
+      "Padahal <span class=\"math\">3k</span> punya nilai. Nilai apa?","M1");
+    return;
+  }
+  if(tigaKotak && !adaIsi && !adaKali){
+    say("q14","bad","“3 kotak” menyebut <i>wadahnya</i>, bukan <i>bilangannya</i>. Huruf " +
+      "<span class=\"math\">k</span> mewakili banyaknya ikan, bukan kotaknya. " +
+      "Coba tulis ulang: <span class=\"math\">3k</span> adalah banyaknya … apa?","M1");
+    return;
+  }
+  /* “banyaknya ikan di dalam 3 kotak” sudah benar meski tanpa kata “kali”. */
+  if((adaKali && adaIsi) || (tigaKotak && adaIsi)){
+    say("q14","ok","Penjelasanmu utuh: kamu menyebut bahwa yang diwakili <span class=\"math\">k</span> adalah " +
+      "<b>banyaknya ikan</b> — bukan kotaknya — dan menyebut bahwa angka 3 mengalikannya. " +
+      "Itu persis pemahaman yang dituju.");
+    mark("M1","clear"); complete("q14"); return;
+  }
+  if(adaKali && !adaIsi){
+    say("q14","hint","Sudah benar bahwa itu perkalian — tapi belum kamu sebutkan <i>apa</i> yang dikalikan tiga. " +
+      "3 dikali … apa? Sebutkan bendanya."); return;
+  }
+  if(adaIsi && !adaKali){
+    say("q14","hint","Kamu sudah menyebut isi kotak, bagus. Sekarang lengkapi: apa yang dilakukan angka 3 " +
+      "terhadap <span class=\"math\">k</span>?"); return;
+  }
+  say("q14","hint","Mesin diagnostik belum menemukan alasan yang bisa dibaca. Sebutkan dua hal: " +
+    "(1) apa yang diwakili huruf <span class=\"math\">k</span>, dan (2) apa yang dilakukan angka 3 terhadapnya.");
+};
+
+CHECK.q15 = () => {
+  const raw = document.getElementById("q15").value;
+  if(!raw || !raw.trim()){ say("q15","hint","Tulis ekspresinya dulu."); return; }
+  if(equiv(raw, "2*p+160", ["p"])){
+    say("q15","ok","Tepat. <span class=\"math\">p + p + 80 + 80 = 2p + 160</span>. " +
+      "Dua sisi panjang belum diketahui sehingga tetap ditulis sebagai <span class=\"math\">2p</span>, " +
+      "dua sisi lebar sudah diketahui sehingga menjadi 160. Keduanya berdiri berdampingan.");
+    mark("M2","clear"); complete("q15"); return;
+  }
+  if(equiv(raw, "162*p", ["p"]) || equiv(raw, "2*p*160", ["p"])){
+    say("q15","bad","Kamu menyatukan yang belum diketahui dengan yang sudah diketahui. " +
+      "Uji dengan p = 100: papan 100 × 80 cm punya keliling 360 cm, tapi jawabanmu memberi angka yang jauh berbeda.","M2"); return;
+  }
+  if(equiv(raw, "p+160", ["p"])){
+    say("q15","bad","Sisi panjangnya ada <b>dua</b>, bukan satu. Papan punya empat tepi: dua panjang, dua lebar."); return;
+  }
+  if(equiv(raw, "2*p+80", ["p"])){
+    say("q15","bad","Sisi lebarnya juga ada dua. 80 + 80, bukan 80 saja."); return;
+  }
+  if(equiv(raw, "80*p", ["p"])){
+    say("q15","bad","Itu <i>luas</i> papan, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepinya."); return;
+  }
+  say("q15","bad","Belum cocok. Telusuri tepinya satu per satu sambil menuliskannya: " +
+    "<span class=\"math\">p</span>, lalu 80, lalu <span class=\"math\">p</span> lagi, lalu 80 lagi. Baru jumlahkan.");
+};
+
+/* ---------- 6. POS 2 : NERACA KESETARAAN ----------------------------- */
+const SC = { L:{a:3,b:2}, R:{a:0,b:26}, log:[], hist:[], solved:false, trapped:false };
+const N_TRUE = 8;
+
+function sideStr(s){
+  const a = s.a, b = s.b;
+  const av = fmtNum(a), bv = fmtNum(b);
+  if(Math.abs(a) < 1e-12) return bv;
+  let head = (Math.abs(a - 1) < 1e-12) ? "n" : (Math.abs(a + 1) < 1e-12 ? "-n" : av + "n");
+  if(Math.abs(b) < 1e-12) return head;
+  return head + (b > 0 ? " + " + bv : " − " + fmtNum(Math.abs(b)));
+}
+function sideVal(s){ return s.a * N_TRUE + s.b; }
+
+function renderScale(tilt){
+  const l = sideStr(SC.L), r = sideStr(SC.R);
+  document.getElementById("svgL").textContent = l;
+  document.getElementById("svgR").textContent = r;
+  document.getElementById("eqL").textContent = l;
+  document.getElementById("eqR").textContent = r;
+  const beam = document.getElementById("beam");
+  let ang = 0;
+  if(tilt !== undefined) ang = tilt;
+  beam.style.transition = "transform .45s cubic-bezier(.34,1.4,.5,1)";
+  beam.style.transformOrigin = "200px 60px";
+  beam.style.transform = "rotate(" + ang + "deg)";
+  const lg = document.getElementById("oplog");
+  lg.innerHTML = SC.log.map(o => '<span class="' + (o.trap ? "trap" : "") + '">' + o.t + "</span>").join("");
+}
+function scaleWin(){
+  if(SC.solved) return;
+  if(Math.abs(SC.L.a - 1) < 1e-9 && Math.abs(SC.L.b) < 1e-9 && Math.abs(SC.R.a) < 1e-9){
+    SC.solved = true;
+    say("scale","ok","<b>n = " + fmtNum(SC.R.b) + ".</b> Jadi satu kotak berisi " + fmtNum(SC.R.b) + " ekor. Perhatikan yang barusan kamu lakukan: kamu tidak pernah " +
+      "“memindahkan” apa pun. Kamu menerapkan operasi yang sama pada dua ruas sekaligus, dan neraca tetap seimbang " +
+      "di setiap langkah. Itulah satu-satunya alasan langkahmu sah." +
+      (SC.trapped ? "<span class=\"diag\">Catatan: kamu sempat memakai jalan pintas “pindah ruas”. " +
+        "Hasilnya kebetulan sama, tapi kamu tidak bisa menjelaskan <i>kenapa</i> boleh — dan itu bedanya hafal dengan paham.</span>" : ""));
+    mark("M3","clear"); if(!SC.trapped) mark("M4","clear");
+    complete("scale");
+  }
+}
+const OPS = {
+  sub2:{t:"− 2 kedua ruas", f:s => ({a:s.a, b:s.b - 2})},
+  add2:{t:"+ 2 kedua ruas", f:s => ({a:s.a, b:s.b + 2})},
+  div3:{t:"÷ 3 kedua ruas", f:s => ({a:s.a/3, b:s.b/3})},
+  mul3:{t:"× 3 kedua ruas", f:s => ({a:s.a*3, b:s.b*3})}
+};
+document.getElementById("ops").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-op]"); if(!btn) return;
+  const op = btn.dataset.op;
+
+  if(op === "trapL"){
+    const before = JSON.parse(JSON.stringify(SC.L));
+    SC.L = {a:SC.L.a, b:SC.L.b - 2};
+    SC.log.push({t:"− 2 KIRI saja", trap:true}); SC.hist.push({t:"− 2 pada ruas KIRI saja", trap:true});
+    const diff = sideVal(SC.L) - sideVal(SC.R);
+    renderScale(Math.max(-11, Math.min(11, -diff * 0.9)));
+    say("scale","bad","Neraca langsung miring. Kamu mengambil 2 dari satu sisi tanpa mengambil 2 dari sisi lain, " +
+      "jadi kedua sisi tidak lagi bernilai sama — persamaannya rusak. Aku kembalikan.","M3");
+    SC.trapped = true;
+    setTimeout(() => { SC.L = before; SC.log.pop(); renderScale(0); }, 1700);
+    return;
+  }
+  if(op === "trapMove"){
+    SC.L = {a:SC.L.a, b:SC.L.b - 2};
+    SC.R = {a:SC.R.a, b:SC.R.b - 2};
+    SC.log.push({t:"“pindah ruas”", trap:true}); SC.hist.push({t:"“pindahkan 2 ke kanan”", trap:true});
+    SC.trapped = true; mark("M4","flag");
+    renderScale(0);
+    say("scale","hint","Angkanya jadi benar — dan justru itu masalahnya. “Memindahkan lalu mengganti tanda” " +
+      "adalah <i>deskripsi</i> tentang apa yang terlihat di kertas, bukan <i>alasan</i> kenapa boleh. " +
+      "Yang sebenarnya terjadi: kamu mengurangi 2 dari <b>kedua</b> ruas sekaligus. Tombol “− 2 kedua ruas” " +
+      "melakukan hal yang persis sama, dengan alasan yang bisa kamu ucapkan.","M4");
+    scaleWin();
+    return;
+  }
+  const o = OPS[op]; if(!o) return;
+  SC.L = o.f(SC.L); SC.R = o.f(SC.R);
+  SC.log.push({t:o.t, trap:false}); SC.hist.push({t:o.t, trap:false});
+  renderScale(0);
+  const el = document.getElementById("fb-scale");
+  if(el && !SC.solved) el.className = "fb";
+  scaleWin();
+});
+document.getElementById("resetScale").addEventListener("click", () => {
+  SC.L = {a:3,b:2}; SC.R = {a:0,b:26}; SC.log = []; SC.hist = []; SC.solved = false;
+  document.getElementById("fb-scale").className = "fb";
+  renderScale(0);
+});
+
+CHECK.q22 = () => {
+  const got = numOf(document.getElementById("q22").value);
+  if(isNaN(got)){ say("q22","hint","Isi dengan sebuah angka."); return; }
+  if(Math.abs(got - 11) < 1e-9){
+    say("q22","ok","Benar, 11 lembar. Rp 47.000 − Rp 25.000 = Rp 22.000 untuk kertas, lalu dibagi Rp 2.000 per lembar.");
+    complete("q22"); return;
+  }
+  if(Math.abs(got - 23.5) < 1e-6){
+    say("q22","bad","Kamu membagi seluruh uang kas dengan 2.000. Papan sterofoam Rp 25.000 dibeli sekali dan tidak " +
+      "bergantung banyaknya lembar — harus dikeluarkan dulu sebelum dibagi.","M4"); return;
+  }
+  if(Math.abs(got - 36) < 1e-6){
+    say("q22","bad","Kamu menambahkan Rp 25.000, bukan mengurangkannya. Harga papan itu bagian <i>dari</i> " +
+      "Rp 47.000 yang dikeluarkan, bukan tambahan di atasnya.","M5"); return;
+  }
+  say("q22","bad","Belum tepat. Bagian mana dari Rp 47.000 yang <i>tidak</i> bergantung pada banyaknya lembar kertas? " +
+    "Keluarkan bagian itu dulu.");
+};
+CHECK.q23 = () => {
+  const raw = document.getElementById("q23").value;
+  if(!raw || !raw.trim()){ say("q23","hint","Tulis rumusnya."); return; }
+  if(equiv(raw, "(b-25000)/2000", ["b"])){
+    say("q23","ok","Tepat. <span class=\"math\">L = (B − 25000) / 2000</span>. Ini rumus yang <b>sama</b> dengan " +
+      "sebelumnya, hanya dibaca dari arah berlawanan — bukan rumus baru yang perlu dihafal terpisah.");
+    mark("M4","clear"); complete("q23"); return;
+  }
+  if(equiv(raw, "(25000-b)/2000", ["b"])){
+    say("q23","bad","Urutan pengurangannya terbalik. Total biaya selalu lebih besar daripada harga papan, " +
+      "jadi banyak lembarnya akan keluar negatif.","M5"); return;
+  }
+  if(equiv(raw, "b/2000-25000", ["b"])){
+    say("q23","bad","Kamu membagi dulu baru mengurangi. Urutannya harus dibalik dari rumus asal: " +
+      "pada <span class=\"math\">B = 25000 + 2000L</span>, yang <i>terakhir</i> ditambahkan harus " +
+      "yang <i>pertama</i> dilepas.","M4"); return;
+  }
+  if(equiv(raw, "b-25000/2000", ["b"])){
+    say("q23","bad","Tanpa kurung, yang terbagi hanya angka 25000. Bagian <span class=\"math\">B − 25000</span> " +
+      "harus dibagi seluruhnya."); return;
+  }
+  say("q23","bad","Belum cocok. Mulai dari <span class=\"math\">B = 25000 + 2000L</span> dan lepas satu per satu: " +
+    "apa yang menempel pada <span class=\"math\">L</span>, dan dengan operasi apa?");
+};
+
+/* ---------- 7. POS 3 : BUDI, TEMAN SEBAYA AI -------------------------
+   Bawaan: mesin aturan offline yang membaca argumen siswa terhadap
+   daftar KONSEP (bukan terhadap kunci jawaban). Budi baru menyerah
+   kalau seluruh konsep tersentuh. Opsional: model bahasa.            */
+const TOPICS = {
+  eq:{
+    code:"M3", itemId:"budi_eq",
+    open:"Aku bingung. Menurutku tanda “=” itu artinya “hasilnya”. Jadi kalau ditulis 3n + 2 = 26, " +
+         "ya 26 itu jawabannya. Berarti kalau ditulis 26 = 3n + 2, itu kebalik dong — salah tulis?",
+    concepts:[
+      {id:"senilai", hint:"Apa sebenarnya yang diklaim tanda “=”? Coba jelaskan tanpa memakai kata “hasilnya”.",
+       words:["nilainya sama","bernilai sama","sama nilai","senilai","seimbang","setara","sama besar","sama beratnya","dua duanya sama","kedua ruas sama"],
+       hint2:"Mulai kalimatmu dengan: “tanda = berarti kedua ruas …”. Lanjutkan sendiri.",
+       reply:"Hmm. Jadi maksudmu ruas kiri dan ruas kanan itu dua cara menulis bilangan yang <i>sama</i>? " +
+             "Tapi kalau memang sama, kenapa ditulisnya beda begitu?"},
+      {id:"simetris", hint:"Kalau dua sisi memang bernilai sama, apakah urutan kiri–kanan masih penting?",
+       words:["dibalik","dibolak","bolak balik","ditukar","tukar","urutannya","boleh saja","sama saja","tidak masalah","dua arah"],
+       hint2:"Sebut satu kata kuncinya saja: apakah kiri–kanan boleh <i>ditukar</i> atau tidak?",
+       reply:"Oke… kalau cuma dua cara menulis bilangan yang sama, berarti dibalik pun tetap benar ya. " +
+             "Tapi aku belum sreg. Coba buktikan pakai angka beneran."},
+      {id:"bukti", hint:"Ambil n = 8. Hitung nilai ruas kiri, lalu nilai ruas kanan. Tunjukkan angkanya ke Budi.",
+       words:[], numeric:true,
+       hint2:"Tulis begini: “kalau n = 8, ruas kiri = … dan ruas kanan = …”. Isi kedua titik-titiknya dengan angka.",
+       reply:"Aku ikut hitung: 3 × 8 + 2 = 26, dan ruas kanan juga 26. Sama persis. Baiklah, angkanya memang cocok."}
+    ],
+    menyerah:"Oke, aku mengerti sekarang. Tanda “=” bukan tombol “hasilnya” — itu klaim bahwa dua sisi bernilai sama. " +
+             "Karena cuma klaim tentang nilai, ditulis dari arah mana pun artinya tetap sama. Makasih ya.",
+    push:["Tapi di kalkulator, aku pencet “=” lalu keluar hasilnya. Kok di sini beda?",
+          "Kalau “=” bukan berarti “hasilnya”, terus untuk apa dong tanda itu ditulis?",
+          "Kalau memang boleh dibalik, kenapa buku selalu menaruh jawaban di sebelah kanan?",
+          "Coba pakai kalimat yang lebih sederhana, aku belum menangkapnya."]
+  },
+  konkat:{
+    code:"M2", itemId:"budi_konkat",
+    open:"Menurutku 2 + 3n itu bisa disederhanakan jadi 5n. Kan 2 + 3 = 5, terus n-nya tinggal dibawa. " +
+         "Sama kayak 2 ikan + 3 ikan = 5 ikan.",
+    concepts:[
+      {id:"beda", hint:"Apakah angka 2 dan bentuk 3n itu benda sejenis? Perhatikan: yang satu sudah diketahui, yang satu belum.",
+       words:["tidak sejenis","bukan sejenis","beda jenis","berbeda","suku yang berbeda","bukan suku sejenis","tidak sama jenis","satuannya beda","yang satu belum diketahui"],
+       hint2:"Bandingkan dua hal ini: angka 2 sudah diketahui nilainya, sedangkan 3n belum. Apa sebutannya?",
+       reply:"Oh iya… 2 itu benar-benar dua, sedangkan 3n itu tiga kali sesuatu yang belum ketahuan. " +
+             "Tapi tetap saja rasanya aneh membiarkan jawaban tidak selesai."},
+      {id:"terbuka", hint:"Apakah sebuah jawaban aljabar wajib berupa satu suku tunggal? Bolehkah berhenti dalam bentuk terbuka?",
+       words:["tidak harus","boleh berhenti","belum selesai","memang begitu","tidak bisa disederhanakan",
+              "sudah bentuk akhir","bentuk paling sederhana","sudah final","tetap begitu","boleh",
+              "masih ada variabel","masih terdapat variabel","masih mengandung variabel","boleh ada huruf",
+              "tidak perlu disederhanakan","tidak harus satu suku","tidak apa apa","tidak apa-apa","sah saja"],
+       hint2:"Jawab pertanyaan ini dengan satu kalimat: bolehkah jawaban akhir masih memuat huruf?",
+       reply:"Hmm, jadi 2 + 3n itu memang sudah bentuk akhirnya. Tapi aku masih belum yakin. " +
+             "Buktikan dong pakai angka — coba masukkan sebuah nilai untuk n."},
+      {id:"bukti", hint:"Pilih sebuah nilai untuk n, lalu hitung 2 + 3n dan 5n. Hati-hati: jangan pilih n = 1.",
+       words:[], numeric:true, notOne:true,
+       hint2:"Tulis begini: “kalau n = 4 maka 2 + 3n = … sedangkan 5n = …”. Isi angkanya.",
+       reply:"Aku ikut hitung. Untuk n = 4: 2 + 3×4 = 14, sedangkan 5×4 = 20. Beda jauh. Angkanya memang tidak cocok."}
+    ],
+    menyerah:"Oke, aku salah. Kalau 2 + 3n benar-benar sama dengan 5n, harusnya cocok untuk <i>semua</i> nilai n, " +
+             "bukan cuma kebetulan satu. Dan karena 2 sudah diketahui sedangkan 3n belum, keduanya memang tidak " +
+             "bisa disatukan — bentuk terbuka itu sudah jawaban akhirnya. Makasih.",
+    push:["Tapi 2 ikan + 3 ikan jelas 5 ikan. Kenapa huruf tidak boleh diperlakukan begitu?",
+          "Guruku bilang jawaban harus disederhanakan. Kalau dibiarkan 2 + 3n, itu belum sederhana dong?",
+          "Aku masih menganggap 2 dan 3n itu sejenis. Yakinkan aku kenapa tidak.",
+          "Coba pakai contoh angka, mungkin aku lebih mudah paham."]
+  }
+};
+
+const B = { topic:"eq", met:{}, turn:0, busy:false, stuck:0, lastHint:null, selesai:false };
+const chat = document.getElementById("chat");
+
+function bubble(who, html){
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  if(who === "sys"){ d.innerHTML = '<div class="bub">' + html + "</div>"; }
+  else{
+    const av = who === "budi" ? "B" : "Aku";
+    d.innerHTML = '<div class="av">' + av + '</div><div class="bub">' + html + "</div>";
+  }
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  if(who !== "sys") BLOG.push({topic:B.topic, who:who, text:plain(html)});
+}
+function renderPips(){
+  const T = TOPICS[B.topic];
+  const pips = document.getElementById("pips").children;
+  let n = 0;
+  T.concepts.forEach((c,i) => { if(B.met[c.id]){ pips[i].classList.add("on"); n++; } else pips[i].classList.remove("on"); });
+  const st = document.getElementById("budistate");
+  st.textContent = n === 0 ? "masih keras kepala" : n === 1 ? "mulai goyah" : n === 2 ? "hampir yakin" : "menyerah — kamu berhasil";
+  return n;
+}
+function startTopic(k){
+  B.topic = k; B.met = {}; B.turn = 0; B.stuck = 0; B.lastHint = null; B.selesai = false;
+  document.getElementById("budiIn").disabled = false;
+  document.getElementById("budiSend").disabled = false;
+  chat.innerHTML = "";
+  const on = "background:var(--ink);color:#fff;border-color:var(--ink)";
+  document.getElementById("tEq").style.cssText = k === "eq" ? on : "";
+  document.getElementById("tKk").style.cssText = k === "konkat" ? on : "";
+  bubble("sys","Budi memegang miskonsepsi <b>" + TOPICS[k].code + " — " + TAXO[TOPICS[k].code].name +
+    "</b>. Dia tidak akan berubah pikiran hanya karena kamu menulis jawaban benar.");
+  bubble("budi", TOPICS[k].open);
+  renderPips();
+}
+/** Deteksi bukti numerik: siswa benar-benar memasukkan angka & menghitung. */
+function numericEvidence(text, notOne){
+  const nums = (text.match(/\d+([.,]\d+)?/g) || []).map(x => parseFloat(x.replace(",", ".")));
+  if(nums.length < 2) return {ok:false};
+  /* Nilai yang benar-benar DIPASANG ke variabel — bukan sekadar angka yang
+     kebetulan muncul di dalam perhitungan. "n = 1" berbeda dari "2 + 3". */
+  const assigned = [];
+  const re = /([a-z])\s*(?:=|adalah|nya)\s*(\d+([.,]\d+)?)/gi;
+  let m; while((m = re.exec(text)) !== null) assigned.push(parseFloat(m[2].replace(",", ".")));
+  if(notOne && assigned.length && assigned.every(v => v === 1 || v === 0)){
+    return {ok:false, onlyOne:true};
+  }
+  return {ok:true};
+}
+function ruleReply(text){
+  const T = TOPICS[B.topic];
+  const t = tokens(text);
+  let newly = null;
+  for(const c of T.concepts){
+    if(B.met[c.id]) continue;
+    if(c.numeric){
+      const ev = numericEvidence(text, c.notOne);
+      if(ev.onlyOne){
+        return {say:"Aku coba n = 1: 2 + 3×1 = 5, dan 5×1 = 5. Sama! Berarti aku benar dong? " +
+                    "…atau jangan-jangan n = 1 itu kebetulan? Coba angka lain.", moved:false};
+      }
+      if(ev.ok){ newly = c; break; }
+    }else if(hasAny(t, c.words)){ newly = c; break; }
+  }
+  if(newly){
+    B.met[newly.id] = true;
+    return {say:newly.reply, moved:true, newly:newly};
+  }
+  /* Dorongan dirotasi, bukan dipatok ke elemen terakhir. Versi lama
+     mengulang kalimat yang sama persis tanpa henti begitu B.turn lewat
+     panjang daftar — dan itu membuat Budi terlihat rusak, bukan keras kepala. */
+  const p = T.push[(B.turn - 1 + T.push.length) % T.push.length];
+  return {say:p, moved:false, newly:null};
+}
+async function llmReply(text){
+  const key = (document.getElementById("apiKey").value || "").trim();
+  const T = TOPICS[B.topic];
+  const sys = [
+    "Kamu adalah BUDI, siswa SMP kelas 8 di Semarang. Kamu BUKAN asisten dan BUKAN guru.",
+    "Kamu memegang miskonsepsi berikut dan mempercayainya: " + TAXO[T.code].name + " — " + TAXO[T.code].ex + ".",
+    "ATURAN MUTLAK:",
+    "1. JANGAN PERNAH memberi jawaban akhir, rumus jadi, atau langkah penyelesaian. Kamu tidak tahu jawabannya.",
+    "2. Kamu hanya berubah pikiran jika lawan bicara memberi alasan struktural atau bukti angka yang benar.",
+    "3. Kalau alasannya lemah, bantah balik dengan sopan dan ajukan satu pertanyaan lanjutan.",
+    "4. Bahasa Indonesia santai khas remaja, maksimal 3 kalimat.",
+    "5. Kalau kamu benar-benar yakin, akhiri dengan kalimat yang memuat kata BERHASIL."
+  ].join("\n");
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "content-type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body:JSON.stringify({
+      model:(document.getElementById("apiModel") && document.getElementById("apiModel").value) || "claude-sonnet-4-5",
+      max_tokens:300,
+      system:sys,
+      messages:[{role:"user", content:"Pernyataan awalmu: " + T.open + "\n\nLawan bicara menjawab: " + text}]
+    })
+  });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const j = await res.json();
+  return (j.content || []).map(c => c.text || "").join(" ").trim();
+}
+async function budiSend(){
+  if(B.busy) return;
+  const box = document.getElementById("budiIn");
+  const text = (box.value || "").trim();
+  if(text.length < 5){ bubble("sys","Tulis argumen yang lebih panjang — Budi tidak bisa dibujuk dengan satu kata."); return; }
+  bubble("me", text.replace(/</g,"&lt;"));
+  box.value = ""; B.busy = true; B.turn++;
+
+  const key = (document.getElementById("apiKey").value || "").trim();
+  let out = null;
+  if(key){
+    try{
+      out = await llmReply(text);
+      if(out && /berhasil/i.test(out)){ TOPICS[B.topic].concepts.forEach(c => B.met[c.id] = true); }
+    }catch(e){
+      bubble("sys","Model bahasa tidak bisa dihubungi (" + e.message + "). Budi otomatis kembali ke mesin aturan offline — media tetap berjalan.");
+      out = null;
+    }
+  }
+  let maju = false;
+  if(!out){
+    const r = ruleReply(text);
+    out = r.say; maju = r.moved;
+  }else maju = true;
+  bubble("budi", out);
+
+  const n = renderPips();
+  const T = TOPICS[B.topic];
+
+  if(maju && n < T.concepts.length){
+    B.stuck = 0;
+    bubble("sys","Budi menerima poin itu — <b>" + n + " dari " + T.concepts.length +
+      "</b> hal sudah ia terima. Masih ada yang mengganjal.");
+  }else if(!maju && n < T.concepts.length){
+    /* Kalau dua giliran berturut-turut tidak ada kemajuan, Budi sendiri yang
+       menawarkan petunjuk. Membiarkan siswa mentok berulang kali tanpa jalan
+       keluar adalah cara tercepat membuatnya menyerah. */
+    B.stuck++;
+    if(B.stuck >= 2){
+      const sisa = T.concepts.find(c => !B.met[c.id]);
+      if(sisa){
+        bubble("sys","<b>Petunjuk:</b> " + (B.lastHint === sisa.id && sisa.hint2 ? sisa.hint2 : sisa.hint));
+        B.lastHint = sisa.id;
+      }
+      B.stuck = 0;
+    }
+  }
+
+  if(n >= T.concepts.length && !B.selesai){
+    B.selesai = true;
+    if(T.menyerah) bubble("budi", T.menyerah);
+    bubble("sys","Budi berubah pikiran. Yang membuatnya berubah bukan jawaban benarmu, melainkan <b>alasanmu</b>. " +
+      "Debat topik ini selesai — pilih topik lain di atas, atau tekan <b>Ulangi debat</b>.");
+    document.getElementById("budiIn").disabled = true;
+    document.getElementById("budiSend").disabled = true;
+    mark(T.code, "clear");
+    complete(T.itemId);
+  }
+  B.busy = false;
+}
+document.getElementById("budiSend").addEventListener("click", budiSend);
+document.getElementById("budiIn").addEventListener("keydown", e => {
+  if(e.key === "Enter" && (e.ctrlKey || e.metaKey)) budiSend();
+});
+document.getElementById("budiHint").addEventListener("click", () => {
+  const T = TOPICS[B.topic];
+  const next = T.concepts.find(c => !B.met[c.id]);
+  if(next){
+    bubble("sys", "<b>Petunjuk:</b> " + (B.lastHint === next.id && next.hint2 ? next.hint2 : next.hint));
+    B.lastHint = next.id;
+  }else bubble("sys","Budi sudah yakin — tidak ada lagi yang perlu dibuktikan di topik ini.");
+});
+document.getElementById("budiReset").addEventListener("click", () => startTopic(B.topic));
+document.querySelectorAll("[data-topic]").forEach(b =>
+  b.addEventListener("click", () => startTopic(b.dataset.topic)));
+document.getElementById("apiSave").addEventListener("click", () => {
+  const k = (document.getElementById("apiKey").value || "").trim();
+  const bd = document.getElementById("aiBadge");
+  if(k){ bd.textContent = "MODEL BAHASA AKTIF"; bd.classList.remove("off"); }
+  else { bd.textContent = "MODE OFFLINE"; bd.classList.add("off"); }
+});
+document.getElementById("apiClear").addEventListener("click", () => {
+  document.getElementById("apiKey").value = "";
+  const bd = document.getElementById("aiBadge");
+  bd.textContent = "MODE OFFLINE"; bd.classList.add("off");
+});
+
+/* ---------- 8. POS 4 : PETA MISKONSEPSI ------------------------------ */
+const LABEL = {
+  clear:["s-clear","sudah kuat"],
+  work:["s-work","sempat keliru, lalu pulih"],
+  flag:["s-flag","perlu dikerjakan"],
+  undefined:["s-untested","belum teruji"]
+};
+function renderMap(){
+  const g = document.getElementById("mgrid");
+  if(!g) return;
+  g.innerHTML = ORDER.map(k => {
+    const st = S.flags[k];
+    const [cls, txt] = LABEL[st] || LABEL.undefined;
+    return '<div class="mcard"><div class="code">' + k + '</div><div class="name">' + TAXO[k].name +
+      '</div><div class="ex">' + TAXO[k].ex + '</div><span class="status ' + cls + '">' + txt + "</span></div>";
+  }).join("");
+  const tp = document.getElementById("teacherPanel");
+  if(tp){
+    const flag = ORDER.filter(k => S.flags[k] === "flag");
+    const work = ORDER.filter(k => S.flags[k] === "work");
+    const clear = ORDER.filter(k => S.flags[k] === "clear");
+    const untest = ORDER.filter(k => !S.flags[k]);
+    tp.innerHTML =
+      "<b>Perlu tindak lanjut:</b> " + (flag.length ? flag.join(", ") : "—") + "<br>" +
+      "<b>Pulih setelah keliru:</b> " + (work.length ? work.join(", ") : "—") + "<br>" +
+      "<b>Sudah kuat:</b> " + (clear.length ? clear.join(", ") : "—") + "<br>" +
+      "<b>Belum teruji:</b> " + (untest.length ? untest.join(", ") : "—") +
+      '<div style="margin-top:10px;font-size:12.5px;color:var(--ink-soft)">' +
+      "Kode yang berstatus <i>pulih setelah keliru</i> justru yang paling layak dibahas ulang di kelas: " +
+      "siswa sampai ke jawaban benar, tapi lewat jalan yang sempat salah.</div>";
+  }
+}
+document.getElementById("resetAll").addEventListener("click", () => { hapusSimpanan(); location.reload(); });
+
+/* ---------- 9. NAVIGASI, MODE, PROGRES ------------------------------- */
+const POS_ITEMS = { p1:["q11","q12","q13","q15","q14"], p2:["scale","q22","q23"], p3:["budi_eq","budi_konkat"] };
+const POS_URUT = ["p1","p2","p3","p4"];
+function posDone(p){ return p === "p4" ? 0 : POS_ITEMS[p].filter(k => S.done[k]).length; }
+/* Pos berikutnya terbuka begitu pos sebelumnya tersentuh — bukan setelah
+   tuntas. Kunci yang terlalu ketat berubah jadi hukuman, bukan petualangan.
+   Guru tetap bisa membuka semuanya sekaligus untuk demo. */
+function posOpen(p){
+  if(G.openAll || p === "p1") return true;
+  const i = POS_URUT.indexOf(p);
+  return posDone(POS_URUT[i - 1]) >= 1 || (i >= 2 && posDone(POS_URUT[i - 2]) >= 1);
+}
+function renderProgress(){
+  simpan();
+  const n = KEY_ITEMS.filter(k => S.done[k]).length;
+  document.getElementById("progbar").style.width = (100 * n / KEY_ITEMS.length) + "%";
+  const rf = document.getElementById("railfill");
+  if(rf) rf.style.width = (75 * n / KEY_ITEMS.length) + "%";
+  const aktif = document.querySelector("section.pos.active");
+  const sekarang = aktif ? aktif.id : "p1";
+  POS_URUT.forEach(p => {
+    const sub = document.querySelector('[data-st="' + p + '"]');
+    const node = document.querySelector('[data-go="' + p + '"]');
+    const dot = document.querySelector('[data-dot="' + p + '"]');
+    if(!sub || !node) return;
+    const tot = p === "p4" ? 0 : POS_ITEMS[p].length, d = posDone(p);
+    const tuntas = tot > 0 && d === tot;
+    sub.textContent = p === "p4" ? "peta & bekal" :
+      (d === 0 ? "belum dikerjakan" : d + " / " + tot + " selesai");
+    const open = posOpen(p);
+    node.dataset.state = tuntas ? "done" : (p === sekarang ? "now" : (open ? "open" : "lock"));
+    node.disabled = !open;
+    if(dot) dot.textContent = tuntas ? "✓" : String(POS_URUT.indexOf(p) + 1);
+  });
+}
+document.getElementById("nav").addEventListener("click", e => {
+  const b = e.target.closest("button[data-go]"); if(!b) return;
+  document.querySelectorAll("nav.pos button").forEach(x => x.setAttribute("aria-current", "false"));
+  b.setAttribute("aria-current","true");
+  document.querySelectorAll("section.pos").forEach(s => s.classList.remove("active"));
+  document.getElementById(b.dataset.go).classList.add("active");
+  const nav = document.getElementById("nav");
+  const hdr = document.querySelector("header.top").offsetHeight;
+  window.scrollTo({top:Math.max(0, nav.offsetTop - hdr - 10), behavior:"smooth"});
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-check]"); if(!b) return;
+  const fn = CHECK[b.dataset.check]; if(fn) fn();
+});
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter") return;
+  const t = e.target;
+  if(t && t.tagName === "INPUT" && t.id && CHECK[t.id]){ e.preventDefault(); CHECK[t.id](); }
+});
+
+/* ---------- init ---------- */
+renderTray();
+renderScale(0);
+pulihkan();          // harus mendahului render pertama
+renderMap();
+renderProgress();
+startTopic("eq");
+document.getElementById("lock13").textContent = "Tip: tekan “Buka satu kotak” di 1.2 — angkanya berubah tiap kali.";
+
+/* ---------- 9. LEMBAR KERJA (cetak / simpan PDF) ---------------------
+   Tanpa pustaka luar: laporan dibangun sebagai DOM biasa, lalu diserahkan
+   ke dialog cetak peramban. Di Android dan iOS, tujuan "Simpan sebagai PDF"
+   tersedia bawaan — jadi tidak ada unduhan, tidak ada biaya, tetap luring. */
+function esc(t){
+  return String(t == null ? "" : t)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+const STATUS_TXT = {
+  flag:"perlu dikerjakan", work:"pulih setelah keliru", clear:"sudah kuat"
+};
+const STATUS_COL = { flag:"#8a3925", work:"#8a5407", clear:"#0d5a54" };
+const TOPIC_LABEL = { eq:"Arti tanda = (M3)", konkat:"Apakah 2 + 3n = 5n? (M2)" };
+
+function buildReport(nama, kelas){
+  const d = new Date();
+  const tgl = d.getDate() + " " +
+    ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][d.getMonth()] +
+    " " + d.getFullYear();
+
+  let h = '<div class="rp-kop"><div class="brand2">JEJAK ALJABAR — Lembar Kerja Siswa</div>' +
+    '<div class="sub">Modul 1 · Di dalam kelas — Penguatan Pemahaman Konsep Aljabar, kelas VII–IX</div></div>';
+
+  h += '<div class="rp-id">' +
+    "<div><b>Nama</b>" + esc(nama || "—") + "</div>" +
+    "<div><b>Kelas</b>" + esc(kelas || "—") + "</div>" +
+    "<div><b>Tanggal</b>" + tgl + "</div>" +
+    "<div><b>Total percobaan</b>" + (LOG.length + SC.hist.length + BLOG.filter(b => b.who === "me").length) + "</div>" +
+    "<div><b>Kode Jejak</b><span style=\"font-family:Menlo,Consolas,monospace;letter-spacing:.06em\">" +
+      myCode() + "</span></div>" +
+    "<div><b>Jejak terkumpul</b>" + G.xp + " · " + levelName(G.xp) + "</div>" +
+    "</div>";
+
+  const punya = BADGES.filter(b => G.badges[b.id]);
+  if(punya.length){
+    h += "<h3>Lencana yang Diperoleh</h3><table>" +
+      '<tr><th style="width:28%">Lencana</th><th>Diberikan karena</th></tr>';
+    punya.forEach(b => { h += "<tr><td>" + esc(b.n) + "</td><td>" + esc(b.d) + "</td></tr>"; });
+    h += "</table>";
+  }
+
+  /* --- peta miskonsepsi --- */
+  h += "<h3>Peta Miskonsepsi</h3><div class=\"mgrid2\">";
+  ORDER.forEach(c => {
+    const st = S.flags[c];
+    h += '<div class="mcell"><b>' + c + " · " + esc(TAXO[c].name) + "</b>" +
+      '<span class="stt" style="color:' + (st ? STATUS_COL[st] : "#5b6b70") + '">' +
+      (st ? STATUS_TXT[st] : "belum teruji") + "</span></div>";
+  });
+  h += "</div>";
+
+  /* --- riwayat per item --- */
+  const byItem = {};
+  LOG.forEach(r => { (byItem[r.id] = byItem[r.id] || []).push(r); });
+  const ids = Object.keys(LABELS).filter(k => byItem[k]);
+  if(ids.length){
+    h += "<h3>Riwayat Jawaban &amp; Umpan Balik</h3>";
+    h += '<table><tr><th style="width:30%">Kegiatan</th><th style="width:22%">Jawaban siswa</th>' +
+         '<th style="width:48%">Umpan balik yang diterima</th></tr>';
+    ids.forEach(id => {
+      byItem[id].forEach((r, i) => {
+        const mark2 = r.kind === "ok" ? '<span class="ok2">✓</span>' :
+                      r.kind === "bad" ? '<span class="no2">✗</span>' : "•";
+        h += "<tr><td>" + (i === 0 ? esc(LABELS[id]) : '<span style="color:#9aa7ab">↳ percobaan ' + (i+1) + "</span>") +
+          '</td><td class="att">' + mark2 + " " + esc(r.ans || "(kosong)") + "</td><td>" + esc(r.fb) +
+          (r.code ? '<span class="code2">' + r.code + "</span>" : "") + "</td></tr>";
+      });
+    });
+    h += "</table>";
+  }
+
+  /* --- neraca --- */
+  if(SC.hist.length){
+    h += "<h3>2.1 Neraca Kesetaraan — urutan langkah</h3><table>" +
+      '<tr><th style="width:8%">#</th><th>Operasi yang dipilih</th><th style="width:34%">Catatan</th></tr>';
+    SC.hist.forEach((o, i) => {
+      h += "<tr><td>" + (i+1) + '</td><td class="att">' + esc(o.t) + "</td><td>" +
+        (o.trap ? '<span class="no2">langkah yang tidak sah — neraca miring / tanpa alasan</span>' : "sah") + "</td></tr>";
+    });
+    h += "</table>";
+  }
+
+  /* --- transkrip Budi --- */
+  if(BLOG.length){
+    h += "<h3>Pos 3 · Debat dengan Budi</h3>";
+    let cur = null;
+    BLOG.forEach(b => {
+      if(b.topic !== cur){
+        cur = b.topic;
+        h += '<div style="font-size:11px;font-weight:700;color:#5b6b70;margin:9px 0 3px">Topik: ' +
+          esc(TOPIC_LABEL[b.topic] || b.topic) + "</div>";
+      }
+      h += '<div class="chatline"><b>' + (b.who === "budi" ? "Budi" : "Siswa") + "</b>" + esc(b.text) + "</div>";
+    });
+  }
+
+  h += "<h3>Catatan Guru</h3><div class=\"notes\"></div>";
+  h += '<div class="foot2"><b>Cara membaca lembar ini.</b> Yang penting bukan berapa jawaban yang benar, ' +
+    "melainkan <i>jenis</i> kekeliruannya. Kode M1–M6 pada kolom umpan balik menunjuk pola salah paham yang " +
+    "terdeteksi, dan Peta Miskonsepsi di halaman pertama merangkumnya. Status “pulih setelah keliru” berarti " +
+    "siswa sempat memegang salah paham itu lalu berhasil melepaskannya sendiri — itu hasil belajar, bukan kesalahan.<br>" +
+    "Dihasilkan oleh JEJAK ALJABAR · draft media KMPM 2026.</div>";
+
+  document.getElementById("report").innerHTML = h;
+}
+
+document.getElementById("btnPdf").addEventListener("click", () => {
+  const nama = document.getElementById("idNama").value.trim();
+  const kelas = document.getElementById("idKelas").value.trim();
+  if(!nama){
+    say("pdf","hint","Isi namamu dulu — tanpa nama, gurumu tidak tahu lembar ini milik siapa.");
+    document.getElementById("idNama").focus(); return;
+  }
+  if(!LOG.length && !SC.hist.length && !BLOG.length){
+    say("pdf","hint","Belum ada pekerjaan yang bisa disimpan. Kerjakan dulu minimal satu kegiatan."); return;
+  }
+  buildReport(nama, kelas);
+  const judul = document.title;
+  document.title = "Jejak Aljabar - " + nama + (kelas ? " - " + kelas : "");
+  say("pdf","ok","Lembar kerja disiapkan. Pada dialog cetak, pilih tujuan <b>“Simpan sebagai PDF”</b>, " +
+    "lalu kirimkan berkasnya ke gurumu.");
+  setTimeout(() => { window.print(); document.title = judul; }, 60);
+});
+
+
+/* ---------- 10. KODE JEJAK -------------------------------------------
+   Kode 7 karakter yang menyandikan POLA pengerjaan, bukan identitas:
+   6 status miskonsepsi (2 bit) + item selesai (10 bit) + jumlah percobaan
+   (6 bit) + checksum (5 bit). Dikirim lewat WhatsApp; guru menempelkan
+   percakapannya dan panel menyaring sendiri kode yang sah.
+   Tidak ada server, tidak ada akun, tidak ada nama siswa di dalamnya. */
+
+/* Alfabet Crockford: tanpa I, L, O, U — agar salah baca dan salah ketik
+   di HP tidak menghasilkan kode lain yang kebetulan sah. */
+const B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+const ST2N = { flag:1, work:2, clear:3 };
+
+/* Sumber kode disandikan pada salah satu dari dua bit sisa (28 bit data
+   dibulatkan ke 30). Versi lama memakai bit ke-10 dari itemMask sebagai
+   penanda — padahal bit itu SUDAH dipakai Modul 1 untuk item budi_konkat,
+   jadi setiap siswa yang menyelesaikan debat Budi terbaca sebagai kode
+   latihan. Awalan huruf dan bit sumber sekarang harus cocok; kalau tidak,
+   kodenya ditolak. */
+const SUMBER = { 0:{ awalan:"JJK", nama:"konsep" }, 1:{ awalan:"JLT", nama:"latihan" } };
+function packCode(stat, itemMask, att, sumber){
+  sumber = sumber ? 1 : 0;
+  let v = 0;
+  for(let i = 0; i < 6; i++) v = v * 4 + (stat[i] || 0);                 // 12 bit
+  let data = ((v * 1024) + (itemMask & 1023)) * 64 + Math.min(63, att);  // 28 bit
+  data = data * 4 + sumber;                                              // + 1 bit sumber, 1 bit sisa
+  const ch = [];
+  for(let i = 5; i >= 0; i--) ch.push(B32[Math.floor(data / Math.pow(32, i)) % 32]);
+  let cs = 0;
+  ch.forEach((c, i) => { cs = (cs + (i + 1) * B32.indexOf(c)) % 32; });
+  ch.push(B32[cs]);
+  return SUMBER[sumber].awalan + "-" + ch.slice(0, 4).join("") + "-" + ch.slice(4).join("");
+}
+function unpackCode(seven){
+  const ch = String(seven).split("");
+  if(ch.length !== 7 || ch.some(c => B32.indexOf(c) < 0)) return null;
+  let cs = 0;
+  for(let i = 0; i < 6; i++) cs = (cs + (i + 1) * B32.indexOf(ch[i])) % 32;
+  if(B32[cs] !== ch[6]) return null;                                     // checksum gagal
+  let data = 0;
+  for(let i = 0; i < 6; i++) data = data * 32 + B32.indexOf(ch[i]);
+  const sumber = data % 2;       data = Math.floor(data / 4);
+  const att = data % 64;         data = Math.floor(data / 64);
+  const itemMask = data % 1024;  data = Math.floor(data / 1024);
+  const stat = [];
+  for(let i = 5; i >= 0; i--){ stat[i] = data % 4; data = Math.floor(data / 4); }
+  return { stat:stat, itemMask:itemMask, att:att, sumber:sumber };
+}
+function myCode(){
+  const stat = ORDER.map(c => ST2N[S.flags[c]] || 0);
+  let mask = 0;
+  KEY_ITEMS.forEach((k, i) => { if(S.done[k]) mask |= (1 << i); });
+  const att = LOG.length + SC.hist.length + BLOG.filter(b => b.who === "me").length;
+  return packCode(stat, mask, att, 0);   // 0 = kode konsep
+}
+/* Menyaring kode dari teks bebas. Huruf yang mudah tertukar dinormalkan
+   dulu, jadi siswa yang menulis huruf O alih-alih angka nol tetap terbaca. */
+function harvest(text){
+  /* Normalisasi Crockford (I,L -> 1 · O -> 0 · U -> V) hanya boleh dikenakan
+     pada MUATAN kode, bukan pada awalannya. Kalau seluruh teks dinormalkan
+     lebih dulu, awalan "JLT" berubah jadi "J1T" dan tidak pernah cocok. */
+  const rapi = t => String(t).replace(/[IL]/g, "1").replace(/O/g, "0").replace(/U/g, "V");
+  const norm = String(text).toUpperCase();
+  const re = /(JJK|JLT)[^0-9A-Z]{0,2}([0-9A-Z]{4})[^0-9A-Z]{0,2}([0-9A-Z]{3})/g;
+  const seen = new Set(), ok = [];
+  let m, total = 0, silang = 0;
+  while((m = re.exec(norm))){
+    total++;
+    const muatan = rapi(m[2]) + rapi(m[3]);
+    const d = unpackCode(muatan);
+    if(!d) continue;
+    /* Awalan huruf dan bit sumber harus sepakat. Kalau tidak, kodenya
+       rusak atau disunting — lebih baik ditolak daripada masuk ke kolom
+       yang salah dan menggeser angka satu kelas. */
+    if(SUMBER[d.sumber].awalan !== m[1]){ silang++; continue; }
+    const key = m[1] + muatan;
+    if(seen.has(key)) continue;                                          // kiriman ganda
+    seen.add(key); ok.push(d);
+  }
+  return { rows:ok, total:total, ditolak:total - ok.length, silang:silang,
+           konsep:ok.filter(r => r.sumber === 0), latihan:ok.filter(r => r.sumber === 1) };
+}
+
+const STAT_LABEL = ["belum teruji", "perlu dikerjakan", "pulih setelah keliru", "sudah kuat"];
+/* Palet status sudah lolos pemeriksaan keterbacaan buta warna
+   (ΔE deutan 15,3 · penglihatan normal 21,0). Warna tidak pernah berdiri
+   sendiri — setiap warna selalu didampingi label teks. */
+const STAT_COLOR = ["#7a848a", "#a5301a", "#d29a05", "#14776f"];
+const REMEDY = {
+  M1:"Pos 1 — kegiatan 1.1 dan 1.4",
+  M2:"Pos 1 — kegiatan 1.2, lalu 1.5",
+  M3:"Pos 2 — Neraca Kesetaraan, dan Pos 3 topik “Arti tanda =”",
+  M4:"Pos 2 — Neraca Kesetaraan dan kegiatan 2.2",
+  M5:"Kegiatan 2.2 — Anggaran mading",
+  M6:"Pos 1 — kegiatan 1.3, tombol “Buka satu kotak”"
+};
+
+const KELAS = { hasil:null, jenis:"konsep" };
+const JENIS_INFO = {
+  konsep:{ label:"Kode konsep (Modul 1)",
+           ket:"Diukur dari empat pos konseptual: apakah salah pahamnya sudah lepas." },
+  latihan:{ label:"Kode latihan (Modul 3)",
+            ket:"Diukur dari jalur level: apakah soalnya sudah lancar dikerjakan." }
+};
+function renderKelas(rows, jenis){
+  const res = { rows:rows };
+  const n = res.rows.length;
+  const tally = ORDER.map(() => [0, 0, 0, 0]);
+  let selesai = 0;
+  res.rows.forEach(r => {
+    r.stat.forEach((v, i) => tally[i][v]++);
+    let c = 0;
+    for(let i = 0; i < KEY_ITEMS.length; i++) if(r.itemMask & (1 << i)) c++;
+    selesai += c / KEY_ITEMS.length;
+  });
+  const rank = ORDER.map((c, i) => ({ code:c, i:i, buruk:tally[i][1], belum:tally[i][0] }))
+    .sort((a, b) => b.buruk - a.buruk || b.belum - a.belum);
+  const max = Math.max(1, rank[0].buruk);
+
+  let h = '<div class="kstat">' +
+    "<div><b>" + n + "</b>siswa terbaca</div>" +
+    "<div><b>" + Math.round(100 * selesai / Math.max(1, n)) + "%</b>rata-rata kegiatan selesai</div>" +
+    "<div><b>" + rank[0].code + "</b>paling mendesak</div></div>";
+
+  h += '<div class="kfig"><h4>Berapa siswa yang masih memegang tiap salah paham</h4>' +
+    '<p class="cap">Satu batang = jumlah siswa berstatus <b>perlu dikerjakan</b> pada kode itu, ' +
+    "urut dari yang paling mendesak. Rincian keempat status ada pada tabel di bawah.</p>";
+  rank.forEach(r => {
+    h += '<div class="kbar-row"><div class="kbar-lab">' + r.code + " · " + esc(TAXO[r.code].name) + "</div>" +
+      '<div class="kbar-track"><div class="kbar-fill" style="width:' +
+      (r.buruk ? Math.max(2, Math.round(100 * r.buruk / max)) : 0) + '%"></div></div>' +
+      '<div class="kbar-val">' + r.buruk + "</div></div>";
+  });
+  h += "</div>";
+
+  h += '<table class="ktab"><tr><th>Kode</th>';
+  STAT_LABEL.forEach(l => { h += "<th>" + l + "</th>"; });
+  h += "</tr>";
+  rank.forEach(r => {
+    h += "<tr><td>" + r.code + "</td>";
+    for(let v = 0; v < 4; v++) h += "<td>" + tally[r.i][v] + "</td>";
+    h += "</tr>";
+  });
+  h += "</table>";
+  h += '<div class="klegend">';
+  STAT_LABEL.forEach((l, v) => {
+    h += '<span><i class="kdot" style="background:' + STAT_COLOR[v] + '"></i>' + l + "</span>";
+  });
+  h += "</div>";
+
+  const top = rank[0];
+  if(top.buruk === 0){
+    h += '<div class="kadvice" style="background:var(--teal-bg);border-color:var(--teal)">' +
+      "<b>Tidak ada salah paham yang tersisa di kelas ini.</b> Lanjutkan ke materi berikutnya, " +
+      "atau bawa siswa ke Modul 2 di depan papan mading.</div>";
+  }else{
+    h += '<div class="kadvice"><b>Besok ulangi ini dulu: ' + top.code + " — " + esc(TAXO[top.code].name) +
+      ".</b> " + top.buruk + " dari " + n + " siswa masih memegangnya" +
+      (top.belum ? ", dan " + top.belum + " siswa lagi belum sempat mengujinya" : "") + ". " +
+      "Bagian yang perlu diulang: <b>" + REMEDY[top.code] + "</b>.";
+    const aman = rank.filter(r => r.buruk === 0 && r.belum <= n * 0.2).map(r => r.code);
+    if(aman.length) h += " Kode " + aman.join(", ") + " sudah aman — tidak perlu diulang.";
+    h += "</div>";
+  }
+  document.getElementById("kelasOut").innerHTML = h;
+}
+function gantiJenis(j){
+  if(!KELAS.hasil) return;
+  KELAS.jenis = j;
+  const rows = j === "konsep" ? KELAS.hasil.konsep : KELAS.hasil.latihan;
+  document.querySelectorAll("[data-jenis]").forEach(b => {
+    b.setAttribute("aria-pressed", b.dataset.jenis === j);
+  });
+  const info = document.getElementById("jenisKet");
+  if(info) info.textContent = JENIS_INFO[j].ket;
+  if(!rows.length){
+    document.getElementById("kelasOut").innerHTML =
+      '<div class="note"><b>Belum ada ' + JENIS_INFO[j].label.toLowerCase() +
+      ' yang masuk.</b> Kolom ini terisi setelah siswa mengirim kode dari modul itu.</div>';
+    return;
+  }
+  renderKelas(rows, j);
+}
+
+/* ---- sisi siswa ---- */
+document.getElementById("btnKode").addEventListener("click", () => {
+  if(!LOG.length && !SC.hist.length && !BLOG.length){
+    say("kode","hint","Kerjakan dulu minimal satu kegiatan, baru kodenya ada isinya."); return;
+  }
+  const box = document.getElementById("kodeBox");
+  box.textContent = myCode(); box.style.display = "";
+  say("kode","ok","Kode dibuat. Kirim ke grup WhatsApp kelas. Kode ini tidak memuat namamu, " +
+    "tidak memuat jawabanmu, dan tidak bisa dibaca balik sebagai identitas.");
+});
+function selectBox(box){
+  const r = document.createRange(); r.selectNodeContents(box);
+  const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  say("kode","hint","Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+    "tekan lama lalu pilih <b>Copy</b>.");
+}
+document.getElementById("btnSalin").addEventListener("click", () => {
+  const box = document.getElementById("kodeBox");
+  if(box.style.display === "none" || box.textContent === "—"){
+    say("kode","hint","Tekan <b>Buat kode</b> dulu."); return;
+  }
+  const t = box.textContent;
+  const done = () => say("kode","ok","Kode <b>" + t + "</b> tersalin. Tempel di grup WhatsApp kelas.");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(done, () => selectBox(box));
+  }else selectBox(box);
+});
+
+/* ---- sisi guru ---- */
+document.getElementById("btnBaca").addEventListener("click", () => {
+  const txt = document.getElementById("paste").value;
+  if(!txt.trim()){ say("kelas","hint","Tempel dulu percakapan WhatsApp-nya."); return; }
+  const res = harvest(txt);
+  if(!res.rows.length){
+    document.getElementById("kelasOut").innerHTML = "";
+    say("kelas","bad","Tidak ada kode sah yang ditemukan" +
+      (res.total ? " — padahal ada " + res.total + " teks yang berbentuk kode. Checksum-nya tidak cocok, " +
+       "jadi kode itu sengaja ditolak daripada memberimu angka yang keliru." : ".")); return;
+  }
+  KELAS.hasil = res;
+  document.getElementById("jenisRow").classList.remove("hide");
+  document.querySelectorAll("[data-jenis]").forEach(b => {
+    const j = b.dataset.jenis;
+    const c = (j === "konsep" ? res.konsep : res.latihan).length;
+    b.textContent = JENIS_INFO[j].label + " · " + c;
+    b.disabled = c === 0;
+  });
+  /* Kalau satu siswa mengirim dua kode, keduanya sah — tapi mereka mengukur
+     hal yang berbeda dan TIDAK boleh dijumlahkan jadi satu angka kelas. */
+  gantiJenis(res.konsep.length >= res.latihan.length ? "konsep" : "latihan");
+  /* Argumen keempat say() adalah KODE diagnostik (M1–M6), bukan teks bebas.
+     Catatan panjang ditempelkan sendiri sebagai <span class="diag">. */
+  const catatan = (res.konsep.length && res.latihan.length)
+    ? '<span class="diag">Keduanya <b>tidak dijumlahkan</b> — kode konsep mengukur apakah salah pahamnya ' +
+      "sudah lepas, kode latihan mengukur apakah soalnya sudah lancar. Seorang siswa bisa lancar " +
+      "mengerjakan soal tapi tetap memegang salah paham; itu justru temuan yang berguna.</span>"
+    : "";
+  say("kelas","ok", res.konsep.length + " kode konsep dan " + res.latihan.length +
+    " kode latihan terbaca" +
+    (res.ditolak ? ", " + res.ditolak + " diabaikan karena ganda atau salah ketik" : "") +
+    (res.silang ? ", " + res.silang + " ditolak karena awalan dan isinya tidak cocok" : "") + "." + catatan);
+});
+document.getElementById("btnKosong").addEventListener("click", () => {
+  document.getElementById("paste").value = "";
+  document.getElementById("kelasOut").innerHTML = "";
+  document.getElementById("fb-kelas").className = "fb";
+  document.getElementById("jenisRow").classList.add("hide");
+  KELAS.hasil = null;
+});
+document.getElementById("jenisRow").addEventListener("click", e => {
+  const b = e.target.closest("[data-jenis]");
+  if(b && !b.disabled) gantiJenis(b.dataset.jenis);
+});
+document.getElementById("btnDemo").addEventListener("click", () => {
+  /* Contoh satu kelas. M3 dan M4 sengaja dibuat berat — miskonsepsi tanda
+     "=" memang yang paling membandel di literatur. Acaknya bersifat tetap
+     agar demo di depan juri dapat diulang dengan hasil yang sama. */
+  const nama = ["Aisyah","Bagas","Citra","Dimas","Elok","Fajar","Gita","Hafiz","Intan","Joko",
+                "Kirana","Lutfi","Maya","Nanda","Okta","Putri","Qori","Rizky","Sinta","Tegar",
+                "Umi","Vina","Wahyu","Yoga","Zahra","Andi","Bella","Candra","Dewi","Eka","Farid"];
+  const berat = [0.16, 0.19, 0.61, 0.42, 0.26, 0.10];
+  let out = "";
+  nama.forEach((n, i) => {
+    const stat = berat.map((pr, k) => {
+      const r = ((i * 37 + k * 11 + 7) % 100) / 100;
+      if(r < pr) return 1;
+      if(r < pr + 0.18) return 2;
+      if(r < pr + 0.86) return 3;
+      return 0;
+    });
+    out += "[07:" + (10 + (i % 50)) + "] " + n + ": " + packCode(stat, ((i * 53) % 1024) | 31, 8 + (i % 20), 0) + "\n";
+    /* Sepertiga siswa juga mengirim kode latihan — supaya saat demo terlihat
+       bahwa panel memisahkannya, bukan menjumlahkannya. */
+    if(i % 3 === 0){
+      const sl = stat.map((v, k) => (v === 1 && k !== 2) ? 3 : v);
+      out += "[07:" + (11 + (i % 48)) + "] " + n + ": " + packCode(sl, 63, 20 + (i % 30), 1) + "\n";
+    }
+  });
+  out += "[07:59] Bu Guru: yang belum kirim, ditunggu ya\n";
+  document.getElementById("paste").value = out;
+  document.getElementById("kelasOut").innerHTML = "";
+  say("kelas","hint","Contoh percakapan satu kelas dimuat — berisi kode konsep dan kode latihan bercampur, seperti di grup WhatsApp sungguhan. Tekan <b>Baca kode</b>.");
+});
+
+/* dipakai oleh berkas pengujian */
+/* Pemulihan dijalankan sebelum render pertama, supaya siswa tidak sempat
+   melihat papan kosong lalu tiba-tiba terisi. */
+function pulihkan(){
+  const d = muatState();
+  if(!d) return;
+  S.letter = d.letter || S.letter;
+  S.nBox = d.nBox != null ? d.nBox : S.nBox;
+  S.nLoose = d.nLoose != null ? d.nLoose : S.nLoose;
+  S.subVal = d.subVal != null ? d.subVal : S.subVal;
+  S.flags = d.flags || {}; S.done = d.done || {}; S.q11ok = !!d.q11ok;
+  G.xp = d.xp || 0; G.badges = d.badges || {}; G.seenBangkit = d.seenBangkit || {};
+  G.openAll = !!d.openAll;
+  (d.log || []).forEach(r => LOG.push(r));
+  (d.blog || []).forEach(r => BLOG.push(r));
+  (d.schist || []).forEach(r => SC.hist.push(r));
+  SC.trapped = !!d.sctrapped;
+  const n = document.getElementById("idNama"), k = document.getElementById("idKelas");
+  if(n && d.nama) n.value = d.nama;
+  if(k && d.kelas) k.value = d.kelas;
+  if(S.q11ok){
+    const el = document.getElementById("q11");
+    if(el) el.value = S.letter;
+  }
+  const bar = document.getElementById("restoreBar");
+  if(bar){
+    const sel = KEY_ITEMS.filter(x => S.done[x]).length;
+    document.getElementById("restoreTxt").innerHTML =
+      "<b>Kemajuanmu dipulihkan.</b> " + sel + " dari " + KEY_ITEMS.length + " kegiatan sudah selesai, " +
+      G.xp + " jejak terkumpul. Kemajuan tersimpan di peramban ini saja — bukan di server mana pun.";
+    bar.classList.remove("hide");
+  }
+  if(G.openAll){
+    const b = document.getElementById("bukaSemua");
+    if(b){ b.textContent = "Semua pos terbuka"; b.disabled = true; }
+  }
+}
+document.getElementById("btnBuatSimpan").addEventListener("click", () => {
+  const box = document.getElementById("simpanBox");
+  box.textContent = buatKodeSimpan(); box.style.display = "";
+  say("simpan","ok","Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel " +
+    "di perangkat lain dan tekan <b>Pulihkan</b>.");
+});
+document.getElementById("btnSalinSimpan").addEventListener("click", () => {
+  const box = document.getElementById("simpanBox");
+  if(box.style.display === "none"){ say("simpan","hint","Tekan <b>Buat kode simpan</b> dulu."); return; }
+  const t = box.textContent;
+  const ok = () => say("simpan","ok","Kode <b>" + t + "</b> tersalin.");
+  const gagal = () => {
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+    say("simpan","hint","Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — " +
+      "tekan lama lalu pilih <b>Copy</b>.");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, gagal);
+  else gagal();
+});
+document.getElementById("btnPakaiSimpan").addEventListener("click", () => {
+  const v = document.getElementById("inSimpan").value.trim();
+  if(!v){ say("simpan","hint","Tempel kode simpannya dulu."); return; }
+  const hasil = pakaiKodeSimpan(v);
+  if(hasil === "gagal"){
+    say("simpan","bad","Kode itu tidak sah.",
+      "Checksum-nya tidak cocok, jadi kodenya sengaja ditolak daripada memulihkan kemajuan yang keliru. " +
+      "Periksa lagi — biasanya ada satu karakter yang tertukar."); return;
+  }
+  if(hasil === "versi"){
+    say("simpan","bad","Kode itu dibuat oleh versi media yang berbeda.",
+      "Struktur datanya sudah berubah, jadi memulihkannya justru akan memberi angka yang keliru."); return;
+  }
+  simpan(); renderMap(); renderProgress(); renderGame();
+  const el = document.getElementById("q11");
+  if(el && S.q11ok) el.value = S.letter;
+  say("simpan","ok","Kemajuan dipulihkan dari kode. " + KEY_ITEMS.filter(k => S.done[k]).length +
+    " dari " + KEY_ITEMS.length + " kegiatan selesai, " + G.xp + " jejak.",
+    "Riwayat jawaban tidak ikut terbawa — Lembar Kerja PDF di perangkat ini akan mulai dari kosong.");
+});
+document.getElementById("btnMulaiBaru").addEventListener("click", () => {
+  hapusSimpanan();
+  location.reload();
+});
+document.getElementById("bukaSemua").addEventListener("click", () => {
+  G.openAll = true; simpan();
+  document.getElementById("bukaSemua").textContent = "Semua pos terbuka";
+  document.getElementById("bukaSemua").disabled = true;
+  renderProgress();
+});
+renderGame();
+
+window.__snap = () => JSON.stringify({xp:G.xp, b:Object.keys(G.badges).sort(), sb:Object.keys(G.seenBangkit).sort(),
+  d:Object.keys(S.done).sort(), f:S.flags, l:S.letter, q:S.q11ok, oa:G.openAll});
+window.__kosongkan = () => { G.xp=0; G.badges={}; G.seenBangkit={}; S.done={}; S.flags={}; S.letter='n'; S.q11ok=false; G.openAll=false; };
+window.__ks = { buat:buatKodeSimpan, pakai:pakaiKodeSimpan, BitTulis:BitTulis, BitBaca:BitBaca };
+window.__kj = { packCode:packCode, unpackCode:unpackCode, harvest:harvest, myCode:myCode };
+window.__g  = { G:G, S:S, BADGES:BADGES, levelName:levelName, XP_ITEM:XP_ITEM, XP_PULIH:XP_PULIH };
+
+</script>
+<script>
+/* =====================================================================
+   TEMA — cuplikan bersama, disalin apa adanya ke setiap berkas.
+
+   Pilihan tema disimpan pada satu kunci yang sama untuk kelima berkas,
+   sehingga mengganti tema di satu modul langsung berlaku di modul lain.
+   Kunci ini TERPISAH dari kunci kemajuan; menghapus kemajuan tidak
+   menghapus pilihan tema, dan sebaliknya.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.tema.v1";
+  var TEMA = [
+    { id:"kertas",  nm:"Kertas",         ket:"Hangat, silau rendah — bawaan", a:"#faf7f2", b:"#14776f" },
+    { id:"laut",    nm:"Laut",           ket:"Sejuk, untuk ruang berlampu kuning", a:"#f1f6f8", b:"#0f6f74" },
+    { id:"malam",   nm:"Malam",          ket:"Gelap, untuk belajar malam", a:"#131a1c", b:"#40bfb2" },
+    { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
+  ];
+  var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+
+  /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
+     perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
+     bisa diganti untuk sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "kertas"; }
+    catch(e){ return "kertas"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+
+  function pakai(v){
+    if(!sah[v]) v = "kertas";
+    document.documentElement.setAttribute("data-tema", v);
+    var b = document.getElementById("btnTema");
+    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    var m = document.getElementById("temaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
+      var aktif = t.getAttribute("data-tema") === v;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      var tk = t.querySelector(".tick");
+      if(tk) tk.textContent = aktif ? "dipakai" : "";
+    });
+  }
+
+  function bangun(){
+    var w = document.getElementById("temaWrap");
+    if(!w) return;
+    var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
+               'aria-controls="temaMenu" title="Ganti tema warna">' +
+               '<span aria-hidden="true">◐</span> Tema</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
+               '<div class="hd">Tema warna</div>';
+    TEMA.forEach(function(t){
+      html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
+              '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
+              '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
+              '"></i><i style="background:' + t.a + '"></i></span>' +
+              '<span><span class="nm">' + t.nm + '</span>' +
+              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span class="tick"></span></button>';
+    });
+    html += "</div>";
+    w.innerHTML = html;
+
+    var btn = document.getElementById("btnTema");
+    var menu = document.getElementById("temaMenu");
+    function tutup(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    function buka(){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(menu.hidden){ buka(); } else { tutup(); }
+    });
+    menu.addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button[data-tema]") : null;
+      if(!t) return;
+      var v = t.getAttribute("data-tema");
+      pakai(v); simpan(v); tutup(); btn.focus();
+    });
+    /* Menu ditutup lewat klik di luar dan tombol Escape. Sengaja tidak
+       memakai dialog bawaan peramban: dialog memblokir seluruh halaman dan
+       pada sebagian peramban dalam-aplikasi tidak muncul sama sekali. */
+    document.addEventListener("click", function(e){
+      if(!menu.hidden && !w.contains(e.target)) tutup();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+    });
+
+    pakai(baca());
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.__tema = { pakai:pakai, baca:baca, TEMA:TEMA, KUNCI:KUNCI };
+})();
+</script>
+</body>
+</html>

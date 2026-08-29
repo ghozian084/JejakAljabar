@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JEJAK ALJABAR — Modul 3: Jalur Latihan</title>
+<style>
+/* =====================================================================
+   TEMA WARNA
+   Empat tema, masing-masing punya alasan pakai — bukan sekadar pilihan
+   rasa. Seluruh warna media diambil dari variabel di bawah ini, sehingga
+   mengganti tema tidak menyentuh satu pun aturan tata letak.
+
+   Dua hal SENGAJA kebal tema:
+   1. Lembar kartu cetak Modul 4 (#lembar) — kartunya harus hitam pekat di
+      atas kertas putih, karena pengenal kartu bergantung pada kontras itu.
+   2. Blok @media print — mencetak tema gelap memboroskan tinta dan membuat
+      Lembar Kerja PDF sulit dibaca.
+   ===================================================================== */
+:root{
+  --m-sky1:#cfe4f0; --m-sky2:#eaf2ee; --m-h1a:#a9c7c2; --m-h1b:#bfd6cf; --m-h2a:#8fb6ad; --m-h2b:#a7c6ba;
+  --m-h3a:#7ba795; --m-h3b:#94b99f; --m-gunung:#b8ccd6; --m-gunung2:#c3d5dd; --m-awan:#ffffff;
+  --m-rumus:#7d99a6; --m-pohon:#5d8f79; --m-sungai:#9cc3d6; --m-jalur:#e0cfae; --m-jalurGaris:#ffffff;
+
+  /* Kertas — bawaan. Hangat, silaunya rendah, nyaman untuk sesi panjang. */
+  --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+  --line:#e3ddd2; --line-strong:#cfc6b6;
+  --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+  --stage:#26302f; --sky:#dceaf2;
+  /* #c97a10 hanya mencapai kontras 3,35:1 di atas kartu putih — di bawah
+     ambang WCAG AA untuk teks biasa. Digelapkan ke #a8630c (4,71:1).
+     Ini kekeliruan yang sudah ada sejak versi pertama dan baru
+     ketahuan ketika pemeriksa kontras dijalankan untuk keempat tema. */
+  --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd; --amber-hover:#8f5309;
+  --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+  --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+  --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+  --ok:#14776f; --warn:#b8760c; --bad:#b04a33;
+  --r:14px; --shadow:0 1px 2px rgba(31,42,46,.05), 0 8px 24px -14px rgba(31,42,46,.28);
+}
+
+/* Laut — sejuk. Untuk yang silau oleh nada hangat, atau ruang berlampu kuning. */
+html[data-tema="laut"]{
+  --m-sky1:#c3ddec; --m-sky2:#e4eef2; --m-h1a:#9fc0c4; --m-h1b:#b6d0d3; --m-h2a:#83aeb0; --m-h2b:#9cbfc0;
+  --m-h3a:#6e9fa1; --m-h3b:#88b2ad; --m-gunung:#aec6d4; --m-gunung2:#bad0da; --m-awan:#ffffff;
+  --m-rumus:#6f93a4; --m-pohon:#4f8a86; --m-sungai:#8fbdd6; --m-jalur:#dbcfb8; --m-jalurGaris:#ffffff;
+
+  --paper:#f1f6f8; --card:#ffffff; --ink:#15282f; --ink-soft:#4c6570; --ink-mute:#5f7a85;
+  --line:#d6e3e8; --line-strong:#b5ccd4;
+  --surf:#fbfdfe; --surf2:#e8f0f4; --surf3:#dae7ec; --mute:#9db1b9;
+  --stage:#1d2b31; --sky:#d2e6f1;
+  --amber:#a8630c; --amber-bg:#fdf0dc; --amber-ink:#7a4806; --amber-line:#dc9e46; --amber-soft:#f2e0c0; --amber-hover:#9c5c0b;
+  --teal:#0f6f74;  --teal-bg:#dff2f3;  --teal-ink:#0a5155;  --teal-line:#b0d9dc;  --teal-lite:#159aa1;
+  --clay:#a74631;  --clay-bg:#fae8e4;  --clay-ink:#823623;  --clay-line:#e7c8c0;  --heart:#962c17;
+  --plum:#5b4e8b;  --plum-bg:#eceaf7;  --plum-line:#c9c5e5; --plum-lite:#7467a7;
+  --ok:#0f6f74; --warn:#a8630c; --bad:#a74631;
+  --shadow:0 1px 2px rgba(21,40,47,.05), 0 8px 24px -14px rgba(21,40,47,.3);
+}
+
+/* Malam — gelap. Untuk belajar malam, ruang gelap, atau layar yang menyilaukan.
+   Nada aksen dibalik: yang tadinya varian gelap kini varian terang, supaya
+   teks di atas latar berwarna tetap terbaca. */
+html[data-tema="malam"]{
+  --m-sky1:#16242e; --m-sky2:#1b2b2e; --m-h1a:#22353a; --m-h1b:#2a3f42; --m-h2a:#1d3236; --m-h2b:#254045;
+  --m-h3a:#182b2d; --m-h3b:#20383a; --m-gunung:#243740; --m-gunung2:#2b414a; --m-awan:#3a4d55;
+  --m-rumus:#6f8b96; --m-pohon:#2f5f52; --m-sungai:#2c5872; --m-jalur:#4a4132; --m-jalurGaris:#7d6f55;
+
+  --paper:#131a1c; --card:#1c2427; --ink:#e9eff1; --ink-soft:#a4b4b9; --ink-mute:#8b9ba1;
+  --line:#2d3639; --line-strong:#414e52;
+  --surf:#222b2e; --surf2:#283235; --surf3:#303b3f; --mute:#4c585c;
+  --stage:#0c1113; --sky:#1a2933;
+  --amber:#e8a341; --amber-bg:#3a2b13; --amber-ink:#f6c67f; --amber-line:#7d5c23; --amber-soft:#4c3818; --amber-hover:#f2b055;
+  --teal:#40bfb2;  --teal-bg:#0f322f;  --teal-ink:#74dacd;  --teal-line:#1f5d56;  --teal-lite:#55d6c7;
+  --clay:#ec8a70;  --clay-bg:#3a1f19;  --clay-ink:#f6b3a1;  --clay-line:#6d3a2c;  --heart:#f07a5e;
+  --plum:#b79ed8;  --plum-bg:#282034;  --plum-line:#4c3f66; --plum-lite:#c8b2e6;
+  --ok:#40bfb2; --warn:#e8a341; --bad:#ec8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+/* Kontras Tinggi — untuk siswa berpenglihatan rendah, proyektor pucat, atau
+   ruang yang terkena cahaya matahari langsung. Garis dibuat hitam pekat dan
+   bayangan dimatikan supaya batas antarbagian tegas. */
+html[data-tema="kontras"]{
+  --m-sky1:#eef5f9; --m-sky2:#f7fafb; --m-h1a:#d8e4e2; --m-h1b:#e6eeec; --m-h2a:#c4d6d1; --m-h2b:#d4e2dd;
+  --m-h3a:#b0c8bf; --m-h3b:#c2d6cc; --m-gunung:#cfdde4; --m-gunung2:#dde7ec; --m-awan:#ffffff;
+  --m-rumus:#3a5560; --m-pohon:#2c6b52; --m-sungai:#5b93b5; --m-jalur:#cbb894; --m-jalurGaris:#ffffff;
+
+  --paper:#ffffff; --card:#ffffff; --ink:#000000; --ink-soft:#1c1c1c; --ink-mute:#333333;
+  --line:#000000; --line-strong:#000000;
+  --surf:#ffffff; --surf2:#eeeeee; --surf3:#dddddd; --mute:#6b6b6b;
+  --stage:#000000; --sky:#e8f0f5;
+  --amber:#7a4600; --amber-bg:#fff3df; --amber-ink:#5a3300; --amber-line:#7a4600; --amber-soft:#ffe7c2; --amber-hover:#5a3300;
+  --teal:#00564f;  --teal-bg:#dff4f1;  --teal-ink:#003b36;  --teal-line:#00564f;  --teal-lite:#00776d;
+  --clay:#8c2a12;  --clay-bg:#fde9e5;  --clay-ink:#661d0b;  --clay-line:#8c2a12;  --heart:#8c2a12;
+  --plum:#472b73;  --plum-bg:#efe9f8;  --plum-line:#472b73; --plum-lite:#5b3891;
+  --ok:#00564f; --warn:#7a4600; --bad:#8c2a12;
+  --shadow:none;
+}
+
+/* Mencetak selalu memakai tema Kertas, apa pun tema yang sedang dipakai. */
+@media print{
+  html[data-tema]{
+    --paper:#faf7f2; --card:#ffffff; --ink:#1f2a2e; --ink-soft:#5b6b70; --ink-mute:#66737a;
+    --line:#e3ddd2; --line-strong:#cfc6b6;
+    --surf:#fffdf9; --surf2:#f2ede4; --surf3:#ece4d6; --mute:#a9a296;
+    --amber:#a8630c; --amber-bg:#fdf3e2; --amber-ink:#8a5407; --amber-line:#e2a851; --amber-soft:#f0ddbd;
+    --teal:#14776f;  --teal-bg:#e6f4f2;  --teal-ink:#0d5a54;  --teal-line:#bfe0dc;  --teal-lite:#1a9d92;
+    --clay:#b04a33;  --clay-bg:#fbeae6;  --clay-ink:#8a3925;  --clay-line:#eccfc7;  --heart:#a5301a;
+    --plum:#6b4c8a;  --plum-bg:#f1ebf7;  --plum-line:#d5c9e4; --plum-lite:#8264a8;
+    --ok:#14776f; --warn:#b8760c; --bad:#b04a33; --shadow:none;
+  }
+}
+
+/* ---------- tombol tema ---------- */
+.temaWrap{position:relative;display:inline-block}
+.temaBtn{
+  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--card);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.4;
+}
+.temaBtn:hover{border-color:var(--line-strong);color:var(--ink)}
+.temaBtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.temaMenu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:200;width:252px;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 34px -12px rgba(0,0,0,.35);
+  padding:6px;
+}
+.temaMenu[hidden]{display:none}
+.temaMenu .hd{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+  padding:7px 10px 5px;
+}
+.temaMenu button{
+  display:flex;width:100%;text-align:left;gap:10px;align-items:center;
+  font:inherit;cursor:pointer;background:none;border:0;border-radius:9px;
+  padding:8px 10px;color:var(--ink);
+}
+.temaMenu button:hover{background:var(--surf2)}
+.temaMenu button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.temaMenu button[aria-checked="true"]{background:var(--teal-bg)}
+.temaMenu .sw{
+  flex:none;width:26px;height:26px;border-radius:8px;border:1px solid var(--line-strong);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+}
+.temaMenu .sw i{display:block}
+.temaMenu .nm{font-size:13.5px;font-weight:650;line-height:1.25}
+/* Tanda pilihan berupa teks, bukan warna saja — supaya tetap terbaca oleh
+   siswa yang kesulitan membedakan warna. */
+.temaMenu .ket{font-size:11.5px;color:var(--ink-soft);line-height:1.3;display:block;font-weight:400}
+.temaMenu .tick{margin-left:auto;font-weight:700;color:var(--teal)}
+.temabar{display:flex;justify-content:center;margin:16px 0 -2px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.math{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;white-space:nowrap}
+.hide{display:none !important}
+
+header.top{position:sticky;top:0;z-index:40;background:rgba(250,247,242,.95);backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--line)}
+header.top .in{max-width:660px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:750;letter-spacing:-.02em;font-size:15px}
+.brand span{color:var(--amber)}
+.modtag{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;
+  border-radius:999px;background:var(--plum-bg);color:var(--plum)}
+.backlink{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ink-soft);
+  border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px}
+.backlink:hover{background:var(--card);color:var(--ink);border-color:var(--ink)}
+.stats{margin-left:auto;display:flex;gap:8px;align-items:center}
+.stat{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:5px 11px;
+  border-radius:999px;border:1px solid var(--line-strong);background:var(--card);font-variant-numeric:tabular-nums}
+.stat .ic{width:15px;height:15px;flex:none}
+.stat.xp{color:var(--teal)} .stat.crown{color:var(--amber)}
+
+.wrap{max-width:660px;margin:0 auto;padding:20px 16px 100px}
+h1{font-size:clamp(22px,5vw,29px);letter-spacing:-.02em;margin:0 0 8px;line-height:1.2}
+.lede{color:var(--ink-soft);font-size:15.5px;margin:0 0 18px}
+
+/* ---------- jalur unit ---------- */
+.unit{margin:30px 0 6px}
+.unitbar{display:flex;gap:13px;align-items:center;padding:14px 17px;border-radius:15px;color:var(--card);
+  box-shadow:0 6px 18px -10px rgba(31,42,46,.5)}
+.unitbar .no{font-size:10.5px;font-weight:700;letter-spacing:.1em;opacity:.85;text-transform:uppercase}
+.unitbar .ti{font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.unitbar .de{font-size:12px;opacity:.9;line-height:1.4;margin-top:2px}
+.unitbar .cr{margin-left:auto;font-size:12.5px;font-weight:700;white-space:nowrap;
+  background:rgba(255,255,255,.2);padding:5px 10px;border-radius:999px}
+.unitbar.locked{background:var(--mute) !important}
+.path{display:flex;flex-direction:column;align-items:center;gap:15px;padding:20px 0 4px}
+.lvlnode{background:none;border:0;padding:0;font:inherit;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:6px;color:inherit;transition:transform .16s}
+.lvlnode:nth-child(2){transform:translateX(78px)}
+.lvlnode:nth-child(4){transform:translateX(-78px)}
+.lvlnode:not(:disabled):hover{transform:translateY(-3px)}
+.lvlnode:nth-child(2):not(:disabled):hover{transform:translateX(78px) translateY(-3px)}
+.lvlnode:nth-child(4):not(:disabled):hover{transform:translateX(-78px) translateY(-3px)}
+.lvlnode .disc{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;
+  border:3px solid var(--line-strong);background:var(--card);color:var(--ink-soft);
+  font-weight:750;font-size:19px;box-shadow:0 4px 0 var(--line-strong);transition:.2s}
+.lvlnode .cap{font-size:11.5px;font-weight:650;color:var(--ink-soft);text-align:center;line-height:1.3}
+.lvlnode[data-s="open"] .disc{border-color:var(--amber);color:var(--amber);box-shadow:0 4px 0 var(--amber-ink),0 0 0 6px var(--amber-bg)}
+.lvlnode[data-s="done"] .disc{background:var(--teal);border-color:var(--teal);color:var(--card);box-shadow:0 4px 0 var(--teal-ink)}
+.lvlnode[data-s="lock"]{cursor:not-allowed}
+.lvlnode[data-s="lock"] .disc{opacity:.4}
+.lvlnode[data-s="lock"] .cap{opacity:.4}
+.lvlnode.bos .disc{width:80px;height:80px;font-size:13px;letter-spacing:.06em}
+.lvlnode[data-s="open"].bos .disc{border-color:var(--clay);color:var(--clay);box-shadow:0 4px 0 var(--clay-ink),0 0 0 6px var(--clay-bg)}
+@media (max-width:480px){
+  .lvlnode:nth-child(2){transform:translateX(58px)}
+  .lvlnode:nth-child(4){transform:translateX(-58px)}
+  .lvlnode .disc{width:60px;height:60px;font-size:17px}
+  .lvlnode.bos .disc{width:70px;height:70px;font-size:12px}
+}
+
+/* ---------- layar bermain ---------- */
+.playbar{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+.playbar .x{background:none;border:0;font-size:23px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:2px 6px}
+.qprog{flex:1;height:13px;background:var(--surf3);border-radius:999px;overflow:hidden}
+.qprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--teal));
+  border-radius:999px;transition:width .35s}
+.hearts{display:flex;gap:3px;align-items:center}
+.hearts svg{width:21px;height:21px;fill:var(--heart);transition:.25s}
+.hearts svg.off{fill:var(--line-strong);transform:scale(.82)}
+.hearts.pulse svg{animation:hb .4s}
+@keyframes hb{0%{transform:scale(1)}45%{transform:scale(1.28)}100%{transform:scale(1)}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:14px 0;
+  box-shadow:var(--shadow)}
+.card h2{font-size:16.5px;margin:0 0 4px}
+.card .ctx{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+  font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.qcode{font-size:10px;font-weight:700;letter-spacing:.07em;padding:3px 7px;border-radius:5px;
+  background:var(--plum-bg);color:var(--plum)}
+.qcode.kedua{background:var(--amber-bg);color:var(--amber)}
+.qtext{font-size:17.5px;line-height:1.55;margin:0 0 15px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:11px 0}
+button.act{font:inherit;font-size:14.5px;font-weight:650;padding:10px 19px;border-radius:11px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--card);cursor:pointer;transition:.15s}
+button.act.ghost{background:transparent;color:var(--ink)}
+button.act.small{font-size:13px;padding:7px 13px}
+button.act:disabled{opacity:.4;cursor:not-allowed}
+input[type=text]{font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--line-strong);
+  border-radius:10px;background:var(--card);color:var(--ink);width:200px}
+input.alg{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;font-size:19px}
+input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,42,46,.09)}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:15px;padding:12px 15px;margin:8px 0;
+  border:1.5px solid var(--line-strong);border-radius:11px;background:var(--card);color:var(--ink);cursor:pointer;
+  transition:.13s;box-shadow:0 2px 0 var(--line-strong)}
+.opt:hover{border-color:var(--ink)}
+.opt.sel{border-color:var(--ink);background:var(--surf2);box-shadow:0 2px 0 var(--ink)}
+.fb{margin-top:12px;padding:13px 15px;border-radius:11px;font-size:14.5px;display:none;line-height:1.6}
+.fb.show{display:block}
+.fb.ok{background:var(--teal-bg);color:var(--teal-ink);border:1px solid var(--teal-line)}
+.fb.bad{background:var(--clay-bg);color:var(--clay-ink);border:1px solid var(--clay-line)}
+.fb.hint{background:var(--amber-bg);color:var(--amber-ink);border:1px solid var(--amber-soft)}
+.fb .why{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed currentColor;font-size:13.5px}
+
+.big{text-align:center;padding:14px 0}
+.big .em{font-size:44px;font-weight:750;letter-spacing:-.03em;line-height:1.1}
+.big .em.ok{color:var(--teal)} .big .em.no{color:var(--clay)}
+.big .sub{font-size:14.5px;color:var(--ink-soft);margin-top:6px;line-height:1.6}
+.kstat{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin:16px 0 4px}
+.kstat div{font-size:12px;color:var(--ink-soft);text-align:center}
+.kstat div b{display:block;font-size:26px;color:var(--ink);font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.note{background:var(--amber-bg);border-left:3px solid var(--amber);padding:12px 14px;border-radius:0 9px 9px 0;
+  font-size:13.5px;margin:14px 0;line-height:1.65}
+.note b{color:var(--amber)}
+.note.teal{background:var(--teal-bg);border-color:var(--teal)} .note.teal b{color:var(--teal)}
+.note.plum{background:var(--plum-bg);border-color:var(--plum)} .note.plum b{color:var(--plum)}
+.kcode{font-family:"SF Mono",Menlo,Consolas,"Courier New",monospace;font-size:clamp(19px,5.4vw,27px);
+  font-weight:700;letter-spacing:.1em;background:var(--surf);border:1.5px dashed var(--line-strong);
+  border-radius:11px;padding:14px 12px;text-align:center;user-select:all;margin:12px 0}
+.ktab{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px}
+.ktab th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+  padding:5px 6px;border-bottom:1px solid var(--line-strong)}
+.ktab th:not(:first-child),.ktab td:not(:first-child){text-align:right}
+.ktab td{padding:6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ktab td:first-child{font-weight:600}
+.kdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px;
+  box-shadow:0 0 0 1px rgba(31,42,46,.18)}
+.klegend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-top:10px}
+.restore{background:var(--teal-bg);border:1px solid var(--teal-line);border-radius:var(--r);padding:12px 16px;
+  margin:14px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--teal-ink);line-height:1.55}
+.restore b{font-weight:700}
+.restore button{margin-left:auto}
+.toastwrap{position:fixed;left:0;right:0;bottom:18px;z-index:90;display:flex;flex-direction:column;
+  align-items:center;gap:8px;pointer-events:none;padding:0 14px}
+@media (min-width:820px){ .toastwrap{left:auto;right:20px;align-items:flex-end;padding:0} }
+.toast{background:var(--ink);color:var(--card);border-radius:12px;padding:12px 17px;max-width:380px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;
+  transform:translateY(14px);opacity:0;transition:.32s cubic-bezier(.2,.8,.3,1)}
+.toast.in{transform:none;opacity:1}
+.toast .medal{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--teal-lite),var(--teal-ink));color:var(--card);font-weight:750;font-size:14px}
+.toast .tt{font-size:14px;font-weight:650;line-height:1.35}
+.toast .td{font-size:12px;opacity:.82;line-height:1.45;margin-top:2px}
+.teacher{text-align:center;margin:22px 0 0}
+.teacher button{font:inherit;font-size:12px;font-weight:600;background:none;border:0;color:var(--ink-soft);
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;
+  color:var(--ink-soft);line-height:1.7}
+</style>
+<script>
+/* Dipasang sebelum halaman dilukis. Kalau tema baru dibaca setelah halaman
+   tampil, pengguna tema Malam akan melihat kedipan putih lebih dulu. */
+(function(){try{var v=localStorage.getItem("jejak.tema.v1");
+if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute("data-tema",v);}catch(e){}})();
+</script>
+</head>
+<body>
+<svg style="display:none"><symbol id="hrt" viewBox="0 0 24 24"><path d="M12 21s-8-5.1-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.9 12 21 12 21z"/></symbol></svg>
+
+<header class="top">
+  <div class="in">
+    <span class="brand">JEJAK <span>ALJABAR</span></span>
+    <span class="modtag">Modul 3 · Jalur Latihan</span>
+    <a class="backlink" href="index.html">☰ Menu</a>
+    <span class="temaWrap noprint" id="temaWrap"></span>
+    <a class="backlink" href="jejak-aljabar.html">← Modul 1</a>
+    <span class="stats">
+      <span class="stat crown" title="mahkota"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18l-1.6-9-4.4 3.6L12 6l-3 6.6L4.6 9z"/></svg><span id="stCrown">0</span></span>
+      <span class="stat xp" title="jejak"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span id="stXp">0</span></span>
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= PETA JALUR ================= -->
+  <section id="scMap">
+    <h1>Satu jalur, satu salah paham.</h1>
+    <p class="lede">Enam unit, masing-masing menyerang <b>satu</b> jenis salah paham. Tiga latihan lalu satu
+      level BOS. Level berikutnya baru terbuka setelah level sebelumnya lulus.</p>
+
+    <div class="note plum">
+      <b>Nyawa di sini bekerja terbalik dari kebanyakan aplikasi.</b> Kalau kamu keliru, satu nyawa hilang —
+      tapi soal serupa langsung diberikan lagi. Jawab benar di kesempatan kedua itu, dan <b>nyawamu kembali</b>.
+      Kekeliruan yang kamu perbaiki sendiri tidak dihukum; justru itu yang paling ingin dilatih.
+    </div>
+
+    <div class="restore hide" id="restoreBar">
+      <span id="restoreTxt"></span>
+      <button class="act small" id="btnMulaiBaru">Mulai dari awal</button>
+    </div>
+
+    <div id="mapBody"></div>
+
+    <div class="card">
+      <h2>Pindah ke perangkat lain</h2>
+      <p class="ctx">Ganti HP, atau pindah ke komputer lab? Buat <b>kode simpan</b>, catat atau kirim ke
+        dirimu sendiri, lalu tempel di perangkat baru. Mahkota dan jejakmu ikut pindah.</p>
+      <div class="row">
+        <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
+        <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+      </div>
+      <div class="kcode" id="simpanBox" style="display:none;font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em">—</div>
+      <div class="row">
+        <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+        <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+      </div>
+      <div class="fb" id="fb-simpan"></div>
+    </div>
+
+    <div class="teacher"><button id="bukaSemua">Buka semua level (untuk guru)</button></div>
+  </section>
+
+  <!-- ================= BERMAIN ================= -->
+  <section id="scPlay" class="hide">
+    <div class="playbar">
+      <button class="x" id="btnKeluar" aria-label="Keluar dari level">×</button>
+      <span class="qprog"><i id="qbar"></i></span>
+      <span class="hearts" id="hearts"></span>
+    </div>
+    <div class="card">
+      <div class="qhead">
+        <span id="lvlName">—</span>
+        <span class="qcode" id="qCode">M1</span>
+      </div>
+      <p class="qtext" id="qText">—</p>
+      <div id="qInput"></div>
+      <div class="row">
+        <button class="act" id="btnCek">Periksa</button>
+        <button class="act ghost small hide" id="btnLanjut">Lanjut →</button>
+      </div>
+      <div class="fb" id="fb"></div>
+    </div>
+  </section>
+
+  <!-- ================= HASIL LEVEL ================= -->
+  <section id="scEnd" class="hide">
+    <div class="card">
+      <div class="big" id="endBig"></div>
+      <div class="kstat" id="endStat"></div>
+      <div id="endNote"></div>
+      <div class="row" style="justify-content:center;margin-top:18px">
+        <button class="act" id="btnLagi">Ulangi level</button>
+        <button class="act ghost" id="btnKeMap">Kembali ke jalur</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAMAT ================= -->
+  <section id="scDone" class="hide">
+    <div class="card">
+      <div class="big"><div class="em ok">Jalur tamat</div>
+        <div class="sub">Keenam unit selesai. Sekarang yang penting bukan berapa mahkota yang kamu kumpulkan,
+          melainkan jenis salah paham mana yang masih menempel.</div></div>
+      <div id="tamatHasil"></div>
+    </div>
+    <div class="card">
+      <h2>Kirim kode ke gurumu</h2>
+      <p class="ctx">Berawalan <b>JLT</b> supaya Panel Guru bisa memisahkannya dari kode konsep Modul 1 —
+        keduanya dibaca panel yang sama, tapi dihitung terpisah karena mengukur hal berbeda.
+        Tidak memuat nama, tidak memuat jawaban.</p>
+      <div class="kcode" id="kodeBox">—</div>
+      <div class="row"><button class="act ghost small" id="btnSalin">Salin</button>
+        <button class="act" id="btnKeMap2">Kembali ke jalur</button></div>
+      <div class="fb" id="fb-kode"></div>
+    </div>
+  </section>
+
+  <footer>
+    <b>JEJAK ALJABAR · Modul 3 — Jalur Latihan (prototipe).</b> Enam unit × empat level. Soal dibangkitkan
+    dari 18 kerangka (6 kode miskonsepsi × 3 tingkat) dengan angka acak, jadi tidak pernah habis dan urutannya
+    tidak bisa dihafal. Pemeriksa jawaban aljabar bekerja numerik di banyak titik uji — <span class="math">2(x+3)</span>
+    dan <span class="math">2x+6</span> sama-sama diterima. Tanpa pustaka luar, tanpa <span class="math">eval</span>,
+    berjalan penuh luring.<br>
+    Simpan berkas ini satu folder dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi.
+  </footer>
+</div>
+<div class="toastwrap" id="toastWrap" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   MESIN ALJABAR — sama seperti Modul 1: pengecekan numerik di banyak
+   titik uji, bukan pencocokan string. Tanpa eval/new Function agar tetap
+   hidup di dalam iframe atau halaman ber-CSP ketat.
+   ===================================================================== */

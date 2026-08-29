@@ -1,0 +1,408 @@
+<header class="top">
+  <div class="top-in">
+    <div class="brand">JEJAK <span>ALJABAR</span></div>
+    <div class="top-sub">Penguatan Pemahaman Konsep Aljabar · Kelas VII–IX</div>
+    <div class="modeswitch" role="group" aria-label="Modul">
+      <a class="modelink" href="index.html">☰ Menu</a>
+      <span class="temaWrap noprint" id="temaWrap"></span>
+      <button id="mKelas" aria-pressed="true">Modul 1 · Kelas</button>
+      <a class="modelink" id="mLap" href="ar-ukur.html">Modul 2 · Lapangan ↗</a>
+      <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Penjelajah Baru</span><b id="xpVal">0</b> jejak</span>
+    </div>
+  </div>
+  <div class="progwrap"><div class="progbar" id="progbar"></div></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Huruf itu bukan singkatan.<br>Tanda <span style="color:var(--teal)">=</span> itu bukan perintah.</h1>
+    <p class="lede">Dua salah paham itu bertahan sampai SMA. Media ini tidak mengajarkan cara menjawab soal aljabar — media ini
+      membongkar dua salah paham tersebut, lalu memeriksa apakah benar-benar sudah hilang.</p>
+    <div class="pillrow">
+      <span class="pill">Konteks: pasar bandeng · papan mading · kas kelas</span>
+      <span class="pill">Bantuan AI: teman sebaya &amp; diagnostik</span>
+      <span class="pill">Berjalan tanpa internet</span>
+    </div>
+  </div>
+
+  <div class="restore hide" id="restoreBar">
+    <span id="restoreTxt"></span>
+    <button class="act ghost small" id="btnMulaiBaru">Mulai dari awal</button>
+  </div>
+
+  <div class="draft">
+    <b>Draft v0.4 — Modul 1 dari dua modul.</b> Modul ini dikerjakan <b>di dalam kelas</b>. Pos 1 dan 2 memakai
+    kotak bandeng: benda tersegel yang isinya benar-benar tidak bisa dilihat. Item 1.5 lalu berpindah ke
+    papan mading sekolah — dan di situlah <b>Modul 2 · Pindai &amp; Ukur</b> mengambil alih, dikerjakan
+    <b>di depan papan yang sebenarnya</b> lewat kamera HP.
+  </div>
+
+  <nav class="trail" id="nav" aria-label="Peta perjalanan">
+    <span class="rail"></span><span class="railfill" id="railfill"></span>
+    <button class="node" data-go="p1" data-state="now">
+      <span class="dot" data-dot="p1">1</span>
+      <span class="lbl">Kotak Bandeng</span>
+      <span class="sub" data-st="p1">belum dikerjakan</span>
+    </button>
+    <button class="node" data-go="p2" data-state="lock">
+      <span class="dot" data-dot="p2">2</span>
+      <span class="lbl">Neraca Kesetaraan</span>
+      <span class="sub" data-st="p2">belum dikerjakan</span>
+    </button>
+    <button class="node" data-go="p3" data-state="lock">
+      <span class="dot" data-dot="p3">3</span>
+      <span class="lbl">Yakinkan Budi</span>
+      <span class="sub" data-st="p3">belum dikerjakan</span>
+    </button>
+    <button class="node" data-go="p4" data-state="lock">
+      <span class="dot" data-dot="p4">4</span>
+      <span class="lbl">Peta &amp; Bekal</span>
+      <span class="sub" data-st="p4">—</span>
+    </button>
+  </nav>
+  <div class="trailfoot"><button id="bukaSemua">Buka semua pos (untuk guru)</button></div>
+
+  <!-- ================= POS 1 ================= -->
+  <section class="pos active" id="p1">
+    <div class="poshead">
+      <div class="eyebrow">Pos 1 · Pasar Bandeng, Ungaran</div>
+      <h2>Kotak Bandeng</h2>
+      <p>Kamu belanja di Pasar Bandeng. Ikan dijual dalam <b>kotak tersegel</b> — dan segel itu tidak boleh
+         dibuka di lapak. Isinya benar-benar tidak diketahui siapa pun sampai kotaknya sampai di rumah.</p>
+    </div>
+
+    <div class="card">
+      <h3>1.1 Beri nama pada yang belum dihitung <span class="tag">M1 · M6</span></h3>
+      <p class="ctx">Kita butuh cara menulis "banyak ikan di dalam satu kotak" tanpa tahu angkanya.</p>
+      <div class="row">
+        <span>Misalkan</span>
+        <input type="text" class="alg short" id="q11" maxlength="12" placeholder="?" aria-label="huruf variabel">
+        <span>= banyak ikan di dalam <b>satu</b> kotak.</span>
+      </div>
+      <div class="row"><button class="act" data-check="q11">Periksa</button></div>
+      <div class="fb" id="fb-q11"></div>
+    </div>
+
+    <div class="card" id="c12">
+      <h3>1.2 Susun belanjaanmu <span class="tag">M2</span></h3>
+      <p class="ctx">Selain kotak, ada juga <b>ikan satuan</b> — ikan yang dijual sendiri-sendiri di luar kotak,
+        jadi jumlahnya sudah terhitung sejak awal. Ubah jumlahnya, lalu tulis ekspresi untuk
+        <b>total ikan</b> yang kamu bawa pulang.</p>
+      <div class="basket">
+        <div class="tray" id="tray"></div>
+        <div class="legend">
+          <span><i style="background:#c1740c"></i>kotak tersegel — isi belum diketahui</span>
+          <span><i style="background:#7d8a91"></i>ikan satuan — sudah terhitung, di luar kotak</span>
+        </div>
+        <div class="counter">
+          <div class="ctr"><button data-adj="box:-1">−</button><b><span id="nBox">2</span> kotak</b><button data-adj="box:1">+</button></div>
+          <div class="ctr"><button data-adj="loose:-1">−</button><b><span id="nLoose">5</span> ikan satuan</b><button data-adj="loose:1">+</button></div>
+          <button class="act ghost small" id="openBox">Buka satu kotak</button>
+        </div>
+        <div class="reveal" id="reveal"></div>
+      </div>
+      <div class="row">
+        <span>Total ikan =</span>
+        <input type="text" class="alg" id="q12" placeholder="tulis ekspresinya" aria-label="ekspresi total karya" style="width:170px">
+        <button class="act" data-check="q12">Periksa</button>
+      </div>
+      <div class="fb" id="fb-q12"></div>
+      <div class="note">
+        <b>Kenapa tidak bisa disatukan?</b> Ikan di dalam kotak dan ikan satuan dihitung dengan cara berbeda —
+        yang satu jumlahnya belum diketahui, yang satu sudah. Ekspresi aljabar boleh berhenti dalam keadaan
+        "belum selesai" seperti itu.
+      </div>
+    </div>
+
+    <div class="card" id="c13">
+      <h3>1.3 Sampai di rumah, kotaknya dibuka <span class="tag">M6</span></h3>
+      <p class="ctx">Setiap kali kamu menekan <b>Buka satu kotak</b> di atas, isinya berbeda. Ekspresimu tetap benar — itulah gunanya huruf.</p>
+      <div class="row">
+        <span>Jika ternyata satu kotak berisi <b id="subVal">12</b> ekor, total ikannya =</span>
+        <input type="text" class="short" id="q13" placeholder="?" aria-label="hasil substitusi">
+        <button class="act" data-check="q13">Periksa</button>
+      </div>
+      <div class="fb" id="fb-q13"></div>
+      <div class="lockmsg classonly" id="lock13"></div>
+    </div>
+
+    <div class="card" id="c14">
+      <h3>1.4 Jelaskan dengan kalimatmu sendiri <span class="tag">diagnostik AI</span></h3>
+      <p class="ctx">Jawaban ini tidak dinilai benar atau salah. Yang dibaca adalah <i>cara berpikirmu</i>.</p>
+      <p style="font-size:15px">Adik kelasmu belum pernah belajar aljabar. Dia bertanya:
+        <b>“Kak, <span class="math">3k</span> itu apa artinya?”</b><br>
+        Jelaskan kepadanya dengan kalimatmu sendiri — jangan dijawab pakai rumus.</p>
+      <p class="ctx" style="margin:0 0 10px">Pengingat: <span class="math">k</span> = banyak ikan di dalam
+        <b>satu</b> kotak.</p>
+      <textarea id="q14" placeholder="Tulis minimal satu kalimat…"></textarea>
+      <div class="row"><button class="act" data-check="q14">Kirim</button></div>
+      <div class="fb" id="fb-q14"></div>
+    </div>
+    <div class="card" id="c15">
+      <h3>1.5 Sekarang tengok dinding kelasmu <span class="tag">M2</span></h3>
+      <p class="ctx">Yang belum diketahui tidak harus berupa isi kotak. Papan mading sekolahmu berbentuk
+        persegi panjang; lebarnya sudah diukur, <b>80 cm</b>, tapi panjangnya belum sempat diukur —
+        sebut saja <span class="math">p</span> cm.</p>
+      <p style="font-size:15px;margin:6px 0">Panitia mau memasang lis kertas mengelilingi seluruh tepi papan.
+        Berapa panjang lis yang dibutuhkan?</p>
+      <div class="row">
+        <span>Keliling =</span>
+        <input type="text" class="alg" id="q15" placeholder="dalam bentuk p" style="width:170px" aria-label="keliling papan">
+        <span>cm</span>
+        <button class="act" data-check="q15">Periksa</button>
+      </div>
+      <div class="fb" id="fb-q15"></div>
+      <div class="note teal">
+        <b>Di sini kelas berhenti, lapangan dimulai.</b> Barusan lebar papan sudah diberikan kepadamu: 80 cm.
+        Di papan yang sebenarnya, tidak ada yang memberimu angka itu.
+      </div>
+    </div>
+
+    <div class="handoff">
+      <div class="icon">📐</div>
+      <div class="body">
+        <div class="eyebrow2">Modul 2 · Di luar kelas</div>
+        <div class="t">Pindai &amp; Ukur papan mading yang sebenarnya</div>
+        <div class="d">Bawa HP ke koridor. Kamera memindai papan mading, mengenali bahwa bangunnya bersisi empat,
+          lalu menyusun sendiri rumus <span class="math">K = 2p + 2l</span> — <b>tanpa</b> tahu ukurannya.
+          Angkanya harus datang dari meteranmu. Setelah kamu mengukur, media memeriksa apakah hasil ukurmu
+          masuk akal terhadap bentuk yang dilihat kamera.</div>
+        <a class="go" href="ar-ukur.html">Buka Modul 2 →</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= POS 2 ================= -->
+  <section class="pos" id="p2">
+    <div class="poshead">
+      <div class="eyebrow">Pos 2 · Relasi kesetaraan</div>
+      <h2>Neraca Kesetaraan</h2>
+      <p>Tanda <span class="math"><b>=</b></span> bukan perintah "hitung sekarang". Tanda itu berkata: dua sisi ini sama beratnya.
+         Apa pun yang kamu lakukan pada satu sisi, sisi lain harus mengalami hal yang sama.</p>
+    </div>
+
+    <div class="card">
+      <h3>2.1 Berapa isi satu kotak? <span class="tag">M3 · M4</span></h3>
+      <p class="ctx">Kamu membeli 3 kotak dan 2 ikan satuan. Setelah semuanya dihitung di rumah,
+        ternyata ada 26 ekor. Buat <span class="math">n</span> sendirian di satu sisi.</p>
+
+      <div class="scalebox">
+        <svg class="scale" viewBox="0 0 400 190" aria-label="neraca kesetaraan">
+          <line x1="200" y1="60" x2="200" y2="160" stroke="#8a7f6c" stroke-width="7" stroke-linecap="round"/>
+          <path d="M160 168 L240 168 L228 158 L172 158 Z" fill="#8a7f6c"/>
+          <g id="beam">
+            <line x1="70" y1="60" x2="330" y2="60" stroke="#5b4f3d" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="200" cy="60" r="9" fill="#3d3428"/>
+            <line x1="80" y1="60" x2="80" y2="92" stroke="#8a7f6c" stroke-width="3"/>
+            <line x1="320" y1="60" x2="320" y2="92" stroke="#8a7f6c" stroke-width="3"/>
+            <rect x="24" y="92" width="112" height="9" rx="4" fill="#c97a10"/>
+            <rect x="264" y="92" width="112" height="9" rx="4" fill="#14776f"/>
+            <text id="svgL" x="80" y="122" text-anchor="middle" font-family="Palatino,Georgia,serif"
+                  font-style="italic" font-size="23" fill="#1f2a2e">3n + 2</text>
+            <text id="svgR" x="320" y="122" text-anchor="middle" font-family="Palatino,Georgia,serif"
+                  font-style="italic" font-size="23" fill="#1f2a2e">26</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="eqline"><span class="lhs" id="eqL">3n + 2</span><span class="eqs">=</span><span class="rhs" id="eqR">26</span></div>
+
+      <div class="ops" id="ops">
+        <button data-op="sub2">− 2 &nbsp;(kedua ruas)</button>
+        <button data-op="div3">÷ 3 &nbsp;(kedua ruas)</button>
+        <button data-op="add2">+ 2 &nbsp;(kedua ruas)</button>
+        <button data-op="mul3">× 3 &nbsp;(kedua ruas)</button>
+        <button data-op="trapL" class="trap">− 2 &nbsp;(ruas kiri saja)</button>
+        <button data-op="trapMove" class="trap">pindahkan 2 ke kanan</button>
+      </div>
+      <div class="row">
+        <button class="act ghost small" id="resetScale">↺ Mulai lagi</button>
+        <span style="font-size:12.5px;color:var(--ink-soft)">Target: <span class="math">n</span> sendirian di ruas kiri.</span>
+      </div>
+      <div class="oplog" id="oplog"></div>
+      <div class="fb" id="fb-scale"></div>
+    </div>
+
+    <div class="card" id="c22">
+      <h3>2.2 Anggaran mading <span class="tag">M3 · M4</span></h3>
+      <p class="ctx">Papan sterofoam dibeli sekali seharga <b>Rp 25.000</b>. Kertas warna <b>Rp 2.000</b> per lembar.
+        Jadi total biaya <span class="math">B = 25000 + 2000L</span>, dengan <span class="math">L</span> = banyak lembar kertas.</p>
+      <p style="font-size:15px;margin:6px 0">Kas kelas tersisa Rp 47.000 dan dihabiskan seluruhnya. Berapa lembar kertas yang terbeli?</p>
+      <div class="row">
+        <span><span class="math">L</span> =</span>
+        <input type="text" class="short" id="q22" placeholder="?" aria-label="banyak lembar">
+        <span>lembar</span>
+        <button class="act" data-check="q22">Periksa</button>
+      </div>
+      <div class="fb" id="fb-q22"></div>
+      <div class="row" style="margin-top:14px">
+        <div style="flex:1;min-width:220px">
+          <p style="font-size:14.5px;margin:0 0 6px">Sekarang tulis rumusnya terbalik: dari biaya, hitung banyak lembar.</p>
+          <div class="row"><span><span class="math">L</span> =</span>
+            <input type="text" class="alg" id="q23" placeholder="dalam bentuk B" style="width:190px" aria-label="rumus terbalik">
+            <button class="act" data-check="q23">Periksa</button></div>
+        </div>
+      </div>
+      <div class="fb" id="fb-q23"></div>
+    </div>
+  </section>
+
+  <!-- ================= POS 3 ================= -->
+  <section class="pos" id="p3">
+    <div class="poshead">
+      <div class="eyebrow">Pos 3 · Teman sebaya AI</div>
+      <h2>Yakinkan Budi</h2>
+      <p>Budi satu panitia mading denganmu, dan sedang salah paham. Tugasmu bukan menjawab soal —
+        tugasmu <b>meyakinkan Budi</b>. Dia tidak akan mengalah hanya karena kamu menulis jawaban yang benar.</p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-top:0">
+        <span style="font-size:13px;color:var(--ink-soft)">Topik perdebatan:</span>
+        <button class="act ghost small" data-topic="eq" id="tEq">Arti tanda =</button>
+        <button class="act ghost small" data-topic="konkat" id="tKk">2 + 3n = 5n?</button>
+      </div>
+
+      <div class="chat" id="chat"></div>
+
+      <div class="budimeter">
+        <span>Keyakinan Budi:</span>
+        <span class="pips" id="pips"><i class="pip"></i><i class="pip"></i><i class="pip"></i></span>
+        <span id="budistate">masih keras kepala</span>
+      </div>
+
+      <div class="row">
+        <textarea id="budiIn" placeholder="Tulis argumenmu untuk Budi…" style="flex:1;min-width:210px;min-height:64px"></textarea>
+      </div>
+      <div class="row">
+        <button class="act" id="budiSend">Kirim ke Budi</button>
+        <button class="act ghost small" id="budiHint">Aku butuh petunjuk</button>
+        <button class="act ghost small" id="budiReset">↺ Ulangi debat</button>
+      </div>
+
+      <details class="aicfg">
+        <summary>Mesin percakapan <span class="badge-ai off" id="aiBadge">MODE OFFLINE</span></summary>
+        <div class="body">
+          <p style="margin:0 0 8px;flex-basis:100%">
+            Secara bawaan Budi berjalan <b>sepenuhnya offline</b> memakai mesin aturan yang membaca argumenmu terhadap
+            taksonomi miskonsepsi. Tidak butuh internet, tidak butuh biaya, dan tidak pernah gagal saat demo.
+            Jika guru mengisi kunci API di bawah, Budi berganti ke model bahasa dan bisa berdebat lebih luwes —
+            dengan instruksi terkunci: <b>Budi tidak pernah boleh memberi jawaban akhir.</b>
+          </p>
+          <input type="text" id="apiKey" placeholder="Kunci API (opsional)" style="flex:1;min-width:190px">
+          <input type="text" id="apiModel" value="claude-sonnet-4-5" placeholder="nama model" style="width:190px">
+          <button class="act small" id="apiSave">Aktifkan</button>
+          <button class="act ghost small" id="apiClear">Matikan</button>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= POS 4 ================= -->
+  <section class="pos" id="p4">
+    <div class="poshead">
+      <div class="eyebrow">Pos 4 · Diagnostik</div>
+      <h2>Peta Miskonsepsi</h2>
+      <p>Setiap jawabanmu — benar maupun salah — dicocokkan dengan enam pola salah paham yang sudah didefinisikan.
+         Bukan skor, melainkan peta: apa yang sudah beres, apa yang masih perlu dikerjakan.</p>
+    </div>
+
+    <div class="mgrid" id="mgrid"></div>
+
+    <div class="card">
+      <h3>Perjalananmu</h3>
+      <p class="ctx">Perhatikan cara poin ini dihitung: <b>memperbaiki jawaban yang sempat keliru dibayar lebih
+        mahal daripada benar sejak awal.</b> Itu bukan kekeliruan sistem — memang itu yang ingin dihargai.</p>
+      <div class="kstat">
+        <div><b id="pjXp">0</b>jejak terkumpul</div>
+        <div><b id="pjLv">—</b>peringkat</div>
+        <div><b id="pjBadge">0/13</b>lencana</div>
+      </div>
+      <div class="badgegrid" id="badgeGrid"></div>
+    </div>
+
+    <div class="card">
+      <h3>Simpan pekerjaanmu untuk guru</h3>
+      <p class="ctx">Lembar kerja berisi <b>seluruh percobaanmu</b> — termasuk yang keliru — beserta umpan balik
+        yang kamu terima. Justru percobaan yang keliru itulah yang paling berguna bagi gurumu.</p>
+      <div class="idrow">
+        <input type="text" id="idNama" placeholder="Nama lengkap" style="min-width:190px">
+        <input type="text" id="idKelas" placeholder="Kelas" style="width:110px">
+      </div>
+      <div class="row">
+        <button class="act" id="btnPdf">Simpan sebagai PDF</button>
+        <span style="font-size:12.5px;color:var(--ink-soft)">Pada dialog cetak, pilih tujuan
+          <b>“Simpan sebagai PDF”</b>.</span>
+      </div>
+      <div class="fb" id="fb-pdf"></div>
+
+      <h3 style="margin-top:22px">Kirim kode ke gurumu <span class="tag">KODE JEJAK</span></h3>
+      <p class="ctx">Kode pendek ini merangkum <b>pola</b> pengerjaanmu — bukan nama, bukan jawaban, bukan
+        identitas apa pun. Kirimkan ke grup WhatsApp kelas supaya gurumu tahu apa yang perlu diulang besok.</p>
+      <div class="row"><button class="act ghost small" id="btnKode">Buat kode</button>
+        <button class="act ghost small" id="btnSalin">Salin</button></div>
+      <div class="kcode" id="kodeBox" style="display:none">—</div>
+      <div class="fb" id="fb-kode"></div>
+
+      <h3 style="margin-top:24px">Pindah ke perangkat lain</h3>
+      <p class="ctx">Ganti HP, atau pindah ke komputer lab? Buat <b>kode simpan</b>, catat atau kirim ke
+        dirimu sendiri, lalu tempel di perangkat baru. Kode ini membawa kemajuanmu — <b>bukan</b> riwayat
+        jawaban, jadi cetak Lembar Kerja PDF dulu kalau masih dibutuhkan.</p>
+      <div class="row">
+        <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
+        <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+      </div>
+      <div class="kcode" id="simpanBox" style="display:none;font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em">—</div>
+      <div class="row">
+        <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+        <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+      </div>
+      <div class="fb" id="fb-simpan"></div>
+    </div>
+
+    <div class="card">
+      <h3>Ringkasan siswa ini</h3>
+      <div id="teacherPanel" style="font-size:14px;line-height:1.75"></div>
+      <div class="row"><button class="act ghost small" id="resetAll">↺ Hapus semua jawaban</button></div>
+    </div>
+
+    <div class="card">
+      <h3 id="panelGuru">Panel Guru — peta satu kelas <span class="tag">KODE JEJAK</span></h3>
+      <p class="ctx">Salin <b>seluruh percakapan</b> grup WhatsApp kelas apa adanya, lalu tempel di bawah.
+        Panel menyaring sendiri kode yang sah dari teks yang berantakan. Tanpa server, tanpa akun,
+        tanpa satu pun nama siswa ikut terbaca.</p>
+      <textarea id="paste" placeholder="Tempel percakapan WhatsApp di sini…" style="min-height:104px"></textarea>
+      <div class="row">
+        <button class="act" id="btnBaca">Baca kode</button>
+        <button class="act ghost small" id="btnDemo">Isi contoh satu kelas</button>
+        <button class="act ghost small" id="btnKosong">Kosongkan</button>
+      </div>
+      <div class="fb" id="fb-kelas"></div>
+      <div class="row hide" id="jenisRow" style="margin-top:16px">
+        <button class="chip2" data-jenis="konsep" aria-pressed="true">Kode konsep</button>
+        <button class="chip2" data-jenis="latihan" aria-pressed="false">Kode latihan</button>
+      </div>
+      <p class="ctx" id="jenisKet" style="margin:2px 0 4px"></p>
+      <div id="kelasOut"></div>
+    </div>
+
+    <div class="note teal">
+      <b>Kenapa ini bukan sekadar "skor".</b> Media yang hanya menghitung benar–salah tidak bisa membedakan siswa yang
+      salah karena ceroboh dan siswa yang salah karena strukturnya belum terbentuk. Taksonomi M1–M6 memaksa
+      medianya menjawab pertanyaan yang benar: <i>salahnya jenis apa?</i>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <b>JEJAK ALJABAR · Modul 1 — Di dalam kelas</b> — draft media untuk KMPM 2026 · Muhammad Ghozian Kafi Ahsan<br>
+    Dikembangkan dari worksheet <i>Algebraic Modelling: Expressions &amp; Formulae</i> (Local Instructional Theory, kelas IX).
+    Konteks: pasar bandeng (Pos 1–2), papan mading dan kas kelas — benda yang tersedia di setiap sekolah.<br>
+    Modul 2 (<i>Pindai &amp; Ukur</i>) adalah berkas terpisah — simpan keduanya dalam <b>satu folder</b> agar tautannya berfungsi.
+  </footer>
+
+  <div class="toastwrap" id="toastWrap" aria-live="polite"></div>
+
+  <div id="report" class="rp" aria-hidden="true"></div>
+</div>
