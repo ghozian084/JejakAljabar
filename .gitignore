@@ -1,0 +1,6 @@
+# Kebergantungan pengembangan (playwright dipasang lokal untuk menjalankan uji)
+node_modules/
+package-lock.json
+
+# Tangkapan layar hasil sampingan uji
+shot-*.png
