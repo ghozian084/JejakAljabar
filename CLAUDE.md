@@ -49,6 +49,10 @@ Berkas yang disunting langsung (bukan hasil gabungan):
 Setelah menyunting `partA/partB/partC` atau `head3/tail3`, **selalu jalankan ulang cat**
 sebelum menjalankan uji.
 
+`npm run build` menjalankan kedua `cat` di atas, lalu menyalin kelima berkas media ke
+`public/` — direktori keluaran yang diminta Vercel. `public/` dibentuk ulang tiap build dan
+tidak dilacak git. Uji tetap membaca berkas di akar, bukan di `public/`.
+
 ---
 
 ## Menjalankan uji
