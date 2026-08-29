@@ -53,6 +53,10 @@ sebelum menjalankan uji.
 `public/` — direktori keluaran yang diminta Vercel. `public/` dibentuk ulang tiap build dan
 tidak dilacak git. Uji tetap membaca berkas di akar, bukan di `public/`.
 
+`vercel.json` mengulang perintah itu secara eksplisit (`buildCommand` + `outputDirectory`)
+karena pengaturan dasbor Vercel bisa menimpa autodeteksi `npm run build`. Kalau langkah
+build diubah, **ubah di kedua tempat**: `package.json` dan `vercel.json`.
+
 ---
 
 ## Menjalankan uji
