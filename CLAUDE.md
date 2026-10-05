@@ -64,12 +64,12 @@ build diubah, **ubah di kedua tempat**: `package.json` dan `vercel.json`.
 ```bash
 npm i -D playwright && npx playwright install chromium   # sekali saja
 for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
-         test-huruf.js test-menu.js test-tema.js; do
+         test-huruf.js test-menu.js test-tema.js test-kartu.js; do
   printf "%-19s " "$f"; node $f | grep "^GAGAL:"
 done
 ```
 
-Keadaan sekarang: **370 uji, 0 gagal.**
+Keadaan sekarang: **412 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
@@ -80,8 +80,9 @@ Keadaan sekarang: **370 uji, 0 gagal.**
 | `test-huruf.js` | Kebijakan huruf lintas modul | 24 |
 | `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
+| `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 42 |
 
-**Setiap perubahan wajib menjalankan ketujuhnya**, bukan hanya yang terkait. Sudah beberapa
+**Setiap perubahan wajib menjalankan kedelapannya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
 
 ---
@@ -91,11 +92,12 @@ kali perubahan di satu modul merusak modul lain.
 | Berkas | Isi |
 |---|---|
 | `index.html` | Menu utama. Membaca kemajuan keempat modul, **tidak pernah menulis** ke sana. |
-| `jejak-aljabar.html` | Modul 1 · Jejak Aljabar — 4 pos, Budi, Panel Guru, Lembar Kerja PDF, KODE JEJAK |
-| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur |
+| `jejak-aljabar.html` | Modul 1 · Jejak Aljabar — 4 pos, Budi, Panel Guru (KODE JEJAK + kartu lapangan), Lembar Kerja PDF |
+| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur, kartu hasil untuk guru |
 | `latihan.html` | Modul 3 · Jelajah Enam Rimba — 6 unit × 4 level, mekanik nyawa |
 | `ar-ekspresi.html` | Modul 4 · Bengkel Kartu — 8 misi dua arah, lembar kartu cetak |
 | `kodesimpan.js` | Cuplikan bersama: bit-packing → Crockford base32 + checksum |
+| `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
 | `tema-css.txt` / `tema-js.txt` | Cuplikan tema, **disalin** ke tiap berkas (bukan ditaut) |
 | `sapu-warna.py` / `pasang-tema.py` | Skrip sekali pakai untuk memasang sistem tema |
 | `makalah/` | Makalah lomba (docx-js). `isi.js` = naskah, `buat.js` = pembentuk Word |
@@ -134,6 +136,12 @@ DITERIMA. Di Modul 3 huruf berasal dari soal → ditolak, tetapi **tanpa memoton
 tanpa mencatat kode M**. Prinsipnya: media yang mendiagnosis harus lebih memilih diam
 daripada menuduh keliru.
 
+**Kartu lapangan membawa foto utuh — itu keputusan penulis, dengan sadar.** Foto tidak muat
+di KODE JEJAK, jadi datanya yang dititipkan ke dalam gambar: pita kotak 18 px berisi sandi
+KODE SIMPAN biasa, tahan pampatan JPEG WhatsApp. Siswa diingatkan memeriksa pratinjau
+(jangan ada wajah teman). Panel Guru **tidak pernah menyimpan** kartu — hanya di memori.
+Jejak di kartu bersifat **per pindaian** (`ST.jejak`), bukan kemajuan seumur `G`.
+
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang
 jarang dilatih di kelas.
@@ -168,6 +176,10 @@ jarang dilatih di kelas.
 8. Tautan `jejak-aljabar.html#panelGuru` dari menu utama mendarat di Pos 1 — Panel Guru ada
    di Pos 4 yang tersembunyi. Kini `bukaPanelDariHash()` menampilkan Pos 4 tanpa membuka
    kunci pos lain.
+9. `say()` di Modul 1 **mencatat setiap pesan ke `LOG`** — riwayat jawaban siswa yang
+   disimpan ke localStorage. Panel kartu lapangan versi pertama memakainya, sehingga pesan
+   untuk guru (lengkap dengan nama berkas foto WhatsApp) ikut tersimpan sebagai riwayat siswa.
+   Pesan untuk guru memakai `lapanganKata()`, yang tidak menyentuh penyimpanan.
 
 ---
 
@@ -177,3 +189,6 @@ jarang dilatih di kelas.
   dari simulasi, bukan lapangan.
 - Modul 2 belum punya Lembar Kerja PDF sendiri.
 - Visual 3D dari `im02.html` (rangka bambu, Joglo) belum dipindahkan.
+- **Makalah perlu diselaraskan dengan kartu lapangan.** `makalah/isi.js` menyatakan media
+  "tidak memindahkan data peserta didik ke luar perangkat"; kartu lapangan mengirim foto
+  lewat WhatsApp atas pilihan siswa. Klaim itu perlu dirumuskan ulang.

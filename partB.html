@@ -388,6 +388,24 @@
       <div id="kelasOut"></div>
     </div>
 
+    <div class="card">
+      <h3 id="panelLapangan">Panel Guru — kartu lapangan <span class="tag">MODUL 2</span></h3>
+      <p class="ctx">Siswa mengirim <b>kartu hasil</b> Modul 2 ke grup WhatsApp sebagai foto. Simpan gambarnya,
+        lalu seret ke kotak di bawah, pilih berkasnya, atau klik kotaknya dan tempel (Ctrl+V). Datanya dibaca dari
+        pita kotak hitam-putih di bawah kartu — tetap terbaca walau WhatsApp memampatkan fotonya.</p>
+      <p class="ctx">Foto siswa <b>tidak disimpan</b> di perangkat ini: begitu halaman ditutup, semuanya hilang.</p>
+      <div class="dropzone" id="kartuZona" tabindex="0" aria-label="Seret atau tempel kartu lapangan di sini">
+        <b>Seret kartu lapangan ke sini</b>atau klik kotak ini lalu tempel gambarnya
+      </div>
+      <input type="file" id="kartuBerkas" accept="image/*" multiple class="hide">
+      <div class="row">
+        <button class="act" id="btnKartuPilih">Pilih gambar…</button>
+        <button class="act ghost small" id="btnKartuKosong">Kosongkan</button>
+      </div>
+      <div class="fb" id="fb-lapangan"></div>
+      <div id="lapanganOut"></div>
+    </div>
+
     <div class="note teal">
       <b>Kenapa ini bukan sekadar "skor".</b> Media yang hanya menghitung benar–salah tidak bisa membedakan siswa yang
       salah karena ceroboh dan siswa yang salah karena strukturnya belum terbentuk. Taksonomi M1–M6 memaksa

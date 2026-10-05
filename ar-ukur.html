@@ -399,6 +399,22 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
     </div>
   </div>
 
+  <div class="card dim" id="cKirim">
+    <h2><span class="step">KIRIM</span> Kartu hasil untuk guru</h2>
+    <p class="ctx">Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera,
+      dan hasil ukurmu. Kirim ke grup WhatsApp kelas seperti foto biasa — gurumu membukanya di Panel Guru.</p>
+    <p class="ctx"><b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu
+      di dalamnya, pindai ulang dari sudut lain.</p>
+    <div class="row">
+      <button class="act" id="btnKartu">Buat kartu hasil</button>
+      <button class="act small hide" id="btnKartuBagi">Bagikan</button>
+      <button class="act ghost small hide" id="btnKartuUnduh">Unduh kartu</button>
+    </div>
+    <div class="fb" id="fb-kirim"></div>
+    <img id="kartuLihat" class="hide" alt="Pratinjau kartu hasil yang akan dikirim"
+      style="display:block;width:100%;max-width:360px;margin-top:12px;border:1.5px solid var(--line-strong);border-radius:8px">
+  </div>
+
   <div class="card">
     <h2>Bekal Ekspedisi</h2>
     <p class="ctx">Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang
@@ -457,7 +473,8 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
    ===================================================================== */
 const CV = document.getElementById("cv"), X = CV.getContext("2d", {willReadFrequently:true});
 const VID = document.getElementById("vid"), HUD = document.getElementById("hud");
-const ST = { img:null, quad:null, locked:false, ratio:null, skew:0, live:false, drag:-1 };
+const ST = { img:null, quad:null, locked:false, ratio:null, skew:0, live:false, drag:-1,
+             digeser:false, jejak:null, kartuFoto:null };
 
 /* =====================================================================
    LAPISAN EKSPEDISI
@@ -524,6 +541,122 @@ function BitBaca(teks, awalan){
     for(let i = 0; i < n; i++) v = v * 2 + (bits[pos++] || 0);
     return v;
   } };
+}
+
+/* =====================================================================
+   KARTU LAPANGAN — membawa jejak Modul 2 ke Panel Guru lewat gambar
+   Foto tidak muat di dalam KODE JEJAK, jadi arahnya dibalik: datanya yang
+   dititipkan ke dalam gambar. Di bawah kartu ada pita kotak hitam-putih
+   yang isinya sandi KODE SIMPAN biasa (BitTulis/BitBaca, checksum yang
+   sama), satu sel per bit.
+
+   Kenapa kotak besar, bukan metadata PNG: WhatsApp memampatkan foto ke
+   JPEG dan membuang metadata. Sel 18 px hitam pekat di atas putih tetap
+   terbaca walau gambarnya dipampatkan atau diperkecil separuh.
+
+   Cuplikan ini DISALIN ke ar-ukur.html (menulis) dan partC.html
+   (membaca), bukan ditaut. Uji memastikan ketiga salinan sama persis.
+   Membutuhkan BitTulis/BitBaca dari kodesimpan.js.
+   ===================================================================== */
+const KARTU = {
+  W:720, H:1040,                 // ukuran kartu; pembaca menolak rasio lain
+  SEL:18, KOL:33, BAR:4,         // kolom 0 = sel acuan, kolom 1–32 = data
+  PX:63, PY:924,                 // sudut kiri atas sel (0,0); bingkai berakhir di y 1032
+  AWALAN:"KL2", TANDA:167, VERSI:1
+};
+const KARTU_LANGKAH = ["cScan","cModel","cMeasure","cSub"];
+
+function kartuSandi(d){
+  const w = new BitTulis();
+  w.put(KARTU.TANDA, 8).put(KARTU.VERSI, 4).put(d.id, 20);
+  KARTU_LANGKAH.forEach(function(k){ w.put(d.selesai[k] ? 1 : 0, 1); });
+  w.put(Math.round(d.rasio * 100), 11).put(Math.round(d.miring * 100), 7);
+  w.put(Math.round(d.p * 10), 14).put(Math.round(d.l * 10), 14);
+  w.put(d.statusUkur, 2).put(d.ukurUlang, 4);
+  w.put(d.kDua, 3).put(d.kLuas, 3).put(d.kLain, 3);
+  w.put(d.digeser ? 1 : 0, 1).put(d.hari, 12);
+  // "KL2-XXXXX-…" → deretan simbol saja; awalan tidak ikut digambar
+  return w.selesai(KARTU.AWALAN).slice(KARTU.AWALAN.length).replace(/-/g, "");
+}
+function kartuBacaSandi(simbol){
+  const r = BitBaca(KARTU.AWALAN + simbol, KARTU.AWALAN);
+  if(!r) return null;
+  if(r.get(8) !== KARTU.TANDA) return null;
+  if(r.get(4) !== KARTU.VERSI) return "versi";
+  const d = { id:r.get(20), selesai:{} };
+  KARTU_LANGKAH.forEach(function(k){ d.selesai[k] = !!r.get(1); });
+  d.rasio = r.get(11) / 100; d.miring = r.get(7) / 100;
+  d.p = r.get(14) / 10; d.l = r.get(14) / 10;
+  d.statusUkur = r.get(2); d.ukurUlang = r.get(4);
+  d.kDua = r.get(3); d.kLuas = r.get(3); d.kLain = r.get(3);
+  d.digeser = !!r.get(1); d.hari = r.get(12);
+  return d;
+}
+
+/* Kolom acuan berselang hitam-putih: pembaca mengambil ambang dari sini,
+   bukan dari angka tetap, karena kecerahan JPEG hasil pampatan bergeser. */
+function kartuGambarPita(x, simbol){
+  const S = KARTU.SEL, lebar = KARTU.KOL * S, tinggi = KARTU.BAR * S;
+  x.fillStyle = "#000";
+  x.fillRect(KARTU.PX - 2*S, KARTU.PY - 2*S, lebar + 4*S, tinggi + 4*S);
+  x.fillStyle = "#fff";
+  x.fillRect(KARTU.PX - S, KARTU.PY - S, lebar + 2*S, tinggi + 2*S);
+  const bit = [];
+  for(let i = 0; i < simbol.length; i++){
+    const v = B32S.indexOf(simbol[i]);
+    for(let j = 4; j >= 0; j--) bit.push(Math.floor(v / Math.pow(2, j)) % 2);
+  }
+  x.fillStyle = "#000";
+  for(let b = 0; b < KARTU.BAR; b++){
+    if(b % 2 === 0) x.fillRect(KARTU.PX, KARTU.PY + b*S, S, S);
+    for(let k = 1; k < KARTU.KOL; k++){
+      const i = b * (KARTU.KOL - 1) + (k - 1);
+      if(bit[i]) x.fillRect(KARTU.PX + k*S, KARTU.PY + b*S, S, S);
+    }
+  }
+}
+
+/* sumber: Image/canvas apa pun. Hasil: {d} atau {alasan}. */
+function kartuBacaGambar(sumber){
+  const w = sumber.naturalWidth || sumber.width, h = sumber.naturalHeight || sumber.height;
+  if(!w || !h) return { alasan:"kosong" };
+  const rasioMinta = KARTU.W / KARTU.H;
+  if(Math.abs(w / h - rasioMinta) / rasioMinta > 0.03) return { alasan:"rasio" };
+  const c = document.createElement("canvas");
+  c.width = KARTU.W; c.height = KARTU.H;
+  const x = c.getContext("2d", {willReadFrequently:true});
+  x.drawImage(sumber, 0, 0, KARTU.W, KARTU.H);
+  const S = KARTU.SEL;
+  const piksel = x.getImageData(KARTU.PX, KARTU.PY, KARTU.KOL * S, KARTU.BAR * S);
+  // rata-rata kecerahan separuh tengah sel — tepi sel kabur karena pampatan
+  function terang(k, b){
+    let jml = 0, n = 0;
+    for(let yy = Math.round(S*.25); yy < Math.round(S*.75); yy++)
+      for(let xx = Math.round(S*.25); xx < Math.round(S*.75); xx++){
+        const o = ((b*S + yy) * piksel.width + (k*S + xx)) * 4;
+        jml += piksel.data[o]*.299 + piksel.data[o+1]*.587 + piksel.data[o+2]*.114; n++;
+      }
+    return jml / n;
+  }
+  let hitam = 0, putih = 0;
+  for(let b = 0; b < KARTU.BAR; b++){ if(b % 2 === 0) hitam += terang(0, b); else putih += terang(0, b); }
+  hitam /= KARTU.BAR / 2; putih /= KARTU.BAR / 2;
+  if(putih - hitam < 80) return { alasan:"kontras" };
+  const ambang = (hitam + putih) / 2, bit = [];
+  for(let b = 0; b < KARTU.BAR; b++)
+    for(let k = 1; k < KARTU.KOL; k++) bit.push(terang(k, b) < ambang ? 1 : 0);
+  let simbol = "";
+  for(let i = 0; i + 5 <= bit.length; i += 5){
+    let v = 0;
+    for(let j = 0; j < 5; j++) v = v * 2 + bit[i + j];
+    simbol += B32S[v];
+  }
+  /* Sandi 110 bit = 24 simbol (22 isi + 2 checksum); sisa sel kosong.
+     Panjangnya tetap, jadi bisa dipotong pasti tanpa penanda akhir. */
+  const d = kartuBacaSandi(simbol.slice(0, 24));
+  if(d === "versi") return { alasan:"versi" };
+  if(!d) return { alasan:"sandi" };
+  return { d:d };
 }
 
 const AWALAN_SIMPAN = "SMP2";
@@ -949,6 +1082,7 @@ CV.addEventListener("pointermove", e => {
   if(!ST.live){ if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height); overlay(); }
 });
 CV.addEventListener("pointerup", () => {
+  if(ST.drag >= 0) ST.digeser = true;
   if(ST.drag >= 0 && !G.pernahGeser){
     G.pernahGeser = true;
     grant("tangan"); addXp(8, "Kamu membetulkan sudutnya sendiri.", true);
@@ -979,6 +1113,7 @@ function resetFlow(){
   ["fb-det","fb-ukur","fb-k"].forEach(i => document.getElementById(i).className = "fb");
   document.getElementById("rt").style.display = "none";
   document.getElementById("btnLock").disabled = true;
+  ST.digeser = false;
 }
 document.getElementById("btnDetect").onclick = () => {
   if(!ST.img && !ST.live){ fb("det","hint","Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu."); return; }
@@ -1016,6 +1151,15 @@ document.getElementById("btnLock").onclick = () => {
   const sp = sidePairs(ST.quad);
   const long = Math.max(sp.pair1, sp.pair2), short = Math.min(sp.pair1, sp.pair2);
   ST.ratio = long / short; ST.skew = sp.skew;
+  /* Potret kanvas apa adanya — foto beserta garis p dan l yang dilihat
+     siswa saat mengunci. Kamera langsung tidak menyisakan ST.img, jadi
+     inilah satu-satunya salinan fotonya. */
+  ST.kartuFoto = document.createElement("canvas");
+  ST.kartuFoto.width = CV.width; ST.kartuFoto.height = CV.height;
+  ST.kartuFoto.getContext("2d").drawImage(CV, 0, 0);
+  ST.jejak = { id:Math.floor(Math.random() * 1048576), statusUkur:0, p:0, l:0, ukurUlang:0,
+               kDua:0, kLuas:0, kLain:0, kBenar:false };
+  kartuBasi(); undim("cKirim");
 
   document.getElementById("saw").innerHTML =
     "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. " +
@@ -1054,11 +1198,13 @@ document.getElementById("btnCheck").onclick = () => {
       "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> " +
       "Tanpa salah satunya, keliling papan ini tidak bisa dihitung.");
     ST.p = p; ST.l = l;
+    if(ST.jejak){ ST.jejak.statusUkur = 1; ST.jejak.p = p; ST.jejak.l = l; kartuBasi(); }
     undim("cSub");
     if(G.gagalUkur > 0) grant("teliti");
     stepDone("cMeasure", G.gagalUkur > 0, "meteran");
   }else{
     G.gagalUkur++;
+    if(ST.jejak){ ST.jejak.statusUkur = 2; ST.jejak.p = p; ST.jejak.l = l; ST.jejak.ukurUlang++; kartuBasi(); }
     fb("ukur","bad","Belum cocok. Menurut gambar, sisi panjang kira-kira <b>" + ST.ratio.toFixed(2) +
       "×</b> sisi lebar, tapi hasil ukuranmu memberi <b>" + rUkur.toFixed(2) + "×</b>.",
       "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; " +
@@ -1072,18 +1218,148 @@ document.getElementById("btnK").onclick = () => {
   const want = 2*ST.p + 2*ST.l;
   const got = parseFloat(document.getElementById("inK").value);
   if(!(got > 0)){ fb("k","hint","Isi dengan sebuah angka."); return; }
+  kartuBasi();
   if(Math.abs(got - want) < 0.6){
     fb("k","ok","Benar — <b>" + want.toFixed(1) + " cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; " +
       "yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.");
+      if(ST.jejak) ST.jejak.kBenar = true;
       stepDone("cSub", G.gagalKeliling > 0, "keliling");
   }else if(G.gagalKeliling++, Math.abs(got - (ST.p + ST.l)) < 0.6){
+    if(ST.jejak) ST.jejak.kDua++;
     fb("k","bad","Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.",
       "Terdeteksi M2 — sebagian struktur bangun terlewat.");
   }else if(Math.abs(got - ST.p*ST.l) < 0.6){
+    if(ST.jejak) ST.jejak.kLuas++;
     fb("k","bad","Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.");
   }else{
+    if(ST.jejak) ST.jejak.kLain++;
     fb("k","bad","Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.");
   }
+};
+
+/* ---------- KARTU HASIL untuk Panel Guru ----------
+   Satu gambar PNG: foto + garis bangun, angka yang terbaca manusia, dan
+   pita data yang terbaca Panel Guru. Warnanya tetap, tidak ikut tema —
+   sama seperti lembar cetak: pita harus hitam pekat di atas putih.
+   Jejaknya per pindaian (ST.jejak), bukan kemajuan seumur G: guru perlu
+   tahu apa yang terjadi pada papan DI FOTO ITU. */
+let kartuURL = null, kartuBerkas = null;
+const BULAN_ID = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
+                  "Agustus","September","Oktober","November","Desember"];
+let bisaBagi = false;
+try{
+  bisaBagi = !!(navigator.canShare &&
+    navigator.canShare({ files:[new File([""], "uji.png", {type:"image/png"})] }));
+}catch(e){}
+
+function hapusKartu(){
+  if(kartuURL){ try{ URL.revokeObjectURL(kartuURL); }catch(e){} }
+  kartuURL = null; kartuBerkas = null;
+  ["kartuLihat","btnKartuBagi","btnKartuUnduh"].forEach(function(i){
+    const el = document.getElementById(i); if(el) el.classList.add("hide");
+  });
+}
+/* Jejak berubah sesudah kartu dibuat → kartu lama tidak lagi menceritakan
+   keadaan sekarang. Jangan biarkan siswa mengirim versi basi tanpa tahu. */
+function kartuBasi(){
+  if(!kartuURL) return;
+  hapusKartu();
+  fb("kirim","hint","Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim.");
+}
+function kartuData(){
+  const j = ST.jejak;
+  return { id:j.id,
+    selesai:{ cScan:true, cModel:true, cMeasure:j.statusUkur === 1, cSub:j.kBenar },
+    rasio:ST.ratio, miring:ST.skew, p:j.p, l:j.l, statusUkur:j.statusUkur, ukurUlang:j.ukurUlang,
+    kDua:j.kDua, kLuas:j.kLuas, kLain:j.kLain, digeser:ST.digeser,
+    hari:Math.max(0, Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 864e5)) };
+}
+function angka(v, n){ return String(+(+v).toFixed(n)); }    // 57.0 → "57"
+function gambarKartu(){
+  const d = kartuData(), W = KARTU.W;
+  const HURUF = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+  const c = document.createElement("canvas"); c.width = W; c.height = KARTU.H;
+  const x = c.getContext("2d");
+  x.fillStyle = "#fffdf8"; x.fillRect(0, 0, W, KARTU.H);
+
+  x.fillStyle = "#1f2a2e"; x.fillRect(0, 0, W, 64);
+  x.textBaseline = "middle";
+  x.textAlign = "left"; x.fillStyle = "#ffffff"; x.font = "bold 22px " + HURUF;
+  x.fillText("JEJAK ALJABAR · Kartu Lapangan", 20, 33);
+  const t = new Date(2026, 0, 1 + d.hari);
+  x.textAlign = "right"; x.fillStyle = "#f2c27a"; x.font = "bold 15px " + HURUF;
+  x.fillText("MODUL 2 · " + t.getDate() + " " + BULAN_ID[t.getMonth()] + " " + t.getFullYear(), W - 20, 33);
+
+  const BX = 16, BY = 80, BW = W - 32, BH = 516, f = ST.kartuFoto;
+  x.fillStyle = "#26302f"; x.fillRect(BX, BY, BW, BH);
+  const sk = Math.min(BW / f.width, BH / f.height), fw = f.width * sk, fh = f.height * sk;
+  x.drawImage(f, BX + (BW - fw) / 2, BY + (BH - fh) / 2, fw, fh);
+
+  // Setiap status memakai lambang + kata, tidak pernah warna saja.
+  const rUkur = d.statusUkur ? Math.max(d.p, d.l) / Math.min(d.p, d.l) : 0;
+  const salahK = [];
+  if(d.kDua)  salahK.push(d.kDua + "× hanya dua sisi (M2)");
+  if(d.kLuas) salahK.push(d.kLuas + "× menghitung luas");
+  if(d.kLain) salahK.push(d.kLain + "× lainnya");
+  const baris = [
+    ["Dilihat kamera", "sisi panjang = " + angka(d.rasio, 2) + " × sisi pendek" +
+      (d.miring > 0.25 ? " · foto menyerong " + Math.round(d.miring * 100) + "%" : "")],
+    ["Diukur siswa", d.statusUkur === 0 ? "— belum mengukur" :
+      "p = " + angka(d.p, 1) + " cm, l = " + angka(d.l, 1) + " cm (" + angka(rUkur, 2) + " ×) " +
+      (d.statusUkur === 1 ? "✓ cocok" : "✗ belum cocok")],
+    ["Mengukur ulang", d.ukurUlang + " kali"],
+    ["Keliling", d.selesai.cSub ? "✓ benar · 2p + 2l = " + angka(2*d.p + 2*d.l, 1) + " cm"
+      : (salahK.length ? "✗ belum benar" : "— belum dikerjakan")],
+    ["Kekeliruan keliling", salahK.length ? salahK.join(" · ") : "tidak ada"],
+    ["Sudut papan", d.digeser ? "dibetulkan sendiri dengan jari" : "diterima dari deteksi kamera"]
+  ];
+  let y = 628;
+  baris.forEach(function(b){
+    x.textAlign = "left";
+    x.fillStyle = "#5b6668"; x.font = "15px " + HURUF; x.fillText(b[0], 24, y);
+    x.fillStyle = "#1f2a2e"; x.font = "bold 18px " + HURUF; x.fillText(b[1], 196, y, W - 196 - 20);
+    y += 40;
+  });
+  x.textAlign = "center"; x.fillStyle = "#5b6668"; x.font = "13px " + HURUF;
+  x.fillText("Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong",
+             W / 2, KARTU.PY - 2 * KARTU.SEL - 16);
+  kartuGambarPita(x, kartuSandi(d));
+  return c;
+}
+
+document.getElementById("btnKartu").onclick = () => {
+  if(!ST.jejak || !ST.kartuFoto){
+    fb("kirim","hint","Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2.");
+    return;
+  }
+  gambarKartu().toBlob(function(blob){
+    if(!blob){ fb("kirim","bad","Peramban ini tidak bisa membuat gambar kartunya."); return; }
+    hapusKartu();
+    const nama = "kartu-lapangan-" + ST.jejak.id.toString(36) + ".png";
+    kartuURL = URL.createObjectURL(blob);
+    try{ kartuBerkas = new File([blob], nama, {type:"image/png"}); }catch(e){ kartuBerkas = null; }
+    const lihat = document.getElementById("kartuLihat");
+    lihat.src = kartuURL; lihat.classList.remove("hide");
+    document.getElementById("btnKartuUnduh").classList.remove("hide");
+    document.getElementById("btnKartuUnduh").dataset.nama = nama;
+    if(bisaBagi && kartuBerkas) document.getElementById("btnKartuBagi").classList.remove("hide");
+    fb("kirim","ok","Kartu dibuat. Periksa fotonya di pratinjau, lalu " +
+      (bisaBagi ? "tekan <b>Bagikan</b> dan pilih WhatsApp." : "unduh dan kirim ke grup WhatsApp kelas sebagai foto."),
+      "Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp.");
+  }, "image/png");
+};
+document.getElementById("btnKartuUnduh").onclick = function(){
+  if(!kartuURL) return;
+  const a = document.createElement("a");
+  a.href = kartuURL; a.download = this.dataset.nama || "kartu-lapangan.png";
+  document.body.appendChild(a); a.click(); a.remove();
+};
+document.getElementById("btnKartuBagi").onclick = () => {
+  if(!kartuBerkas) return;
+  navigator.share({ files:[kartuBerkas], title:"Kartu Lapangan — Jejak Aljabar" }).catch(function(e){
+    if(e && e.name === "AbortError") return;           // siswa membatalkan sendiri
+    fb("kirim","hint","Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.");
+  });
 };
 
 /* dipakai oleh berkas pengujian */
@@ -1126,6 +1402,7 @@ window.__snap = function(){ return JSON.stringify({xp:G.xp, b:Object.keys(G.badg
   d:Object.keys(G.done).sort(), gu:G.gagalUkur, gk:G.gagalKeliling, pg:G.pernahGeser}); };
 window.__kosongkan = function(){ G.xp=0; G.badges={}; G.done={}; G.gagalUkur=0; G.gagalKeliling=0; G.pernahGeser=false; };
 window.__ks = {buat:buatKodeSimpan, pakai:pakaiKodeSimpan};
+window.__kartu = {gambar:gambarKartu, data:kartuData, baca:kartuBacaGambar};
 window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PULIH, levelName:levelName};
 </script>
 <script>
