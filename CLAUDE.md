@@ -69,18 +69,18 @@ for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
 done
 ```
 
-Keadaan sekarang: **412 uji, 0 gagal.**
+Keadaan sekarang: **430 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
 | `test.js` | Modul 1 | 111 |
-| `test-ar.js` | Modul 2 | 32 |
+| `test-ar.js` | Modul 2 (termasuk penghitung waktu) | 43 |
 | `test-latihan.js` | Modul 3 | 47 |
 | `test-ekspresi.js` | Modul 4 | 53 |
 | `test-huruf.js` | Kebijakan huruf lintas modul | 24 |
 | `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
-| `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 42 |
+| `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 49 |
 
 **Setiap perubahan wajib menjalankan kedelapannya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
@@ -93,11 +93,11 @@ kali perubahan di satu modul merusak modul lain.
 |---|---|
 | `index.html` | Menu utama. Membaca kemajuan keempat modul, **tidak pernah menulis** ke sana. |
 | `jejak-aljabar.html` | Modul 1 · Jejak Aljabar — 4 pos, Budi, Panel Guru (KODE JEJAK + kartu lapangan), Lembar Kerja PDF |
-| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur, kartu hasil untuk guru |
+| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur, penghitung 20 menit, kartu hasil untuk guru |
 | `latihan.html` | Modul 3 · Jelajah Enam Rimba — 6 unit × 4 level, mekanik nyawa |
 | `ar-ekspresi.html` | Modul 4 · Bengkel Kartu — 8 misi dua arah, lembar kartu cetak |
 | `kodesimpan.js` | Cuplikan bersama: bit-packing → Crockford base32 + checksum |
-| `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
+| `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2 (format versi 2, **pita sudah penuh** — 125 dari 128 sel). **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
 | `tema-css.txt` / `tema-js.txt` | Cuplikan tema, **disalin** ke tiap berkas (bukan ditaut) |
 | `sapu-warna.py` / `pasang-tema.py` | Skrip sekali pakai untuk memasang sistem tema |
 | `makalah/` | Makalah lomba (docx-js). `isi.js` = naskah, `buat.js` = pembentuk Word |
@@ -141,6 +141,12 @@ di KODE JEJAK, jadi datanya yang dititipkan ke dalam gambar: pita kotak 18 px be
 KODE SIMPAN biasa, tahan pampatan JPEG WhatsApp. Siswa diingatkan memeriksa pratinjau
 (jangan ada wajah teman). Panel Guru **tidak pernah menyimpan** kartu — hanya di memori.
 Jejak di kartu bersifat **per pindaian** (`ST.jejak`), bukan kemajuan seumur `G`.
+
+**Penghitung 20 menit Modul 2 adalah pengingat, bukan batas.** Saat habis tidak ada langkah yang
+dikunci: batas yang memotong pengukuran mendorong siswa menebak angka, padahal siswa yang
+memberi besaran. Dimulai dengan tombol (aba-aba guru), diukur dari jam dinding agar tahan
+muat ulang, dilupakan setelah 3 jam. Menitnya ikut di kartu lapangan; batasnya satu angka,
+`KARTU.BATAS_MENIT`, yang dipakai Modul 2 dan Panel Guru bersama.
 
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang

@@ -233,6 +233,15 @@ header.top .in{max-width:760px;margin:0 auto;padding:11px 16px;display:flex;alig
 .xpchip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:5px 12px;
   border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);white-space:nowrap}
 .xpchip b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tmchip{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12px;font-weight:600;padding:5px 12px;
+  border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);white-space:nowrap}
+button.tmchip{cursor:pointer;border-color:var(--ink);color:var(--ink)}
+.tmchip b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tmchip.akhir{background:var(--amber-bg);color:var(--amber-ink);border-color:var(--amber-soft)}
+.tmchip.akhir b{color:var(--amber-ink)}
+.tmchip.habis{background:var(--clay-bg);color:var(--clay-ink);border-color:var(--clay-line)}
+.tmchip.habis b{color:var(--clay-ink)}
+.toast.waktu .medal{background:var(--amber)}
 .xpchip .lv{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--amber)}
 .trail{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:20px 0 8px;padding-top:4px}
 .trail .rail,.trail .railfill{position:absolute;top:32px;height:4px;border-radius:3px}
@@ -295,6 +304,9 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
     <span class="temaWrap noprint" id="temaWrap"></span>
     <a class="backlink" href="jejak-aljabar.html">← Modul 1 · Kelas</a>
     <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Pemula Lapangan</span><b id="xpVal">0</b> jejak</span>
+    <button class="tmchip" id="btnTimer" type="button"><span aria-hidden="true">⏱</span> Mulai 20 menit</button>
+    <span class="tmchip hide" id="tmChip" role="timer"><span aria-hidden="true" id="tmIkon">⏱</span>
+      <span id="tmLabel">sisa</span> <b id="tmAngka">20:00</b></span>
   </div>
 </header>
 <div class="wrap">
@@ -557,12 +569,18 @@ function BitBaca(teks, awalan){
    Cuplikan ini DISALIN ke ar-ukur.html (menulis) dan partC.html
    (membaca), bukan ditaut. Uji memastikan ketiga salinan sama persis.
    Membutuhkan BitTulis/BitBaca dari kodesimpan.js.
+
+   Versi 2 menambah 5 bit waktu kerja. Isinya kini 115 bit = 23 simbol
+   + 2 checksum = 25 simbol = 125 dari 128 sel. PITA SUDAH PENUH: kolom
+   baru berarti menambah baris dan menggeser tata letak kartu.
    ===================================================================== */
 const KARTU = {
   W:720, H:1040,                 // ukuran kartu; pembaca menolak rasio lain
   SEL:18, KOL:33, BAR:4,         // kolom 0 = sel acuan, kolom 1–32 = data
   PX:63, PY:924,                 // sudut kiri atas sel (0,0); bingkai berakhir di y 1032
-  AWALAN:"KL2", TANDA:167, VERSI:1
+  AWALAN:"KL2", TANDA:167, VERSI:2,
+  SIMBOL:{ 1:24, 2:25 },         // panjang sandi per versi, termasuk checksum
+  BATAS_MENIT:20                 // waktu kerja lapangan; Modul 2 dan Panel Guru sepakat di sini
 };
 const KARTU_LANGKAH = ["cScan","cModel","cMeasure","cSub"];
 
@@ -575,6 +593,8 @@ function kartuSandi(d){
   w.put(d.statusUkur, 2).put(d.ukurUlang, 4);
   w.put(d.kDua, 3).put(d.kLuas, 3).put(d.kLain, 3);
   w.put(d.digeser ? 1 : 0, 1).put(d.hari, 12);
+  // waktu: 0 = penghitung tidak dipakai; 1–31 = menit + 1 (31 berarti 30 menit atau lebih)
+  w.put(d.waktu === null || d.waktu === undefined ? 0 : Math.min(31, d.waktu + 1), 5);
   // "KL2-XXXXX-…" → deretan simbol saja; awalan tidak ikut digambar
   return w.selesai(KARTU.AWALAN).slice(KARTU.AWALAN.length).replace(/-/g, "");
 }
@@ -582,7 +602,12 @@ function kartuBacaSandi(simbol){
   const r = BitBaca(KARTU.AWALAN + simbol, KARTU.AWALAN);
   if(!r) return null;
   if(r.get(8) !== KARTU.TANDA) return null;
-  if(r.get(4) !== KARTU.VERSI) return "versi";
+  const versi = r.get(4);
+  /* Versi yang terbaca harus cocok dengan panjang potongannya. Tanpa ini,
+     kartu v2 yang dipotong ke panjang v1 bisa lolos checksum secara
+     kebetulan (1 dari 1024) lalu terbaca dengan bit waktu yang hilang. */
+  if(KARTU.SIMBOL[versi] !== simbol.length) return null;
+  if(versi !== KARTU.VERSI) return "versi";
   const d = { id:r.get(20), selesai:{} };
   KARTU_LANGKAH.forEach(function(k){ d.selesai[k] = !!r.get(1); });
   d.rasio = r.get(11) / 100; d.miring = r.get(7) / 100;
@@ -590,6 +615,7 @@ function kartuBacaSandi(simbol){
   d.statusUkur = r.get(2); d.ukurUlang = r.get(4);
   d.kDua = r.get(3); d.kLuas = r.get(3); d.kLain = r.get(3);
   d.digeser = !!r.get(1); d.hari = r.get(12);
+  const t = r.get(5); d.waktu = t === 0 ? null : t - 1;
   return d;
 }
 
@@ -651,12 +677,17 @@ function kartuBacaGambar(sumber){
     for(let j = 0; j < 5; j++) v = v * 2 + bit[i + j];
     simbol += B32S[v];
   }
-  /* Sandi 110 bit = 24 simbol (22 isi + 2 checksum); sisa sel kosong.
-     Panjangnya tetap, jadi bisa dipotong pasti tanpa penanda akhir. */
-  const d = kartuBacaSandi(simbol.slice(0, 24));
-  if(d === "versi") return { alasan:"versi" };
-  if(!d) return { alasan:"sandi" };
-  return { d:d };
+  /* Panjang sandi tetap per versi, jadi bisa dipotong pasti tanpa penanda
+     akhir. Panjang versi lama ikut dicoba: tanpa itu checksum kartu lama
+     gagal dan guru diberi tahu "pita rusak", padahal kartunya utuh —
+     hanya dibuat oleh versi media sebelumnya. */
+  let versiLain = false;
+  for(const v in KARTU.SIMBOL){
+    const d = kartuBacaSandi(simbol.slice(0, KARTU.SIMBOL[v]));
+    if(d === "versi") versiLain = true;
+    else if(d) return { d:d };
+  }
+  return { alasan: versiLain ? "versi" : "sandi" };
 }
 
 const AWALAN_SIMPAN = "SMP2";
@@ -687,6 +718,11 @@ function pakaiKodeSimpan(teks){
    bisa melempar SecurityError di Safari mode private atau bila penyimpanan
    situs diblokir. Kalau gagal, modul tetap jalan penuh — tanpa ingatan. */
 const SIMPAN_KEY = "jejak.modul2.v1";
+/* Waktu kerja lapangan ikut disimpan: HP siswa sering memuat ulang halaman
+   ketika mereka pindah ke kamera atau WhatsApp, dan penghitungnya tidak
+   boleh mulai dari nol lagi. */
+const TM = { mulai:null, diingatkan:false, habisDiumumkan:false };
+const TIMER_BASI_MS = 3 * 3600000;   // lebih tua dari satu sesi pelajaran → dilupakan
 let simpanAktif = (function(){
   try{ localStorage.setItem("__uji","1"); localStorage.removeItem("__uji"); return true; }
   catch(e){ return false; }
@@ -694,7 +730,7 @@ let simpanAktif = (function(){
 function simpan(){
   if(!simpanAktif) return;
   try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, xp:G.xp, badges:G.badges, done:G.done,
-    gagalUkur:G.gagalUkur, gagalKeliling:G.gagalKeliling, pernahGeser:G.pernahGeser })); }
+    gagalUkur:G.gagalUkur, gagalKeliling:G.gagalKeliling, pernahGeser:G.pernahGeser, mulai:TM.mulai })); }
   catch(e){ simpanAktif = false; }
 }
 function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
@@ -706,6 +742,8 @@ function pulihkan(){
   G.xp = d.xp || 0; G.badges = d.badges || {}; G.done = d.done || {};
   G.gagalUkur = d.gagalUkur || 0; G.gagalKeliling = d.gagalKeliling || 0;
   G.pernahGeser = !!d.pernahGeser;
+  const umur = Date.now() - d.mulai;
+  if(typeof d.mulai === "number" && umur >= 0 && umur < TIMER_BASI_MS) TM.mulai = d.mulai;
   const bar = document.getElementById("restoreBar");
   if(bar){
     const n = STEPS.filter(k => G.done[k]).length;
@@ -1272,6 +1310,7 @@ function kartuData(){
     selesai:{ cScan:true, cModel:true, cMeasure:j.statusUkur === 1, cSub:j.kBenar },
     rasio:ST.ratio, miring:ST.skew, p:j.p, l:j.l, statusUkur:j.statusUkur, ukurUlang:j.ukurUlang,
     kDua:j.kDua, kLuas:j.kLuas, kLain:j.kLain, digeser:ST.digeser,
+    waktu:TM.mulai === null ? null : Math.max(0, Math.floor((Date.now() - TM.mulai) / 60000)),
     hari:Math.max(0, Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 864e5)) };
 }
 function angka(v, n){ return String(+(+v).toFixed(n)); }    // 57.0 → "57"
@@ -1311,14 +1350,15 @@ function gambarKartu(){
     ["Keliling", d.selesai.cSub ? "✓ benar · 2p + 2l = " + angka(2*d.p + 2*d.l, 1) + " cm"
       : (salahK.length ? "✗ belum benar" : "— belum dikerjakan")],
     ["Kekeliruan keliling", salahK.length ? salahK.join(" · ") : "tidak ada"],
-    ["Sudut papan", d.digeser ? "dibetulkan sendiri dengan jari" : "diterima dari deteksi kamera"]
+    ["Sudut papan", d.digeser ? "dibetulkan sendiri dengan jari" : "diterima dari deteksi kamera"],
+    ["Waktu kerja", teksWaktuKartu(d.waktu)]
   ];
-  let y = 628;
+  let y = 624;
   baris.forEach(function(b){
     x.textAlign = "left";
     x.fillStyle = "#5b6668"; x.font = "15px " + HURUF; x.fillText(b[0], 24, y);
     x.fillStyle = "#1f2a2e"; x.font = "bold 18px " + HURUF; x.fillText(b[1], 196, y, W - 196 - 20);
-    y += 40;
+    y += 36;
   });
   x.textAlign = "center"; x.fillStyle = "#5b6668"; x.font = "13px " + HURUF;
   x.fillText("Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong",
@@ -1362,9 +1402,61 @@ document.getElementById("btnKartuBagi").onclick = () => {
   });
 };
 
+/* ---------- WAKTU KERJA LAPANGAN ----------
+   Pengingat, bukan batas. Saat habis tidak ada yang dikunci: siswa yang
+   sedang mengukur di depan papan harus boleh menyelesaikan ukurannya.
+   Batas yang memotong pengukuran mendorong siswa menebak angka — padahal
+   "siswa memberi besaran" adalah inti modul ini.
+   Waktu diukur dari jam dinding (Date.now), bukan dengan menghitung detik:
+   HP menghentikan setInterval di latar belakang ketika siswa membuka kamera
+   atau WhatsApp, tetapi jam dindingnya tetap berjalan. */
+const BATAS_MS = KARTU.BATAS_MENIT * 60000;
+function jamMenit(detik){
+  return String(Math.floor(detik / 60)).padStart(2, "0") + ":" + String(detik % 60).padStart(2, "0");
+}
+function teksWaktuKartu(m){
+  if(m === null) return "— penghitung waktu tidak dipakai";
+  const lama = m >= 30 ? "30 menit atau lebih" : m + " menit";
+  return m < KARTU.BATAS_MENIT ? "✓ " + lama + ", dalam batas " + KARTU.BATAS_MENIT
+                               : lama + ", lewat batas " + KARTU.BATAS_MENIT + " menit";
+}
+function renderTimer(){
+  const btn = document.getElementById("btnTimer"), chip = document.getElementById("tmChip");
+  if(!btn || !chip) return;
+  if(TM.mulai === null){ btn.classList.remove("hide"); chip.classList.add("hide"); return; }
+  btn.classList.add("hide"); chip.classList.remove("hide");
+  const sisa = BATAS_MS - (Date.now() - TM.mulai);
+  const habis = sisa <= 0, akhir = !habis && sisa <= 5 * 60000;
+  chip.classList.toggle("akhir", akhir);
+  chip.classList.toggle("habis", habis);
+  // Status selalu berkata, tidak hanya berganti warna.
+  document.getElementById("tmIkon").textContent = habis ? "⏰" : "⏱";
+  document.getElementById("tmLabel").textContent = habis ? "Waktu habis · lewat" : "sisa";
+  document.getElementById("tmAngka").textContent =
+    habis ? jamMenit(Math.floor(-sisa / 1000)) : jamMenit(Math.ceil(sisa / 1000));
+  if(habis && !TM.habisDiumumkan){
+    TM.habisDiumumkan = TM.diingatkan = true;
+    toast("waktu", "Waktu " + KARTU.BATAS_MENIT + " menit habis",
+      "Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu.", "⏰");
+  }else if(akhir && !TM.diingatkan){
+    TM.diingatkan = true;
+    toast("waktu", "5 menit lagi", "Mulai siapkan kartu hasilmu untuk guru.", "⏱");
+  }
+}
+document.getElementById("btnTimer").onclick = () => {
+  if(TM.mulai !== null) return;
+  TM.mulai = Date.now();
+  simpan(); renderTimer();
+  toast("waktu", "Waktu mulai berjalan", KARTU.BATAS_MENIT + " menit untuk memindai, mengukur, dan mengirim kartu. " +
+    "Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.", "⏱");
+};
+setInterval(renderTimer, 1000);
+document.addEventListener("visibilitychange", renderTimer);
+
 /* dipakai oleh berkas pengujian */
 pulihkan();          // harus mendahului render pertama
 renderGame();
+renderTimer();
 document.getElementById("btnMulaiBaru").addEventListener("click", function(){ hapusSimpanan(); location.reload(); });
 document.getElementById("btnBuatSimpan").addEventListener("click", function(){
   const box = document.getElementById("simpanBox");
@@ -1403,6 +1495,7 @@ window.__snap = function(){ return JSON.stringify({xp:G.xp, b:Object.keys(G.badg
 window.__kosongkan = function(){ G.xp=0; G.badges={}; G.done={}; G.gagalUkur=0; G.gagalKeliling=0; G.pernahGeser=false; };
 window.__ks = {buat:buatKodeSimpan, pakai:pakaiKodeSimpan};
 window.__kartu = {gambar:gambarKartu, data:kartuData, baca:kartuBacaGambar};
+window.__waktu = {TM:TM, render:renderTimer};
 window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PULIH, levelName:levelName};
 </script>
 <script>

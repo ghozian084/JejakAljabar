@@ -176,6 +176,64 @@ const BASE = "file://" + __dirname + "/";
   });
   ks.forEach(([n, ok, x]) => rec('simpan: ' + n, ok, x));
 
+  // ---- penghitung waktu 20 menit: pengingat, bukan batas ----
+  // Jam palsu Playwright: 20 menit diuji tanpa menunggu 20 menit sungguhan.
+  const ctxW = await browser.newContext({ viewport: { width: 820, height: 1000 } });
+  const w = await ctxW.newPage();
+  w.on('pageerror', e => errs.push('WAKTU PAGEERROR: ' + e.message));
+  await w.clock.install({ time: new Date('2026-10-05T08:00:00+07:00') });
+  await w.goto(BASE + 'ar-ukur.html'); await w.waitForTimeout(300);
+  const cip = async () => (await w.textContent('#tmChip')).replace(/\s+/g, ' ').trim();
+  rec('waktu: sebelum mulai, tombol "Mulai 20 menit" tampil dan penghitung tersembunyi',
+      await w.isVisible('#btnTimer') && !(await w.isVisible('#tmChip')) &&
+      (await w.textContent('#btnTimer')).includes('Mulai 20 menit'));
+  rec('waktu: belum ada waktu tercatat sebelum tombol ditekan', await w.evaluate(() => window.__waktu.TM.mulai === null));
+  await w.click('#btnTimer'); await w.clock.runFor(500);
+  const mulai = await w.evaluate(() => window.__waktu.TM.mulai);
+  rec('waktu: setelah Mulai, penghitung tampil 20:00 dan tombolnya hilang',
+      (await cip()).includes('sisa 20:00') && !(await w.isVisible('#btnTimer')), await cip());
+  await w.evaluate(() => document.getElementById('btnTimer').click());
+  rec('waktu: menekan Mulai lagi tidak mengulang penghitung', await w.evaluate(m => window.__waktu.TM.mulai === m, mulai));
+  await w.clock.runFor('15:03');   // jauh dari detik peralihan: angkanya dibulatkan ke atas
+  rec('waktu: lima menit terakhir diberi peringatan berkata, bukan warna saja',
+      (await w.getAttribute('#tmChip', 'class')).includes('akhir') && (await cip()).includes('sisa 04:5') &&
+      (await w.textContent('#toastWrap')).includes('5 menit lagi'), await cip());
+  await w.clock.runFor('07:12');
+  rec('waktu: saat habis tertulis "Waktu habis" dan berapa lama lewatnya',
+      (await w.getAttribute('#tmChip', 'class')).includes('habis') && (await cip()).includes('Waktu habis · lewat 02:1'), await cip());
+  // pengingat, bukan batas: langkah ukur tetap bisa diselesaikan
+  await w.click('#btnSim'); await w.clock.runFor(200); await w.click('#btnDetect'); await w.clock.runFor(200);
+  await w.click('#btnLock'); await w.clock.runFor(200);
+  const rW = await w.evaluate(() => window.__ar.ST.ratio);
+  await w.fill('#inP', String(+(50 * rW).toFixed(1))); await w.fill('#inL', '50'); await w.click('#btnCheck');
+  rec('waktu: setelah habis, siswa tetap boleh menyelesaikan ukurannya',
+      (await w.textContent('#fb-ukur')).startsWith('Cocok') && !(await w.$eval('#cSub', e => e.classList.contains('dim'))));
+  await w.reload(); await w.waitForTimeout(300);
+  rec('waktu: muat ulang halaman tidak mengulang penghitung dari nol',
+      await w.evaluate(m => window.__waktu.TM.mulai === m, mulai) && (await cip()).includes('Waktu habis'), await cip());
+  // tiga jam kemudian: sesi pelajaran sudah lewat, penghitung lama dilupakan
+  await w.clock.runFor('03:00:00'); await w.reload(); await w.waitForTimeout(300);
+  rec('waktu: penghitung yang lebih tua dari 3 jam dilupakan',
+      await w.evaluate(() => window.__waktu.TM.mulai === null) && await w.isVisible('#btnTimer'));
+  await w.click('#btnTimer'); await w.clock.runFor(500);
+  await w.click('#btnMulaiBaru'); await w.waitForTimeout(400);
+  rec('waktu: "Mulai baru" ikut menghapus penghitung', await w.evaluate(() => window.__waktu.TM.mulai === null));
+  await ctxW.close();
+
+  // penyimpanan diblokir: penghitung tetap jalan, hanya tanpa ingatan
+  const ctxB = await browser.newContext();
+  const wb = await ctxB.newPage(); const eb = [];
+  wb.on('pageerror', e => eb.push(e.message));
+  await wb.addInitScript(() => {
+    const tolak = () => { throw new DOMException('diblokir', 'SecurityError'); };
+    Object.defineProperty(window, 'localStorage', { get: tolak });
+  });
+  await wb.goto(BASE + 'ar-ukur.html'); await wb.waitForTimeout(300);
+  await wb.click('#btnTimer'); await wb.waitForTimeout(1200);
+  rec('waktu: penyimpanan diblokir, penghitung tetap berjalan tanpa galat',
+      (await wb.isVisible('#tmChip')) && eb.length === 0, eb.join('|').slice(0, 70));
+  await ctxB.close();
+
   console.log(R.join('\n'));
   console.log('\nerror konsol: ' + (errs.length ? '\n' + errs.join('\n') : 'tidak ada'));
   console.log('\nGAGAL: ' + R.filter(r => r.startsWith('**')).length + ' / ' + R.length);

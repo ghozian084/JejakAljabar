@@ -68,7 +68,7 @@ const BASE = "file://" + __dirname + "/";
     return { w: im.naturalWidth, h: im.naturalHeight, baca: window.__kartu.baca(im), data: window.__kartu.data() };
   });
   rec('kartu berukuran 720×1040', balik.w === 720 && balik.h === 1040, balik.w + '×' + balik.h);
-  const samaData = (a, b) => ['id','rasio','p','l','statusUkur','ukurUlang','kDua','kLuas','kLain','digeser','hari']
+  const samaData = (a, b) => ['id','rasio','p','l','statusUkur','ukurUlang','kDua','kLuas','kLain','digeser','hari','waktu']
     .every(k => k === 'rasio' ? Math.abs(a[k] - Math.round(b[k] * 100) / 100) < 1e-9 : a[k] === b[k]) &&
     Object.keys(b.selesai).every(k => a.selesai[k] === b.selesai[k]);
   rec('pita kartu PNG terbaca balik sama dengan datanya', !!balik.baca.d && samaData(balik.baca.d, balik.data));
@@ -111,9 +111,28 @@ const BASE = "file://" + __dirname + "/";
     const cx = cr.getContext('2d'); cx.drawImage(c, 0, 0);
     cx.fillStyle = '#fff'; cx.fillRect(300, 924, 140, 40);
     out.coret = window.__kartu.baca(cr).alasan;
-    // versi format berbeda
-    KARTU.VERSI = 2; const v2 = window.__kartu.gambar(); KARTU.VERSI = 1;
-    out.versi = window.__kartu.baca(v2).alasan;
+    // kartu versi 1 sungguhan: tata bit lama, 110 bit = 24 simbol, tanpa waktu
+    const w1 = new BitTulis();
+    w1.put(KARTU.TANDA, 8).put(1, 4).put(12345, 20).put(1, 1).put(1, 1).put(1, 1).put(0, 1)
+      .put(178, 11).put(5, 7).put(891, 14).put(500, 14).put(1, 2).put(0, 4)
+      .put(0, 3).put(0, 3).put(0, 3).put(0, 1).put(277, 12);
+    const s1 = w1.selesai(KARTU.AWALAN).slice(KARTU.AWALAN.length).replace(/-/g, '');
+    const k1 = document.createElement('canvas'); k1.width = 720; k1.height = 1040;
+    const x1 = k1.getContext('2d'); x1.fillStyle = '#fff'; x1.fillRect(0, 0, 720, 1040);
+    kartuGambarPita(x1, s1);
+    out.panjangV1 = s1.length;
+    out.versi = window.__kartu.baca(k1).alasan;
+    // Kartu v2 yang 24 simbol pertamanya KEBETULAN lolos checksum versi 1
+    // (1 dari 1024). Dicari sungguhan, bukan diandaikan.
+    const pita = s => { const k = document.createElement('canvas'); k.width = 720; k.height = 1040;
+      const x = k.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 720, 1040); kartuGambarPita(x, s); return k; };
+    let jebakan = null, coba = 0;
+    for (; coba < 100000 && !jebakan; coba++) {
+      const s = kartuSandi(Object.assign({}, window.__kartu.data(), { id: coba, waktu: 9 }));
+      if (BitBaca(KARTU.AWALAN + s.slice(0, 24), KARTU.AWALAN)) jebakan = s;
+    }
+    out.jebakan = jebakan ? { coba: coba, potong: kartuBacaSandi(jebakan.slice(0, 24)),
+                              utuh: (window.__kartu.baca(pita(jebakan)).d || {}).waktu } : null;
     return out;
   });
   rec('pita terbaca setelah JPEG kualitas 60% (≈ WhatsApp)', tahan.q60);
@@ -123,7 +142,12 @@ const BASE = "file://" + __dirname + "/";
   rec('kartu terpotong ditolak, bukan dibaca keliru', tahan.potong === 'rasio', tahan.potong);
   rec('foto sembarang ditolak', !!tahan.acak, tahan.acak);
   rec('pita tercoret ditolak oleh checksum, bukan dibaca keliru', tahan.coret === 'sandi', tahan.coret);
-  rec('kartu versi lain ditolak dengan alasan versi', tahan.versi === 'versi', tahan.versi);
+  rec('kartu versi 1 sungguhan (24 simbol) ditolak dengan alasan versi, bukan "pita rusak"',
+      tahan.panjangV1 === 24 && tahan.versi === 'versi', tahan.panjangV1 + ' simbol → ' + tahan.versi);
+  rec('kartu v2 yang lolos checksum v1 secara kebetulan tidak terbaca sebagai v1',
+      !!tahan.jebakan && tahan.jebakan.potong === null,
+      tahan.jebakan ? 'ditemukan setelah ' + tahan.jebakan.coba + ' percobaan' : 'tidak ditemukan');
+  rec('kartu jebakan itu tetap terbaca utuh beserta waktunya', !!tahan.jebakan && tahan.jebakan.utuh === 9);
 
   // kartu kebal tema: pita harus hitam di atas putih di tema apa pun
   const kebal = await m2.evaluate(() => {
@@ -223,6 +247,35 @@ const BASE = "file://" + __dirname + "/";
   }, kartu.C.toString('base64'));
   await m1.waitForTimeout(500);
   rec('kartu yang diseret ke kotak terbaca', (await isi()).length === 1);
+
+  // waktu kerja: 14 menit (dalam batas), 25 menit, dan 45 menit (dicatat "30 atau lebih")
+  const kartuWaktu = menit => m2.evaluate(m => {
+    window.__waktu.TM.mulai = Date.now() - m * 60000 - 5000;
+    window.__ar.ST.jejak.id = (window.__ar.ST.jejak.id + 7) % 1048576;   // pindaian berbeda
+    const d = window.__kartu.data(), url = window.__kartu.gambar().toDataURL('image/jpeg', .6);
+    window.__waktu.TM.mulai = null;
+    return { waktu: d.waktu, url: url };
+  }, menit);
+  const w14 = await kartuWaktu(14), w25 = await kartuWaktu(25), w45 = await kartuWaktu(45);
+  rec('kartu mencatat menit kerja sejak tombol Mulai', w14.waktu === 14 && w25.waktu === 25, w14.waktu + ', ' + w25.waktu);
+  await m1.setInputFiles('#kartuBerkas', [
+    { name: 'w14.jpg', mimeType: 'image/jpeg', buffer: buf(w14.url) },
+    { name: 'w25.jpg', mimeType: 'image/jpeg', buffer: buf(w25.url) },
+    { name: 'w45.jpg', mimeType: 'image/jpeg', buffer: buf(w45.url) },
+  ]);
+  await m1.waitForTimeout(700);
+  k = await isi();
+  rec('waktu terbaca di panel: 14, 25, 30+ (dibatasi), dan kosong bila tidak dipakai',
+      JSON.stringify(k.map(d => d.waktu).sort()) === JSON.stringify([14, 25, 30, null].sort()),
+      JSON.stringify(k.map(d => d.waktu)));
+  const statW = (await m1.textContent('#lapanganOut .kstat')).replace(/\s+/g, ' ');
+  rec('ringkasan: 1/3 kartu dibuat dalam 20 menit (kartu tanpa penghitung tidak dihitung)',
+      statW.includes('1/3kartu dibuat dalam 20 menit'), statW);
+  rec('saran menyebut kartu yang dibuat setelah 20 menit',
+      (await m1.textContent('#lapanganOut .kadvice')).includes('2 kartu dibuat setelah 20 menit'));
+  const ketW = await m1.$$eval('.kkartu .kket', ks => ks.map(x => x.textContent).join(' | '));
+  rec('galeri menulis waktunya dengan kata, termasuk "lewat batas"',
+      ketW.includes('14 menit') && ketW.includes('25 menit (lewat batas)') && ketW.includes('30+ menit (lewat batas)'), ketW);
 
   // privasi & peta miskonsepsi guru
   /* Bukan sekadar "tidak ada foto": panel ini tidak boleh menulis apa pun.
