@@ -78,6 +78,16 @@ const BASE = "file://" + __dirname + "/";
     rec('tautan Menu ada di '+f, (await q.$$eval('a[href="index.html"]', a=>a.length))>0);
     await q.close();
   }
+  // --- tautan Panel Guru: panelnya ada di Pos 4 yang tersembunyi sampai dibuka ---
+  {
+    const q = await b.newPage({ viewport:{width:1160,height:1000} });
+    await q.goto(BASE + 'index.html'); await q.waitForTimeout(300);
+    await q.click('a[href="jejak-aljabar.html#panelGuru"]'); await q.waitForTimeout(500);
+    rec('tautan Panel Guru membuka panelnya, bukan Pos 1', await q.isVisible('#panelGuru'));
+    rec('membuka Panel Guru tidak membuka kunci pos lain', await q.evaluate(()=>
+      window.__g.G.openAll===false && document.querySelector('[data-go="p3"]').disabled===true));
+    await q.close();
+  }
   await b.close();
   const gagal = R.filter(x=>x.startsWith('**FAIL**')).length;
   console.log(R.join('\n')); console.log('\nGAGAL: '+gagal+' / '+R.length);

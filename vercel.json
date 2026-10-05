@@ -1,0 +1,6 @@
+{
+  "installCommand": "echo 'tanpa kebergantungan sisi klien — lihat CLAUDE.md'",
+  "buildCommand": "cat partA.html partB.html partC.html > jejak-aljabar.html && cat head3.html engine.js tail3.html > latihan.html && rm -rf public && mkdir -p public && cp index.html jejak-aljabar.html ar-ukur.html ar-ekspresi.html latihan.html public/ && ls -l public",
+  "outputDirectory": "public",
+  "framework": null
+}
