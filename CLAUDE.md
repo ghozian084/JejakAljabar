@@ -69,7 +69,7 @@ for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
 done
 ```
 
-Keadaan sekarang: **368 uji, 0 gagal.**
+Keadaan sekarang: **370 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
@@ -78,7 +78,7 @@ Keadaan sekarang: **368 uji, 0 gagal.**
 | `test-latihan.js` | Modul 3 | 47 |
 | `test-ekspresi.js` | Modul 4 | 53 |
 | `test-huruf.js` | Kebijakan huruf lintas modul | 24 |
-| `test-menu.js` | Menu utama | 28 |
+| `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
 
 **Setiap perubahan wajib menjalankan ketujuhnya**, bukan hanya yang terkait. Sudah beberapa
@@ -165,6 +165,9 @@ jarang dilatih di kelas.
    Memasukkan kalimat penjelasan ke sana menyebabkan TypeError.
 7. Skrip patch Python yang `assert`-nya gagal di tengah → tidak ada satu pun suntingan
    tersimpan. Selalu periksa hasilnya setelah menjalankan skrip patch.
+8. Tautan `jejak-aljabar.html#panelGuru` dari menu utama mendarat di Pos 1 — Panel Guru ada
+   di Pos 4 yang tersembunyi. Kini `bukaPanelDariHash()` menampilkan Pos 4 tanpa membuka
+   kunci pos lain.
 
 ---
 

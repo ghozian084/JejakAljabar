@@ -2587,6 +2587,22 @@ document.getElementById("bukaSemua").addEventListener("click", () => {
 });
 renderGame();
 
+/* Menu utama menautkan langsung ke #panelGuru, padahal Panel Guru ada di
+   Pos 4 yang tersembunyi sampai dibuka — tautan itu dulu mendarat di Pos 1
+   dan guru tidak menemukan panelnya. Guru bukan siswa: tampilkan Pos 4
+   tanpa membuka kunci pos lain dan tanpa mengubah kemajuan siapa pun. */
+function bukaPanelDariHash(){
+  const id = location.hash.slice(1);
+  if(id !== "panelGuru" && id !== "panelLapangan") return;
+  const sasaran = document.getElementById(id), pos = sasaran.closest("section.pos");
+  document.querySelectorAll("section.pos").forEach(s => s.classList.toggle("active", s === pos));
+  document.querySelectorAll("nav.pos button").forEach(b => b.setAttribute("aria-current", String(b.dataset.go === pos.id)));
+  const hdr = document.querySelector("header.top").offsetHeight;
+  window.scrollTo({ top:Math.max(0, sasaran.getBoundingClientRect().top + scrollY - hdr - 10) });
+}
+bukaPanelDariHash();
+window.addEventListener("hashchange", bukaPanelDariHash);
+
 window.__snap = () => JSON.stringify({xp:G.xp, b:Object.keys(G.badges).sort(), sb:Object.keys(G.seenBangkit).sort(),
   d:Object.keys(S.done).sort(), f:S.flags, l:S.letter, q:S.q11ok, oa:G.openAll});
 window.__kosongkan = () => { G.xp=0; G.badges={}; G.seenBangkit={}; S.done={}; S.flags={}; S.letter='n'; S.q11ok=false; G.openAll=false; };
