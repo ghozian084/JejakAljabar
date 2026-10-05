@@ -43,8 +43,13 @@ const BASE = "file://" + __dirname + "/";
   rec('kartu kirim aktif setelah papan dikunci', !(await redup()));
   const rasio = await m2.evaluate(() => window.__ar.ST.ratio);
 
+  /* Ukuran yang PASTI meleset: dua kali rasio papan yang sebenarnya. Ukuran
+     tetap seperti 100 × 100 kebetulan cocok bila papan simulasi acaknya
+     hampir persegi — uji jadi lolos atau gagal tergantung undian. */
+  const ukurMeleset = r => [String(+(100 * r).toFixed(1)), '50'];
   // ukur salah dulu, lalu cocok
-  await m2.fill('#inP', '100'); await m2.fill('#inL', '100'); await m2.click('#btnCheck');
+  let [mp, ml] = ukurMeleset(rasio);
+  await m2.fill('#inP', mp); await m2.fill('#inL', ml); await m2.click('#btnCheck');
   let j = await m2.evaluate(() => Object.assign({}, window.__ar.ST.jejak));
   rec('ukuran yang belum cocok tercatat (status 2, ulang 1)', j.statusUkur === 2 && j.ukurUlang === 1, JSON.stringify(j));
   const P = +(50 * rasio).toFixed(1);
@@ -146,8 +151,8 @@ const BASE = "file://" + __dirname + "/";
   kartu.B_awal = buf(await jpeg());
   await m2.fill('#inK', String(2 * P2 + 80)); await m2.click('#btnK');
   kartu.B_akhir = buf(await jpeg());
-  await kunciBaru();
-  await m2.fill('#inP', '90'); await m2.fill('#inL', '89'); await m2.click('#btnCheck');
+  [mp, ml] = ukurMeleset(await kunciBaru());
+  await m2.fill('#inP', mp); await m2.fill('#inL', ml); await m2.click('#btnCheck');
   kartu.C = buf(await jpeg());
   kartu.potong = buf(await m2.evaluate(() => { const c = window.__kartu.gambar(), k = document.createElement('canvas');
     k.width = 720; k.height = 880; k.getContext('2d').drawImage(c, 0, 0); return k.toDataURL('image/jpeg', .6); }));
