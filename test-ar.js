@@ -176,6 +176,168 @@ const BASE = "file://" + __dirname + "/";
   });
   ks.forEach(([n, ok, x]) => rec('simpan: ' + n, ok, x));
 
+  // ---- Langkah 5: soal buatan siswa ----
+  // Media memeriksa KUNCI JAWABAN terhadap model, tidak pernah menilai kalimatnya.
+  {
+    const ctxS = await browser.newContext({ viewport: { width: 820, height: 1200 } });
+    const q = await ctxS.newPage();
+    q.on('pageerror', e => errs.push('SOAL PAGEERROR: ' + e.message));
+    await q.goto(BASE + 'ar-ukur.html'); await q.waitForTimeout(300);
+    const redup = () => q.$eval('#cSoal', e => e.classList.contains('dim'));
+    const fbS = async () => (await q.textContent('#fb-soal')).replace(/\s+/g, ' ');
+    const kelasFb = () => q.getAttribute('#fb-soal', 'class');
+    const xp = () => q.evaluate(() => window.__g.G.xp);
+    const jj = () => q.evaluate(() => Object.assign({}, window.__ar.ST.jejak));
+    const isiSoal = async (jenis, teks, isi, pilihan) => {
+      if (jenis) await q.click('[data-soal="' + jenis + '"]');
+      if (teks !== undefined) await q.fill('#soalTeks', teks);
+      for (const [id, v] of Object.entries(isi || {})) await q.fill('#' + id, v);
+      for (const [id, v] of Object.entries(pilihan || {})) await q.selectOption('#' + id, v);
+      await q.click('#btnSoal');
+    };
+    rec('soal: Langkah 5 redup sebelum papan dipindai', await redup());
+    await q.click('#btnSim'); await q.waitForTimeout(150); await q.click('#btnDetect'); await q.waitForTimeout(150);
+    await q.click('#btnLock'); await q.waitForTimeout(150);
+    const rS = await q.evaluate(() => window.__ar.ST.ratio), PS = +(50 * rS).toFixed(1);
+    await q.fill('#inP', String(PS)); await q.fill('#inL', '50'); await q.click('#btnCheck');
+    rec('soal: masih redup sebelum keliling benar', await redup());
+    await q.fill('#inK', String(2 * PS + 100)); await q.click('#btnK');
+    rec('soal: terbuka setelah keliling benar', !(await redup()));
+
+    await q.click('[data-soal="mundur"]');
+    rec('soal: jenis terpilih ditandai lambang dan kata, bukan warna saja',
+        (await q.textContent('[data-soal="mundur"]')) === '✓ Mundur' &&
+        (await q.getAttribute('[data-soal="mundur"]', 'aria-pressed')) === 'true' &&
+        (await q.textContent('[data-soal="maju"]')) === 'Maju');
+    const xp0 = await xp();
+    await isiSoal(null, 'Berapa?', { soalA: '300', soalB: '50', soalJawab: '100' });
+    rec('soal: kalimat terlalu pendek → petunjuk, tidak dinilai', (await kelasFb()).includes('hint') &&
+        (await jj()).soal === '' && (await xp()) === xp0);
+    const TEKS = 'Pak Budi punya lis 300 cm untuk papan selebar 50 cm. Berapa panjang papan paling besar?';
+    await isiSoal(null, TEKS, { soalA: '300', soalB: '50', soalJawab: '' });
+    rec('soal: angka kunci belum lengkap → petunjuk', (await kelasFb()).includes('hint') && (await fbS()).includes('Isi semua angka'));
+
+    await isiSoal(null, TEKS, { soalA: '80', soalB: '50', soalJawab: '5' });
+    rec('soal: soal mundur yang mustahil (dua sisi melebihi keliling) dijelaskan, bukan dinilai kuncinya',
+        (await kelasFb()).includes('bad') && (await fbS()).includes('belum bisa dijawab'), (await fbS()).slice(0, 80));
+    await isiSoal(null, TEKS, { soalA: '300', soalB: '50', soalJawab: '250' });
+    const salahS = await fbS();
+    rec('soal: kunci keliru → diajak memeriksa dengan substitusi balik', (await kelasFb()).includes('bad') &&
+        salahS.includes('2 × 250 + 2 × 50 = 600') && salahS.includes('keliling 300'), salahS.slice(0, 120));
+    rec('soal: umpan balik tidak membocorkan kunci yang benar', !/\b100\b/.test(salahS));
+    rec('soal: kunci keliru tetap dicatat di jejak (untuk kartu)', (await jj()).soal === 'mundur' && (await jj()).soalOk === false);
+    await isiSoal(null, TEKS, { soalJawab: '100' });
+    rec('soal: kunci mundur yang benar diterima', (await kelasFb()).includes('ok') && (await fbS()).includes('berjalan mundur'));
+    rec('soal: diperbaiki sendiri → dibayar 12 + jejak pemulihan',
+        (await xp()) - xp0 === 12 + await q.evaluate(() => window.__g.XP_PULIH), String((await xp()) - xp0));
+    const xp1 = await xp();
+    await isiSoal(null, TEKS, { soalJawab: '100' });
+    rec('soal: jenis yang sama tidak dibayar dua kali', (await xp()) === xp1);
+    await q.fill('#soalTeks', TEKS + ' Jawab dalam cm.');
+    rec('soal: menyunting setelah diperiksa → diingatkan memeriksa lagi', (await fbS()).includes('berubah sejak diperiksa'));
+
+    await isiSoal('perubahan', 'Kalau papan ini dipanjangkan 10 cm, kelilingnya bertambah berapa?',
+                  { soalA: '10', soalJawab: '10' }, { soalSisi: 'p', soalTanya: 'K' });
+    rec('soal: perubahan keliling yang lupa dua sisi → diingatkan ada dua sisi',
+        (await kelasFb()).includes('bad') && (await fbS()).includes('dua sisi panjang'));
+    await isiSoal(null, undefined, { soalJawab: '20' });
+    rec('soal: perubahan keliling benar → ditunjukkan bahwa jawabannya tidak bergantung pada papan',
+        (await fbS()).includes('tidak memakai ukuran papanmu'));
+    await isiSoal(null, 'Kalau papan ini dipanjangkan 10 cm, luasnya bertambah berapa?',
+                  { soalA: '10', soalJawab: '20' }, { soalSisi: 'p', soalTanya: 'L' });
+    rec('soal: perubahan luas dengan jawaban keliling ditolak', (await kelasFb()).includes('bad'));
+    await isiSoal(null, undefined, { soalJawab: '500' });
+    rec('soal: perubahan luas memakai lebar papan yang diukur sendiri (10 × 50)',
+        (await kelasFb()).includes('ok') && (await fbS()).includes('bergantung pada papanmu'));
+
+    await isiSoal('maju', 'Papan panjangnya delapan puluh cm dan lebarnya lima puluh cm. Kelilingnya?',
+                  { soalA: '80', soalB: '50', soalJawab: '260' }, { soalTanya: 'K' });
+    const majuS = await fbS();
+    rec('soal: maju benar, siswa didorong mencoba jenis yang lebih menantang', majuS.includes('Coba juga soal'));
+    rec('soal: angka yang tidak tertulis di kalimat → catatan lunak, tetap diterima',
+        (await kelasFb()).includes('ok') && majuS.includes('angka 80 dan 50 belum terlihat') && majuS.includes('abaikan catatan ini'));
+    await isiSoal(null, 'Papan panjangnya 80,5 cm dan lebarnya 50 cm. Kelilingnya?', { soalA: '80.5', soalJawab: '261' });
+    rec('soal: desimal dengan koma di kalimat dikenali', !(await fbS()).includes('belum terlihat'));
+
+    const bungkus = await q.evaluate(() => {
+      const x = document.createElement('canvas').getContext('2d'); x.font = '17px sans-serif';
+      const panjang = 'Satu dua tiga empat lima enam tujuh delapan sembilan sepuluh. '.repeat(12);
+      return { biasa: window.__soal.bungkus(x, 'Soal pendek.', 664, 4),
+               potong: window.__soal.bungkus(x, panjang, 664, 4),
+               kata: window.__soal.bungkus(x, 'x'.repeat(200), 664, 4),
+               lebar: Math.max(...window.__soal.bungkus(x, panjang, 664, 4).map(b => x.measureText(b).width)) };
+    });
+    rec('soal: kalimat dibungkus tanpa melewati lebar kartu, paling banyak 4 baris berakhir "…"',
+        bungkus.biasa.length === 1 && bungkus.potong.length === 4 && bungkus.potong[3].endsWith('…') &&
+        bungkus.lebar <= 664 && bungkus.kata.length >= 2, bungkus.potong.length + ' baris, ' + Math.round(bungkus.lebar) + ' px');
+
+    // pindaian baru = papan baru = soal baru
+    await q.click('#btnSim'); await q.waitForTimeout(150); await q.click('#btnDetect'); await q.waitForTimeout(150);
+    await q.click('#btnLock'); await q.waitForTimeout(150);
+    rec('soal: pindaian baru mengosongkan soal dan meredupkan Langkah 5', (await redup()) &&
+        (await jj()).soal === '' && (await q.inputValue('#soalTeks')) === '' &&
+        (await q.getAttribute('[data-soal="maju"]', 'aria-pressed')) === 'false');
+    await ctxS.close();
+  }
+
+  // ---- penghitung waktu 20 menit: pengingat, bukan batas ----
+  // Jam palsu Playwright: 20 menit diuji tanpa menunggu 20 menit sungguhan.
+  const ctxW = await browser.newContext({ viewport: { width: 820, height: 1000 } });
+  const w = await ctxW.newPage();
+  w.on('pageerror', e => errs.push('WAKTU PAGEERROR: ' + e.message));
+  await w.clock.install({ time: new Date('2026-10-05T08:00:00+07:00') });
+  await w.goto(BASE + 'ar-ukur.html'); await w.waitForTimeout(300);
+  const cip = async () => (await w.textContent('#tmChip')).replace(/\s+/g, ' ').trim();
+  rec('waktu: sebelum mulai, tombol "Mulai 20 menit" tampil dan penghitung tersembunyi',
+      await w.isVisible('#btnTimer') && !(await w.isVisible('#tmChip')) &&
+      (await w.textContent('#btnTimer')).includes('Mulai 20 menit'));
+  rec('waktu: belum ada waktu tercatat sebelum tombol ditekan', await w.evaluate(() => window.__waktu.TM.mulai === null));
+  await w.click('#btnTimer'); await w.clock.runFor(500);
+  const mulai = await w.evaluate(() => window.__waktu.TM.mulai);
+  rec('waktu: setelah Mulai, penghitung tampil 20:00 dan tombolnya hilang',
+      (await cip()).includes('sisa 20:00') && !(await w.isVisible('#btnTimer')), await cip());
+  await w.evaluate(() => document.getElementById('btnTimer').click());
+  rec('waktu: menekan Mulai lagi tidak mengulang penghitung', await w.evaluate(m => window.__waktu.TM.mulai === m, mulai));
+  await w.clock.runFor('15:03');   // jauh dari detik peralihan: angkanya dibulatkan ke atas
+  rec('waktu: lima menit terakhir diberi peringatan berkata, bukan warna saja',
+      (await w.getAttribute('#tmChip', 'class')).includes('akhir') && (await cip()).includes('sisa 04:5') &&
+      (await w.textContent('#toastWrap')).includes('5 menit lagi'), await cip());
+  await w.clock.runFor('07:12');
+  rec('waktu: saat habis tertulis "Waktu habis" dan berapa lama lewatnya',
+      (await w.getAttribute('#tmChip', 'class')).includes('habis') && (await cip()).includes('Waktu habis · lewat 02:1'), await cip());
+  // pengingat, bukan batas: langkah ukur tetap bisa diselesaikan
+  await w.click('#btnSim'); await w.clock.runFor(200); await w.click('#btnDetect'); await w.clock.runFor(200);
+  await w.click('#btnLock'); await w.clock.runFor(200);
+  const rW = await w.evaluate(() => window.__ar.ST.ratio);
+  await w.fill('#inP', String(+(50 * rW).toFixed(1))); await w.fill('#inL', '50'); await w.click('#btnCheck');
+  rec('waktu: setelah habis, siswa tetap boleh menyelesaikan ukurannya',
+      (await w.textContent('#fb-ukur')).startsWith('Cocok') && !(await w.$eval('#cSub', e => e.classList.contains('dim'))));
+  await w.reload(); await w.waitForTimeout(300);
+  rec('waktu: muat ulang halaman tidak mengulang penghitung dari nol',
+      await w.evaluate(m => window.__waktu.TM.mulai === m, mulai) && (await cip()).includes('Waktu habis'), await cip());
+  // tiga jam kemudian: sesi pelajaran sudah lewat, penghitung lama dilupakan
+  await w.clock.runFor('03:00:00'); await w.reload(); await w.waitForTimeout(300);
+  rec('waktu: penghitung yang lebih tua dari 3 jam dilupakan',
+      await w.evaluate(() => window.__waktu.TM.mulai === null) && await w.isVisible('#btnTimer'));
+  await w.click('#btnTimer'); await w.clock.runFor(500);
+  await w.click('#btnMulaiBaru'); await w.waitForTimeout(400);
+  rec('waktu: "Mulai baru" ikut menghapus penghitung', await w.evaluate(() => window.__waktu.TM.mulai === null));
+  await ctxW.close();
+
+  // penyimpanan diblokir: penghitung tetap jalan, hanya tanpa ingatan
+  const ctxB = await browser.newContext();
+  const wb = await ctxB.newPage(); const eb = [];
+  wb.on('pageerror', e => eb.push(e.message));
+  await wb.addInitScript(() => {
+    const tolak = () => { throw new DOMException('diblokir', 'SecurityError'); };
+    Object.defineProperty(window, 'localStorage', { get: tolak });
+  });
+  await wb.goto(BASE + 'ar-ukur.html'); await wb.waitForTimeout(300);
+  await wb.click('#btnTimer'); await wb.waitForTimeout(1200);
+  rec('waktu: penyimpanan diblokir, penghitung tetap berjalan tanpa galat',
+      (await wb.isVisible('#tmChip')) && eb.length === 0, eb.join('|').slice(0, 70));
+  await ctxB.close();
+
   console.log(R.join('\n'));
   console.log('\nerror konsol: ' + (errs.length ? '\n' + errs.join('\n') : 'tidak ada'));
   console.log('\nGAGAL: ' + R.filter(r => r.startsWith('**')).length + ' / ' + R.length);

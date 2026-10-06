@@ -69,18 +69,18 @@ for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
 done
 ```
 
-Keadaan sekarang: **412 uji, 0 gagal.**
+Keadaan sekarang: **463 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
 | `test.js` | Modul 1 | 111 |
-| `test-ar.js` | Modul 2 | 32 |
+| `test-ar.js` | Modul 2 (termasuk soal buatan siswa dan penghitung waktu) | 66 |
 | `test-latihan.js` | Modul 3 | 47 |
 | `test-ekspresi.js` | Modul 4 | 53 |
 | `test-huruf.js` | Kebijakan huruf lintas modul | 24 |
 | `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
-| `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 42 |
+| `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 59 |
 
 **Setiap perubahan wajib menjalankan kedelapannya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
@@ -93,11 +93,11 @@ kali perubahan di satu modul merusak modul lain.
 |---|---|
 | `index.html` | Menu utama. Membaca kemajuan keempat modul, **tidak pernah menulis** ke sana. |
 | `jejak-aljabar.html` | Modul 1 · Jejak Aljabar — 4 pos, Budi, Panel Guru (KODE JEJAK + kartu lapangan), Lembar Kerja PDF |
-| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur, kartu hasil untuk guru |
+| `ar-ukur.html` | Modul 2 · Petualangan Lapangan — pindai papan mading, siswa mengukur, soal buatan siswa (Langkah 5), penghitung 20 menit, kartu hasil untuk guru |
 | `latihan.html` | Modul 3 · Jelajah Enam Rimba — 6 unit × 4 level, mekanik nyawa |
 | `ar-ekspresi.html` | Modul 4 · Bengkel Kartu — 8 misi dua arah, lembar kartu cetak |
 | `kodesimpan.js` | Cuplikan bersama: bit-packing → Crockford base32 + checksum |
-| `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
+| `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. Format versi 3 (kartu 720×1210, pita 5 baris, sisa 6 simbol); kartu v1/v2 (720×1040, pita 4 baris) **tetap terbaca** — tata letaknya dikenali dari rasio gambar. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
 | `tema-css.txt` / `tema-js.txt` | Cuplikan tema, **disalin** ke tiap berkas (bukan ditaut) |
 | `sapu-warna.py` / `pasang-tema.py` | Skrip sekali pakai untuk memasang sistem tema |
 | `makalah/` | Makalah lomba (docx-js). `isi.js` = naskah, `buat.js` = pembentuk Word |
@@ -142,6 +142,19 @@ KODE SIMPAN biasa, tahan pampatan JPEG WhatsApp. Siswa diingatkan memeriksa prat
 (jangan ada wajah teman). Panel Guru **tidak pernah menyimpan** kartu — hanya di memori.
 Jejak di kartu bersifat **per pindaian** (`ST.jejak`), bukan kemajuan seumur `G`.
 
+**Penghitung 20 menit Modul 2 adalah pengingat, bukan batas.** Saat habis tidak ada langkah yang
+dikunci: batas yang memotong pengukuran mendorong siswa menebak angka, padahal siswa yang
+memberi besaran. Dimulai dengan tombol (aba-aba guru), diukur dari jam dinding agar tahan
+muat ulang, dilupakan setelah 3 jam. Menitnya ikut di kartu lapangan; batasnya satu angka,
+`KARTU.BATAS_MENIT`, yang dipakai Modul 2 dan Panel Guru bersama.
+
+**Soal buatan siswa (Modul 2, Langkah 5, pilihan): media memeriksa KUNCI, bukan kalimat.** Tanpa
+peladen, media tidak bisa membaca bahasa bebas — kalimat soal dibaca guru di kartu lapangan.
+Jenis soal diberi kerangka (maju, mundur, perubahan) karena tanpa kerangka hampir semua siswa
+menulis soal Langkah 4 tanpa variabel. Kunci yang keliru dijawab dengan ajakan memeriksa lewat
+substitusi balik, **tanpa membocorkan kunci yang benar**. Angka yang tidak tertulis di kalimat
+hanya diberi catatan lunak (siswa mungkin menulisnya dengan huruf). Jejak soal per pindaian.
+
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang
 jarang dilatih di kelas.
@@ -180,6 +193,9 @@ jarang dilatih di kelas.
    disimpan ke localStorage. Panel kartu lapangan versi pertama memakainya, sehingga pesan
    untuk guru (lengkap dengan nama berkas foto WhatsApp) ikut tersimpan sebagai riwayat siswa.
    Pesan untuk guru memakai `lapanganKata()`, yang tidak menyentuh penyimpanan.
+10. Sandi pita dibentuk **per 5 bit**, jadi kapasitas pita tidak bisa dihitung per sel. Menambah
+   3 bit ke 115 bit v2 menjadikannya 26 simbol = 130 sel, padahal pita 4 baris hanya 128 sel.
+   Hitung ulang `ceil(bit / 5) + 2` simbol setiap kali format kartu berubah.
 
 ---
 

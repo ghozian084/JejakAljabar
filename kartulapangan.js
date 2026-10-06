@@ -12,14 +12,30 @@
    Cuplikan ini DISALIN ke ar-ukur.html (menulis) dan partC.html
    (membaca), bukan ditaut. Uji memastikan ketiga salinan sama persis.
    Membutuhkan BitTulis/BitBaca dari kodesimpan.js.
+
+   Riwayat format:
+     v1  110 bit, tata "lama"  — jejak pindaian
+     v2  115 bit, tata "lama"  — + menit kerja (5 bit)
+     v3  118 bit, tata "soal"  — + soal buatan siswa (3 bit)
+   Sandi dibentuk per 5 bit, jadi 118 bit = 24 simbol + 2 checksum = 130
+   sel — tidak muat di pita 4 baris (128 sel). Karena itu v3 memakai kartu
+   yang lebih tinggi dengan pita 5 baris (160 sel; sisa 6 simbol).
+   Tata letak dikenali dari RASIO gambar, jadi kartu lama tetap terbaca.
    ===================================================================== */
 const KARTU = {
-  W:720, H:1040,                 // ukuran kartu; pembaca menolak rasio lain
-  SEL:18, KOL:33, BAR:4,         // kolom 0 = sel acuan, kolom 1–32 = data
-  PX:63, PY:924,                 // sudut kiri atas sel (0,0); bingkai berakhir di y 1032
-  AWALAN:"KL2", TANDA:167, VERSI:1
+  W:720, SEL:18, KOL:33, PX:63,  // kolom 0 = sel acuan, kolom 1–32 = data
+  TATA:{
+    lama:{ H:1040, PY:924,  BAR:4, versi:[1, 2] },
+    soal:{ H:1210, PY:1076, BAR:5, versi:[3] }
+  },
+  AWALAN:"KL2", TANDA:167, VERSI:3,
+  SIMBOL:{ 1:24, 2:25, 3:26 },   // panjang sandi per versi, termasuk checksum
+  BATAS_MENIT:20                 // waktu kerja lapangan; Modul 2 dan Panel Guru sepakat di sini
 };
+KARTU.SEKARANG = KARTU.TATA.soal;  // tata letak yang ditulis Modul 2
+KARTU.H = KARTU.SEKARANG.H;
 const KARTU_LANGKAH = ["cScan","cModel","cMeasure","cSub"];
+const KARTU_SOAL = ["", "maju", "mundur", "perubahan"];   // indeks = nilai 2 bit di pita
 
 function kartuSandi(d){
   const w = new BitTulis();
@@ -30,6 +46,10 @@ function kartuSandi(d){
   w.put(d.statusUkur, 2).put(d.ukurUlang, 4);
   w.put(d.kDua, 3).put(d.kLuas, 3).put(d.kLain, 3);
   w.put(d.digeser ? 1 : 0, 1).put(d.hari, 12);
+  // waktu: 0 = penghitung tidak dipakai; 1–31 = menit + 1 (31 berarti 30 menit atau lebih)
+  w.put(d.waktu === null || d.waktu === undefined ? 0 : Math.min(31, d.waktu + 1), 5);
+  // soal: jenis (0 = belum membuat) dan apakah kunci jawabannya konsisten dengan model
+  w.put(Math.max(0, KARTU_SOAL.indexOf(d.soal || "")), 2).put(d.soalOk ? 1 : 0, 1);
   // "KL2-XXXXX-…" → deretan simbol saja; awalan tidak ikut digambar
   return w.selesai(KARTU.AWALAN).slice(KARTU.AWALAN.length).replace(/-/g, "");
 }
@@ -37,36 +57,45 @@ function kartuBacaSandi(simbol){
   const r = BitBaca(KARTU.AWALAN + simbol, KARTU.AWALAN);
   if(!r) return null;
   if(r.get(8) !== KARTU.TANDA) return null;
-  if(r.get(4) !== KARTU.VERSI) return "versi";
-  const d = { id:r.get(20), selesai:{} };
+  const versi = r.get(4);
+  if(versi < 1 || versi > KARTU.VERSI) return "versi";
+  /* Versi yang terbaca harus cocok dengan panjang potongannya. Tanpa ini,
+     kartu v2 yang dipotong ke panjang v1 bisa lolos checksum secara
+     kebetulan (1 dari 1024) lalu terbaca dengan bit waktu yang hilang. */
+  if(KARTU.SIMBOL[versi] !== simbol.length) return null;
+  const d = { versi:versi, id:r.get(20), selesai:{} };
   KARTU_LANGKAH.forEach(function(k){ d.selesai[k] = !!r.get(1); });
   d.rasio = r.get(11) / 100; d.miring = r.get(7) / 100;
   d.p = r.get(14) / 10; d.l = r.get(14) / 10;
   d.statusUkur = r.get(2); d.ukurUlang = r.get(4);
   d.kDua = r.get(3); d.kLuas = r.get(3); d.kLain = r.get(3);
   d.digeser = !!r.get(1); d.hari = r.get(12);
+  d.waktu = null; d.soal = ""; d.soalOk = false;
+  if(versi >= 2){ const t = r.get(5); d.waktu = t === 0 ? null : t - 1; }
+  if(versi >= 3){ d.soal = KARTU_SOAL[r.get(2)]; d.soalOk = !!r.get(1); }
   return d;
 }
 
 /* Kolom acuan berselang hitam-putih: pembaca mengambil ambang dari sini,
    bukan dari angka tetap, karena kecerahan JPEG hasil pampatan bergeser. */
-function kartuGambarPita(x, simbol){
-  const S = KARTU.SEL, lebar = KARTU.KOL * S, tinggi = KARTU.BAR * S;
+function kartuGambarPita(x, simbol, tata){
+  tata = tata || KARTU.SEKARANG;
+  const S = KARTU.SEL, lebar = KARTU.KOL * S, tinggi = tata.BAR * S;
   x.fillStyle = "#000";
-  x.fillRect(KARTU.PX - 2*S, KARTU.PY - 2*S, lebar + 4*S, tinggi + 4*S);
+  x.fillRect(KARTU.PX - 2*S, tata.PY - 2*S, lebar + 4*S, tinggi + 4*S);
   x.fillStyle = "#fff";
-  x.fillRect(KARTU.PX - S, KARTU.PY - S, lebar + 2*S, tinggi + 2*S);
+  x.fillRect(KARTU.PX - S, tata.PY - S, lebar + 2*S, tinggi + 2*S);
   const bit = [];
   for(let i = 0; i < simbol.length; i++){
     const v = B32S.indexOf(simbol[i]);
     for(let j = 4; j >= 0; j--) bit.push(Math.floor(v / Math.pow(2, j)) % 2);
   }
   x.fillStyle = "#000";
-  for(let b = 0; b < KARTU.BAR; b++){
-    if(b % 2 === 0) x.fillRect(KARTU.PX, KARTU.PY + b*S, S, S);
+  for(let b = 0; b < tata.BAR; b++){
+    if(b % 2 === 0) x.fillRect(KARTU.PX, tata.PY + b*S, S, S);
     for(let k = 1; k < KARTU.KOL; k++){
       const i = b * (KARTU.KOL - 1) + (k - 1);
-      if(bit[i]) x.fillRect(KARTU.PX + k*S, KARTU.PY + b*S, S, S);
+      if(bit[i]) x.fillRect(KARTU.PX + k*S, tata.PY + b*S, S, S);
     }
   }
 }
@@ -75,14 +104,18 @@ function kartuGambarPita(x, simbol){
 function kartuBacaGambar(sumber){
   const w = sumber.naturalWidth || sumber.width, h = sumber.naturalHeight || sumber.height;
   if(!w || !h) return { alasan:"kosong" };
-  const rasioMinta = KARTU.W / KARTU.H;
-  if(Math.abs(w / h - rasioMinta) / rasioMinta > 0.03) return { alasan:"rasio" };
+  let tata = null;
+  for(const n in KARTU.TATA){
+    const minta = KARTU.W / KARTU.TATA[n].H;
+    if(Math.abs(w / h - minta) / minta <= 0.03) tata = KARTU.TATA[n];
+  }
+  if(!tata) return { alasan:"rasio" };
   const c = document.createElement("canvas");
-  c.width = KARTU.W; c.height = KARTU.H;
+  c.width = KARTU.W; c.height = tata.H;
   const x = c.getContext("2d", {willReadFrequently:true});
-  x.drawImage(sumber, 0, 0, KARTU.W, KARTU.H);
+  x.drawImage(sumber, 0, 0, KARTU.W, tata.H);
   const S = KARTU.SEL;
-  const piksel = x.getImageData(KARTU.PX, KARTU.PY, KARTU.KOL * S, KARTU.BAR * S);
+  const piksel = x.getImageData(KARTU.PX, tata.PY, KARTU.KOL * S, tata.BAR * S);
   // rata-rata kecerahan separuh tengah sel — tepi sel kabur karena pampatan
   function terang(k, b){
     let jml = 0, n = 0;
@@ -93,12 +126,15 @@ function kartuBacaGambar(sumber){
       }
     return jml / n;
   }
-  let hitam = 0, putih = 0;
-  for(let b = 0; b < KARTU.BAR; b++){ if(b % 2 === 0) hitam += terang(0, b); else putih += terang(0, b); }
-  hitam /= KARTU.BAR / 2; putih /= KARTU.BAR / 2;
+  // Dihitung terpisah: dengan 5 baris ada 3 sel acuan hitam dan 2 putih.
+  let hitam = 0, putih = 0, nh = 0, np = 0;
+  for(let b = 0; b < tata.BAR; b++){
+    if(b % 2 === 0){ hitam += terang(0, b); nh++; } else { putih += terang(0, b); np++; }
+  }
+  hitam /= nh; putih /= np;
   if(putih - hitam < 80) return { alasan:"kontras" };
   const ambang = (hitam + putih) / 2, bit = [];
-  for(let b = 0; b < KARTU.BAR; b++)
+  for(let b = 0; b < tata.BAR; b++)
     for(let k = 1; k < KARTU.KOL; k++) bit.push(terang(k, b) < ambang ? 1 : 0);
   let simbol = "";
   for(let i = 0; i + 5 <= bit.length; i += 5){
@@ -106,10 +142,17 @@ function kartuBacaGambar(sumber){
     for(let j = 0; j < 5; j++) v = v * 2 + bit[i + j];
     simbol += B32S[v];
   }
-  /* Sandi 110 bit = 24 simbol (22 isi + 2 checksum); sisa sel kosong.
-     Panjangnya tetap, jadi bisa dipotong pasti tanpa penanda akhir. */
-  const d = kartuBacaSandi(simbol.slice(0, 24));
-  if(d === "versi") return { alasan:"versi" };
-  if(!d) return { alasan:"sandi" };
-  return { d:d };
+  /* Panjang sandi tetap per versi, jadi bisa dipotong pasti tanpa penanda
+     akhir. Setiap versi milik tata letak ini dicoba; kartu lama tetap
+     terbaca. "versi" hanya untuk kartu yang LEBIH BARU dari pembaca ini. */
+  let versiBaru = false;
+  for(const v of tata.versi){
+    const d = kartuBacaSandi(simbol.slice(0, KARTU.SIMBOL[v]));
+    if(d === "versi") versiBaru = true;
+    else if(d) return { d:d };
+  }
+  // Versi mendatang bisa lebih panjang: cari sandi sah di panjang yang belum dikenal.
+  for(let n = KARTU.SIMBOL[KARTU.VERSI] + 1; n <= simbol.length && !versiBaru; n++)
+    if(kartuBacaSandi(simbol.slice(0, n)) === "versi") versiBaru = true;
+  return { alasan: versiBaru ? "versi" : "sandi" };
 }
