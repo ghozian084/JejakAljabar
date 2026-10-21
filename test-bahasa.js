@@ -1,15 +1,15 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 
-/* Bahasa: pemilih, kelengkapan kamus, dan Modul 2 di keempat bahasa.
+/* Bahasa: pemilih, kelengkapan kamus, dan Modul 1 & 2 di keempat bahasa.
    Teks sumber tetap bahasa Indonesia di dalam kode; kamus memetakannya.
    Uji ini memastikan TIDAK ADA kalimat yang lolos tanpa terjemahan —
    baik yang ditulis di kode (terj/tandai/hud) maupun di markup (data-t). */
 const BASE = "file://" + __dirname + "/";
-const HALAMAN = ['index.html', 'ar-ukur.html'];      // halaman yang sudah diterjemahkan
+const HALAMAN = ['index.html', 'ar-ukur.html', 'jejak-aljabar.html'];      // halaman yang sudah diterjemahkan
 const BAHASA = ['en', 'zh', 'ko'];
 // terjemahan yang memang sama dengan sumbernya
-const BOLEH_SAMA = new Set(['Model', '☰ Menu', 'Jejak Aljabar']);
+const BOLEH_SAMA = new Set(['Model', '☰ Menu', 'Jejak Aljabar', 'Kode Jejak', '2 + 3n = 5n?']);
 
 const rapi = x => x.replace(/\s+/g, ' ').trim();
 /* Kalimat literal di terj()/tandai()/hud(), termasuk "a" + "b" yang
@@ -30,7 +30,8 @@ function kalimatKode(sumber) {
   }
   return [...hasil].filter(k => /[A-Za-z]/.test(k));
 }
-const ph = x => (x.match(/\{\w+\}/g) || []).sort().join(',');
+// {n|box|boxes} adalah bentuk jamak dari placeholder n, bukan placeholder baru
+const ph = x => [...new Set((x.match(/\{\w+(?:\|[^|}]*\|[^}]*)?\}/g) || []).map(p => p.replace(/\|.*\}$/, '}')))].sort().join(',');
 const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
 
 (async () => {
@@ -114,9 +115,10 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
     rec('label tema ikut bahasa', (await p.textContent('#btnTema')).includes('Paper'));
     rec('isi dinamis menu ikut bahasa (tombol Mulai, ringkasan)', (await p.textContent('#g1')) === 'Start' &&
         (await p.textContent('#summary')).includes('journey'));
-    rec('modul 1, 3, 4 diberi catatan "masih berbahasa Indonesia"', JSON.stringify(await p.$$eval('[data-bhs-belum]',
-        x => x.map(e => !e.classList.contains('hide')))) === '[true,true,true]');
-    rec('tidak ada catatan untuk Modul 2 yang sudah diterjemahkan', (await p.$$('#c2 [data-bhs-belum]')).length === 0);
+    rec('modul 3, 4 diberi catatan "masih berbahasa Indonesia"', JSON.stringify(await p.$$eval('[data-bhs-belum]',
+        x => x.map(e => !e.classList.contains('hide')))) === '[true,true]');
+    rec('tidak ada catatan untuk Modul 1 dan 2 yang sudah diterjemahkan',
+        (await p.$$('#c1 [data-bhs-belum]')).length === 0 && (await p.$$('#c2 [data-bhs-belum]')).length === 0);
     for (const b of ['zh', 'ko']) {
       await p.click('#btnBahasa'); await p.click('[data-bahasa="' + b + '"]'); await p.waitForTimeout(150);
     }
@@ -133,6 +135,11 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
     await p.click('a[href="ar-ukur.html"]'); await p.waitForTimeout(500);
     rec('bahasa yang dipilih di menu terbawa ke Modul 2', await p.evaluate(() => JEJAK_BHS.kini()) === 'zh' &&
         (await p.textContent('h1')) === '先扫描，再亲手测量。');
+    await p.goBack(); await p.waitForTimeout(300);
+    await p.click('a[href="jejak-aljabar.html"]'); await p.waitForTimeout(500);
+    rec('bahasa yang dipilih di menu terbawa ke Modul 1', await p.evaluate(() => JEJAK_BHS.kini()) === 'zh' &&
+        (await p.textContent('#p2 h2')) === '等式天平' && (await p.textContent('.hero h1')).startsWith('字母不是缩写'),
+        (await p.textContent('.hero h1')).slice(0, 30));
     await ctx.close();
   }
   {
@@ -207,6 +214,126 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
     await ctx.close();
   }
 
+  // ================= Modul 1: alur penuh di tiap bahasa =================
+  /* Huruf yang disebut soal mengikuti bahasa (LAMBANG1); huruf yang dipilih
+     siswa sendiri (1.1) tetap bebas. Diagnosis teks bebas (1.4 dan Budi)
+     membaca kata kunci Indonesia, jadi di bahasa lain ia DIAM: jawaban
+     diterima, tidak ada kode M, tidak ada yang dicatat di Peta Miskonsepsi. */
+  const HARAP1 = {
+    en: { p: 'l', B: 'C', kotak: ['boxes', 'box'], satuan: 'single fish', peta: 'Misconception Map', bulan: 'Apr', jenis: 'Concept codes' },
+    zh: { p: 'a', B: 'y', kotak: ['盒', '盒'], satuan: '单条鱼', peta: '误解地图', bulan: '4月', jenis: '概念代码' },
+    ko: { p: 'a', B: 'y', kotak: ['상자', '상자'], satuan: '낱개 생선', peta: '오개념 지도', bulan: '4월', jenis: '개념 코드' }
+  };
+  // kata Indonesia yang tidak mungkin muncul di layar berbahasa lain
+  const KATA_ID = /\b(yang|dengan|kamu|belum|sudah|tidak|untuk|dari|kotak|ikan|ekor|lembar|ruas|siswa|kode|kartu|jejak|lencana|selesai|benar|salah|Kegiatan|Pos)\b/;
+  for (const b of BAHASA) {
+    const { p, ctx } = await halaman('jejak-aljabar.html', b);
+    const H = HARAP1[b];
+    const isi = async (id, v) => {
+      await p.fill('#' + id, v); await p.click('[data-check="' + id + '"]'); await p.waitForTimeout(60);
+      return { cls: await p.getAttribute('#fb-' + id, 'class'), txt: await p.textContent('#fb-' + id) };
+    };
+    rec(b + ' M1: <html lang> dan judul ikut bahasa', await p.evaluate(() => document.documentElement.lang) !== 'id' &&
+        !(await p.textContent('.hero h1')).includes('Huruf'));
+    rec(b + ' M1: huruf soal mengikuti bahasa', JSON.stringify(await p.evaluate(() => [lambang1('p'), lambang1('B')])) ===
+        JSON.stringify([H.p, H.B]) && (await p.textContent('#p1')).includes(H.p + ' cm'));
+    await isi('q11', 'n');
+    rec(b + ' M1: label penghitung jamak/tunggal', (await p.textContent('#lblBox')) === H.kotak[0] &&
+        (await p.textContent('#lblLoose')) === H.satuan, (await p.textContent('#lblBox')) + ' / ' + (await p.textContent('#lblLoose')));
+    await p.click('[data-adj="box:-1"]');
+    rec(b + ' M1: satu kotak memakai bentuk tunggal', (await p.textContent('#lblBox')) === H.kotak[1]);
+    await p.click('[data-adj="box:1"]');
+    let r = await isi('q12', '7n');
+    rec(b + ' M1: jawaban berstruktur tetap didiagnosis (7n → M2)', r.cls.includes('bad') && r.txt.includes('M2'));
+    r = await isi('q12', '2n+5');
+    rec(b + ' M1: 1.2 benar diterima', r.cls.includes('ok'));
+    const f0 = await p.evaluate(() => JSON.stringify(__g.S.flags));
+    r = await isi('q14', 'k itu singkatan dari kotak, jadi 3k artinya tiga kotak');
+    rec(b + ' M1: 1.4 diam — diterima tanpa kode M, alasannya disebut', r.cls.includes('ok') && !/M\d/.test(r.txt) &&
+        (await p.$('#fb-q14 .diag')) !== null && await p.evaluate(() => !!__g.S.done.q14), r.txt.slice(0, 60));
+    rec(b + ' M1: 1.4 diam — Peta Miskonsepsi tidak berubah', await p.evaluate(() => JSON.stringify(__g.S.flags)) === f0);
+    r = await isi('q15', '2' + H.p + '+160');
+    rec(b + ' M1: 1.5 menerima huruf bahasanya (2' + H.p + ' + 160)', r.cls.includes('ok'));
+    await p.click('[data-go="p2"]'); await p.waitForTimeout(200);
+    await p.click('[data-op="sub2"]'); await p.waitForTimeout(150); await p.click('[data-op="div3"]'); await p.waitForTimeout(250);
+    await isi('q22', '11');
+    r = await isi('q23', '(' + H.B + '-25000)/2000');
+    rec(b + ' M1: 2.2 rumus terbalik dengan huruf bahasanya', r.cls.includes('ok'));
+    // Budi: kata-kata diterima apa adanya, hanya bukti angka yang diperiksa
+    await p.click('[data-go="p3"]'); await p.waitForTimeout(200);
+    const kirim = async t => { await p.fill('#budiIn', t); await p.click('#budiSend'); await p.waitForTimeout(220);
+      return p.evaluate(() => document.querySelectorAll('#pips .on').length); };
+    rec(b + ' M1: Budi memberi tahu bahwa kata-kata tidak dinilai', (await p.textContent('#chat')).includes(
+        await p.evaluate(() => terj('Di bahasa ini Budi tidak menilai kata-katamu — ia menunggu kamu menjawab setiap poinnya. Hanya bukti angka yang tetap diperiksa.'))));
+    const f1 = await p.evaluate(() => JSON.stringify(__g.S.flags));
+    const a1 = await kirim('Both sides are just two ways of writing one value.');
+    const a2 = await kirim('Then left and right may be swapped.');
+    const a3 = await kirim('I have nothing more to say about it really.');
+    rec(b + ' M1: Budi menerima argumen tanpa menilai kata, tetapi bukti angka tetap ditunggu',
+        a1 === 1 && a2 === 2 && a3 === 2 && !(await p.evaluate(() => !!__g.S.done.budi_eq)), [a1, a2, a3].join(','));
+    const a4 = await kirim('n = 8: 3 x 8 + 2 = 26 and the right side is 26.');
+    rec(b + ' M1: bukti angka menuntaskan debat', a4 === 3 && await p.evaluate(() => !!__g.S.done.budi_eq));
+    rec(b + ' M1: debat yang diam tidak mencatat kode M', await p.evaluate(() => JSON.stringify(__g.S.flags)) === f1);
+    // Pos 4: lembar kerja, KODE JEJAK, kode simpan, kartu lapangan
+    await p.click('[data-go="p4"]'); await p.waitForTimeout(200);
+    await p.fill('#idNama', 'Test'); await p.evaluate(() => { window.print = () => {}; });
+    await p.click('#btnPdf'); await p.waitForTimeout(200);
+    rec(b + ' M1: lembar kerja ikut bahasa', (await p.textContent('#report')).includes(H.peta));
+    await p.click('#btnKode'); await p.click('#btnDemo'); await p.click('#btnBaca'); await p.waitForTimeout(250);
+    rec(b + ' M1: Panel Guru membaca kode kelas, label jenis ikut bahasa',
+        (await p.textContent('[data-jenis="konsep"]')).startsWith(H.jenis) && (await p.$$('#kelasOut .kbar, #kelasOut table')).length > 0,
+        await p.textContent('[data-jenis="konsep"]'));
+    await p.click('#btnBuatSimpan'); await p.waitForTimeout(100);
+    const kode = await p.textContent('#simpanBox');
+    rec(b + ' M1: kode simpan dibuat', /^SMP1-/.test(kode), kode);
+    const tgl = await p.evaluate(() => {
+      const d = { id:1, statusUkur:2, selesai:{ cSub:false }, kDua:1, kLuas:1, kLain:1, miring:0.3, waktu:25, versi:3,
+                  soal:'maju', soalOk:false, p:100, l:80, rasio:1.3, ukurUlang:2, hari:100, digeser:true };
+      __lapangan.L.kartu = [d, Object.assign({}, d, { id:2, statusUkur:1, soal:'mundur', soalOk:true, waktu:31 }),
+        Object.assign({}, d, { id:3, statusUkur:0, waktu:null, selesai:{ cSub:true }, kDua:0, kLuas:0, kLain:0 }),
+        Object.assign({}, d, { id:4, soal:'perubahan', soalOk:true }), Object.assign({}, d, { id:5, soal:null })]
+        .map(x => ({ d:x, url:'data:,' }));
+      __lapangan.render();
+      return tanggalKartu(100);
+    });
+    rec(b + ' M1: tanggal kartu lapangan dalam bahasanya', tgl.includes(H.bulan), tgl);
+    await p.evaluate(() => __lapangan.terima([new File(['x'], 'a.png', { type:'image/png' })])); await p.waitForTimeout(300);
+    const sisa = await p.evaluate(src => {
+      const re = new RegExp(src), o = [];
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT,
+        { acceptNode: n => /SCRIPT|STYLE|TEXTAREA/.test(n.parentNode.nodeName) ? 2 : 1 });
+      // jawaban siswa sendiri (1.4 diisi dalam bahasa Indonesia) boleh tampil apa adanya di lembar kerja
+      let n; while ((n = w.nextNode())) if (re.test(n.nodeValue) && !n.nodeValue.includes('singkatan dari kotak')) o.push(n.nodeValue.trim().slice(0, 50));
+      document.querySelectorAll('[placeholder],[title],[alt]').forEach(e => ['placeholder', 'title', 'alt'].forEach(a => {
+        const v = e.getAttribute(a); if (v && re.test(v)) o.push('@' + a + ': ' + v.slice(0, 50)); }));
+      return o;
+    }, KATA_ID.source);
+    rec(b + ' M1: tidak ada sisa kalimat Indonesia di layar (termasuk yang tersembunyi)', sisa.length === 0, sisa.slice(0, 3).join(' | '));
+    const hil = await p.evaluate(() => Object.keys(JEJAK_BHS.hilang));
+    rec(b + ' M1: alur penuh Modul 1 tanpa satu pun kalimat terlewat', hil.length === 0, hil.slice(0, 2).join(' | ').slice(0, 120));
+    await ctx.close();
+  }
+  // Kode simpan & KODE JEJAK tidak bergantung bahasa
+  {
+    const { p, ctx } = await halaman('jejak-aljabar.html', 'ko');
+    await p.fill('#q11', 'n'); await p.click('[data-check="q11"]');
+    await p.fill('#q12', '7n'); await p.click('[data-check="q12"]');
+    await p.fill('#q12', '2n+5'); await p.click('[data-check="q12"]');
+    const snap = await p.evaluate(() => __snap()), kj = await p.evaluate(() => myCode());
+    await p.evaluate(() => { location.hash = 'panelGuru'; }); await p.waitForTimeout(150);
+    await p.click('#btnBuatSimpan'); await p.waitForTimeout(100);
+    const kode = await p.textContent('#simpanBox');
+    await ctx.close();
+    const h2 = await halaman('jejak-aljabar.html', 'id');
+    await h2.p.evaluate(() => { location.hash = 'panelGuru'; }); await h2.p.waitForTimeout(150);
+    await h2.p.fill('#inSimpan', kode); await h2.p.click('#btnPakaiSimpan'); await h2.p.waitForTimeout(150);
+    rec('kode simpan Modul 1 dari bahasa Korea dipulihkan utuh di bahasa Indonesia',
+        await h2.p.evaluate(() => __snap()) === snap, kode);
+    const kjId = await h2.p.evaluate(k => harvest('[07:10] Ani: ' + k).konsep.length, kj);
+    rec('KODE JEJAK dari bahasa Korea terbaca di Panel Guru berbahasa Indonesia', kjId === 1, kj);
+    await h2.ctx.close();
+  }
+
   // ================= berganti bahasa di tengah kegiatan =================
   {
     const { p, ctx } = await halaman('ar-ukur.html');
@@ -231,6 +358,30 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
     await p.click('#btnSoal');
     rec('pemeriksaan sesudah berganti bahasa tetap benar', (await p.getAttribute('#fb-soal', 'class')).includes('ok') &&
         (await p.textContent('#fb-soal')).includes('work backwards'));
+    await ctx.close();
+  }
+
+  {
+    // Modul 1: teks yang ditulis skrip ikut berganti, kemajuan tidak
+    const { p, ctx } = await halaman('jejak-aljabar.html');
+    await p.fill('#q11', 'n'); await p.click('[data-check="q11"]');
+    await p.fill('#q12', '2n+5'); await p.click('[data-check="q12"]');
+    await p.click('[data-go="p3"]'); await p.waitForTimeout(150);
+    await p.click('[data-topic="konkat"]'); await p.waitForTimeout(150);
+    await p.reload(); await p.waitForTimeout(300);
+    const pulihId = await p.textContent('#restoreTxt');
+    const sebelum = await p.evaluate(() => __snap());
+    await p.click('#btnBahasa'); await p.click('[data-bahasa="en"]'); await p.waitForTimeout(200);
+    rec('Modul 1: berganti bahasa tidak mengubah kemajuan', await p.evaluate(() => __snap()) === sebelum);
+    rec('Modul 1: label kotak, progres pos, lencana MODE, dan keyakinan Budi digambar ulang',
+        (await p.textContent('#lblBox')) === 'boxes' && (await p.textContent('[data-st="p1"]')) === '2 / 5 done' &&
+        (await p.textContent('#aiBadge')) === 'OFFLINE MODE' && (await p.textContent('#budistate')) === 'still stubborn',
+        [await p.textContent('#lblBox'), await p.textContent('[data-st="p1"]'), await p.textContent('#budistate')].join(' / '));
+    const pulihEn = await p.textContent('#restoreTxt');
+    rec('Modul 1: pesan pemulihan diterjemahkan dengan angka yang sama',
+        pulihId.startsWith('Kemajuanmu dipulihkan') && pulihEn.startsWith('Your progress has been restored') &&
+        JSON.stringify(pulihId.match(/\d+/g)) === JSON.stringify(pulihEn.match(/\d+/g)), pulihEn.slice(0, 60));
+    rec('Modul 1: huruf pilihan siswa tetap di kotaknya', (await p.inputValue('#q11')) === 'n');
     await ctx.close();
   }
 

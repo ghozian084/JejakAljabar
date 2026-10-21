@@ -1,6 +1,7 @@
 /* =====================================================================
    BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
-   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   sudah diterjemahkan (sekarang: index.html, ar-ukur.html, dan Modul 1
+   lewat partC.html). Harus
    dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
    sejak awal.
 
@@ -16,6 +17,10 @@
      <p data-t>…</p>                      isi elemen diterjemahkan utuh;
                                           JANGAN berisi elemen ber-id
      data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+     {n|box|boxes}                        (hanya di terjemahan) bentuk tunggal
+                                          bila nilai n = 1, jamak bila bukan —
+                                          bahasa Inggris butuh "1 box"/"2 boxes";
+                                          bahasa Indonesia, Mandarin, Korea tidak
 
    Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
    lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
@@ -54,9 +59,13 @@
       var k = rapi(teks), ada = KAMUS[kini][k];
       if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
     }
-    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
-      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
-    });
+    if(nilai) hasil = String(hasil)
+      .replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, function(m, n, satu, banyak){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? (Number(nilai[n]) === 1 ? satu : banyak) : m;
+      })
+      .replace(/\{(\w+)\}/g, function(m, n){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+      });
     return hasil;
   }
   function tandai(teks){ return teks; }

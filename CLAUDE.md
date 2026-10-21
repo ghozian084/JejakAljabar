@@ -69,7 +69,7 @@ for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
 done
 ```
 
-Keadaan sekarang: **524 uji, 0 gagal.**
+Keadaan sekarang: **599 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
@@ -81,7 +81,7 @@ Keadaan sekarang: **524 uji, 0 gagal.**
 | `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
 | `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 59 |
-| `test-bahasa.js` | Pemilih bahasa, kelengkapan kamus, Modul 2 dalam en/zh/ko | 58 |
+| `test-bahasa.js` | Pemilih bahasa, kelengkapan kamus, Modul 1 & 2 dalam en/zh/ko | 133 |
 
 **Setiap perubahan wajib menjalankan kesembilannya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
@@ -100,7 +100,7 @@ kali perubahan di satu modul merusak modul lain.
 | `kodesimpan.js` | Cuplikan bersama: bit-packing → Crockford base32 + checksum |
 | `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. Format versi 3 (kartu 720×1210, pita 5 baris, sisa 6 simbol); kartu v1/v2 (720×1040, pita 4 baris) **tetap terbaca** — tata letaknya dikenali dari rasio gambar. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
 | `tema-css.txt` / `tema-js.txt` | Cuplikan tema, **disalin** ke tiap berkas (bukan ditaut) |
-| `bahasa-js.txt` | Cuplikan bahasa (ID · EN · 中文 · 한국어): pemilih, `terj()`/`tandai()`, `data-t`. **Disalin** ke `index.html` dan `ar-ukur.html`, dimuat SEBELUM skrip halaman |
+| `bahasa-js.txt` | Cuplikan bahasa (ID · EN · 中文 · 한국어): pemilih, `terj()`/`tandai()`, `data-t`. **Disalin** ke `index.html`, `ar-ukur.html`, dan `partC.html` (Modul 1), dimuat SEBELUM skrip halaman |
 | `sapu-warna.py` / `pasang-tema.py` | Skrip sekali pakai untuk memasang sistem tema |
 | `makalah/` | Makalah lomba (docx-js). `isi.js` = naskah, `buat.js` = pembentuk Word |
 
@@ -158,18 +158,30 @@ substitusi balik, **tanpa membocorkan kunci yang benar**. Angka yang tidak tertu
 hanya diberi catatan lunak (siswa mungkin menulisnya dengan huruf). Jejak soal per pindaian.
 
 **Bahasa: teks sumber tetap bahasa Indonesia di dalam kode.** Kamus tiap halaman memetakan kalimat
-Indonesia → en/zh/ko. Menu utama dan Modul 2 sudah diterjemahkan; Modul 1, 3, 4 belum (menu
-memberi catatan). Aturan menyunting di `index.html` dan `ar-ukur.html`:
+Indonesia → en/zh/ko. Menu utama, Modul 1, dan Modul 2 sudah diterjemahkan; Modul 3, 4 belum
+(menu memberi catatan). Kamus Modul 1 ada di `partC.html` (skrip kedua, "KAMUS MODUL 1").
+Aturan menyunting di `index.html`, `ar-ukur.html`, `partB.html`, dan `partC.html`:
 - kalimat baru di kode → `terj("…", {nilai})`; label tetap (nama lencana dsb.) → `tandai("…")`
   lalu `terj(label)` saat tampil; kalimat di markup → atribut `data-t` (elemennya **tidak boleh**
   berisi elemen ber-id), atribut → `data-t-attr="placeholder alt"`;
 - setiap kalimat baru wajib punya entri di kamus halaman untuk **ketiga** bahasa, dengan
   placeholder `{x}` dan tag HTML yang sama — `test-bahasa.js` gagal bila ada yang terlewat;
 - huruf variabel Modul 2 mengikuti bahasa lewat `lambang()`: id p/l K/L · en l/w P/A ·
-  zh a/b C/S · ko a/b 둘레/넓이. Di kamus, huruf ditulis langsung dalam terjemahannya.
+  zh a/b C/S · ko a/b 둘레/넓이. Di kamus, huruf ditulis langsung dalam terjemahannya;
+- huruf yang **disebut soal** Modul 1 mengikuti bahasa lewat `lambang1()` (`LAMBANG1`): p/B/L/k →
+  en l/C/s/b · zh a/y/x/h · ko a/y/x/s. Huruf yang **dipilih siswa** (1.1) tetap bebas;
+- bentuk jamak hanya di terjemahan: `{n|box|boxes}` (tunggal bila n = 1). Kuncinya memakai
+  penanda ` #{n}` (`"kotak #{n}"`) yang dibuang lagi oleh `tanpaNomor()` dalam bahasa Indonesia;
+- teks yang ditulis skrip digambar ulang di penangan `jejak:bahasa`; umpan balik yang sudah
+  tampil dibiarkan dalam bahasa saat ia ditulis. Budi berbicara akrab (Korea: 반말), suara
+  media memakai 해요체.
 **Diagnosis teks bebas (Modul 1: q14 dan Budi) mencocokkan kata kunci Indonesia.** Keputusan
-penulis: saat Modul 1 diterjemahkan, di bahasa selain Indonesia diagnosis itu **diam** — jawaban
-diterima tanpa kode M dan tanpa dicatat di Peta Miskonsepsi, siswa diberi tahu alasannya.
+penulis: di bahasa selain Indonesia diagnosis itu **diam** — siswa menulis, tidak dinilai.
+q14 diterima dan tercatat di Lembar Kerja untuk dibaca guru. Budi (`budiDiam()`) menerima satu
+poinnya per argumen, berurutan; hanya **bukti angka** yang tetap diperiksa. Tidak ada kode M,
+Peta Miskonsepsi tidak berubah, kegiatannya tetap terhitung selesai, dan siswa diberi tahu
+alasannya. Mode model bahasa diabaikan di bahasa lain. Jawaban berstruktur (ekspresi, angka)
+tetap didiagnosis di semua bahasa.
 
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang
@@ -214,6 +226,10 @@ jarang dilatih di kelas.
 10. Sandi pita dibentuk **per 5 bit**, jadi kapasitas pita tidak bisa dihitung per sel. Menambah
    3 bit ke 115 bit v2 menjadikannya 26 simbol = 130 sel, padahal pita 4 baris hanya 128 sel.
    Hitung ulang `ceil(bit / 5) + 2` simbol setiap kali format kartu berubah.
+11. Kata "lepas" sempat lolos di enam kalimat Modul 1 (lencana Bangkit, umpan balik 2.2,
+   catatan lembar kerja, Panel Guru). Diganti "meluruskan", "dibatalkan", "teratasi".
+   `grep -n lepas partB.html partC.html` sebelum commit. Modul 3 (`engine.js`, penjelasan
+   rumus terbalik di GEN) **masih** memuat "lepas dulu …" — belum diganti.
 
 ---
 
@@ -224,7 +240,12 @@ jarang dilatih di kelas.
 - Modul 2 belum punya Lembar Kerja PDF sendiri.
 - Visual 3D dari `im02.html` (rangka bambu, Joglo) belum dipindahkan.
 - **Terjemahan en/zh/ko belum diperiksa penutur asli** — terutama Mandarin dan Korea, dan
-  istilah matematika sekolah setempat. Modul 1, 3, 4 belum diterjemahkan.
+  istilah matematika sekolah setempat. Modul 3, 4 belum diterjemahkan.
+- **Panel KODE JEJAK Modul 1 masih memakai `say()`** untuk pesan guru (`"kelas"`, `"kode"`),
+  jadi pesan itu ikut tercatat di `LOG` — kelas masalah yang sama dengan bug no. 9.
+- **Mode model bahasa Budi meminta kunci API di halaman**, bertentangan dengan aturan 3 dan
+  klaim "tanpa kunci API" di menu utama. Perlu diputuskan penulis: dibuang, atau klaimnya
+  dirumuskan ulang.
 - **Makalah perlu diselaraskan dengan kartu lapangan.** `makalah/isi.js` menyatakan media
   "tidak memindahkan data peserta didik ke luar perangkat"; kartu lapangan mengirim foto
   lewat WhatsApp atas pilihan siswa. Klaim itu perlu dirumuskan ulang.
