@@ -1,0 +1,182 @@
+/* =====================================================================
+   BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
+   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
+   sejak awal.
+
+   Teks sumber tetap bahasa Indonesia DI DALAM KODE. Kamus memetakan
+   kalimat Indonesia → terjemahan, jadi kode tetap terbaca oleh penulisnya.
+   Kalimat yang belum ada di kamus tampil dalam bahasa Indonesia — layar
+   tidak pernah kosong — dan dicatat di JEJAK_BHS.hilang untuk pengujian.
+
+     terj("Kalimat dengan {x}.", {x:3})  terjemahkan sekarang, isi {x}
+     tandai("Kalimat")                   kembalikan apa adanya; hanya
+                                          menandai kalimat yang diterjemahkan
+                                          belakangan (mis. nama lencana)
+     <p data-t>…</p>                      isi elemen diterjemahkan utuh;
+                                          JANGAN berisi elemen ber-id
+     data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+
+   Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
+   lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
+   menggambar ulang teks dinamisnya. Pilihan bahasa disimpan pada satu
+   kunci untuk semua berkas, terpisah dari kunci kemajuan.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.bahasa.v1";
+  var BAHASA = [
+    { id:"id", nm:"Bahasa Indonesia", pendek:"ID",     lang:"id",      ket:"Indonesia" },
+    { id:"en", nm:"English",          pendek:"EN",     lang:"en",      ket:"Inggris" },
+    { id:"zh", nm:"中文（简体）",       pendek:"中文",   lang:"zh-Hans", ket:"Mandarin (aksara sederhana)" },
+    { id:"ko", nm:"한국어",            pendek:"한국어", lang:"ko",      ket:"Korea" }
+  ];
+  var sah = {}; BAHASA.forEach(function(b){ sah[b.id] = b; });
+  var KAMUS = { en:{}, zh:{}, ko:{} };
+  var hilang = {};
+
+  /* localStorage bisa ditolak sepenuhnya. Bahasa tetap bisa diganti untuk
+     sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "id"; }
+    catch(e){ return "id"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+  var kini = baca();
+
+  function rapi(s){ return String(s).replace(/\s+/g, " ").trim(); }
+  function tambah(kamus){
+    for(var b in kamus) if(KAMUS[b]) for(var k in kamus[b]) KAMUS[b][rapi(k)] = kamus[b][k];
+  }
+  function terj(teks, nilai){
+    var hasil = teks;
+    if(kini !== "id"){
+      var k = rapi(teks), ada = KAMUS[kini][k];
+      if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
+    }
+    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
+      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+    });
+    return hasil;
+  }
+  function tandai(teks){ return teks; }
+
+  function terapkan(){
+    document.documentElement.setAttribute("lang", sah[kini].lang);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function(el){
+      if(el.__asli === undefined) el.__asli = el.innerHTML;
+      el.innerHTML = terj(el.__asli);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t-attr]"), function(el){
+      if(!el.__asliAttr) el.__asliAttr = {};
+      el.getAttribute("data-t-attr").split(/\s+/).forEach(function(a){
+        if(!a) return;
+        if(!(a in el.__asliAttr)) el.__asliAttr[a] = el.getAttribute(a);
+        if(el.__asliAttr[a] !== null) el.setAttribute(a, terj(el.__asliAttr[a]));
+      });
+    });
+    labelPemilih();
+  }
+
+  function labelPemilih(){
+    var b = document.getElementById("btnBahasa");
+    if(b){
+      b.lastChild.nodeValue = " " + sah[kini].pendek;
+      b.setAttribute("title", terj("Ganti bahasa") + " · Language");
+    }
+    var m = document.getElementById("bahasaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-bahasa]"), function(t){
+      var v = t.getAttribute("data-bahasa"), aktif = v === kini;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      t.querySelector(".ket").textContent = terj(sah[v].ket);
+      // Pilihan ditandai dengan kata, tidak hanya warna.
+      t.querySelector(".tick").textContent = aktif ? terj("dipakai") : "";
+    });
+  }
+
+  function pilih(v){
+    if(!sah[v]) v = "id";
+    kini = v;
+    terapkan();
+    var ev;
+    try{ ev = new CustomEvent("jejak:bahasa", { detail:{ bahasa:v } }); }
+    catch(e){ ev = document.createEvent("CustomEvent"); ev.initCustomEvent("jejak:bahasa", false, false, { bahasa:v }); }
+    document.dispatchEvent(ev);
+  }
+
+  /* Pemilih memakai kelas yang sama dengan pemilih tema, jadi tampilannya
+     ikut tema tanpa CSS tambahan. Judul menunya selalu menyebut keempat
+     bahasa: siswa yang tersesat di bahasa yang tidak ia baca tetap bisa
+     menemukan jalan pulang. */
+  function bangun(){
+    var w = document.getElementById("bhsWrap");
+    if(w){
+      var html = '<button class="temaBtn" id="btnBahasa" aria-haspopup="true" aria-expanded="false" ' +
+                 'aria-controls="bahasaMenu"><span aria-hidden="true">🌐</span> ID</button>' +
+                 '<div class="temaMenu" id="bahasaMenu" role="menu" hidden aria-label="Bahasa · Language">' +
+                 '<div class="hd">Bahasa · Language · 语言 · 언어</div>';
+      BAHASA.forEach(function(b){
+        html += '<button type="button" role="menuitemradio" aria-checked="false" data-bahasa="' + b.id +
+                '" lang="' + b.lang + '"><span><span class="nm">' + b.nm + '</span>' +
+                '<span class="ket"></span></span><span class="tick"></span></button>';
+      });
+      w.innerHTML = html + "</div>";
+      var btn = document.getElementById("btnBahasa"), menu = document.getElementById("bahasaMenu");
+      var tutup = function(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        if(menu.hidden){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); } else tutup();
+      });
+      menu.addEventListener("click", function(e){
+        var t = e.target.closest ? e.target.closest("button[data-bahasa]") : null;
+        if(!t) return;
+        var v = t.getAttribute("data-bahasa");
+        simpan(v); tutup(); btn.focus();
+        if(v !== kini) pilih(v);
+      });
+      document.addEventListener("click", function(e){ if(!menu.hidden && !w.contains(e.target)) tutup(); });
+      document.addEventListener("keydown", function(e){
+        if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+      });
+    }
+    terapkan();
+  }
+
+  tambah({
+    en:{ "Ganti bahasa":"Change language", "dipakai":"in use", "Indonesia":"Indonesian", "Inggris":"English",
+         "Mandarin (aksara sederhana)":"Chinese (Simplified)", "Korea":"Korean" },
+    zh:{ "Ganti bahasa":"切换语言", "dipakai":"使用中", "Indonesia":"印度尼西亚语", "Inggris":"英语",
+         "Mandarin (aksara sederhana)":"简体中文", "Korea":"韩语" },
+    ko:{ "Ganti bahasa":"언어 바꾸기", "dipakai":"사용 중", "Indonesia":"인도네시아어", "Inggris":"영어",
+         "Mandarin (aksara sederhana)":"중국어(간체)", "Korea":"한국어" }
+  });
+  // Teks cuplikan tema (tema-js.txt) — diterjemahkan di sini karena tema dipakai di semua halaman.
+  tambah({
+    en:{ "Tema":"Theme", "Ganti tema warna":"Change colour theme", "Tema warna":"Colour theme",
+         "Kertas":"Paper", "Laut":"Sea", "Malam":"Night", "Kontras Tinggi":"High Contrast",
+         "Hangat, silau rendah — bawaan":"Warm, low glare — default",
+         "Sejuk, untuk ruang berlampu kuning":"Cool, for rooms with yellow lighting",
+         "Gelap, untuk belajar malam":"Dark, for studying at night",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"Sharp lines, for projectors & low vision" },
+    zh:{ "Tema":"主题", "Ganti tema warna":"更换配色主题", "Tema warna":"配色主题",
+         "Kertas":"纸张", "Laut":"海洋", "Malam":"夜间", "Kontras Tinggi":"高对比度",
+         "Hangat, silau rendah — bawaan":"暖色、低眩光——默认",
+         "Sejuk, untuk ruang berlampu kuning":"冷色调，适合黄色灯光的教室",
+         "Gelap, untuk belajar malam":"深色，适合夜间学习",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"线条清晰，适合投影仪和视力较弱者" },
+    ko:{ "Tema":"테마", "Ganti tema warna":"색 테마 바꾸기", "Tema warna":"색 테마",
+         "Kertas":"종이", "Laut":"바다", "Malam":"밤", "Kontras Tinggi":"고대비",
+         "Hangat, silau rendah — bawaan":"따뜻하고 눈부심이 적음 — 기본",
+         "Sejuk, untuk ruang berlampu kuning":"시원한 색, 노란 조명 교실용",
+         "Gelap, untuk belajar malam":"어두운 색, 밤 공부용",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"선명한 선, 프로젝터·저시력용" }
+  });
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.terj = terj;
+  window.tandai = tandai;
+  window.JEJAK_BHS = { kini:function(){ return kini; }, terj:terj, tambah:tambah, pilih:pilih,
+                       BAHASA:BAHASA, KUNCI:KUNCI, KAMUS:KAMUS, hilang:hilang, baca:baca };
+})();

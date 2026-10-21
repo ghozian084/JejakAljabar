@@ -307,81 +307,82 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 <header class="top">
   <div class="in">
     <span class="brand">JEJAK <span>ALJABAR</span></span>
-    <span class="modtag">Modul 2 · Di luar kelas</span>
-    <a class="backlink" href="index.html">☰ Menu</a>
+    <span class="modtag" data-t>Modul 2 · Di luar kelas</span>
+    <a class="backlink" href="index.html" data-t>☰ Menu</a>
     <span class="temaWrap noprint" id="temaWrap"></span>
-    <a class="backlink" href="jejak-aljabar.html">← Modul 1 · Kelas</a>
-    <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Pemula Lapangan</span><b id="xpVal">0</b> jejak</span>
-    <button class="tmchip" id="btnTimer" type="button"><span aria-hidden="true">⏱</span> Mulai 20 menit</button>
+    <span class="temaWrap noprint" id="bhsWrap"></span>
+    <a class="backlink" href="jejak-aljabar.html" data-t>← Modul 1 · Kelas</a>
+    <span class="xpchip" id="xpChip"><span class="lv" id="xpLv">Pemula Lapangan</span><b id="xpVal">0</b> <span data-t>jejak</span></span>
+    <button class="tmchip" id="btnTimer" type="button" data-t><span aria-hidden="true">⏱</span> Mulai 20 menit</button>
     <span class="tmchip hide" id="tmChip" role="timer"><span aria-hidden="true" id="tmIkon">⏱</span>
       <span id="tmLabel">sisa</span> <b id="tmAngka">20:00</b></span>
   </div>
 </header>
 <div class="wrap">
-  <h1>Pindai dulu, ukur sendiri.</h1>
-  <p class="lede">Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>.
+  <h1 data-t>Pindai dulu, ukur sendiri.</h1>
+  <p class="lede" data-t>Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>.
      Justru di celah itulah aljabar dibutuhkan.</p>
   <div class="pillrow">
-    <span class="pill">Deteksi bangun tanpa penanda cetak</span>
-    <span class="pill">Tanpa pustaka luar · tanpa internet</span>
-    <span class="pill">Dikerjakan di depan papan yang sebenarnya</span>
+    <span class="pill" data-t>Deteksi bangun tanpa penanda cetak</span>
+    <span class="pill" data-t>Tanpa pustaka luar · tanpa internet</span>
+    <span class="pill" data-t>Dikerjakan di depan papan yang sebenarnya</span>
   </div>
   <div class="restore hide" id="restoreBar">
     <span id="restoreTxt"></span>
-    <button class="act ghost small" id="btnMulaiBaru">Mulai dari awal</button>
+    <button class="act ghost small" id="btnMulaiBaru" data-t>Mulai dari awal</button>
   </div>
 
-  <div class="note">
+  <div class="note" data-t>
     <b>Lanjutan dari Modul 1.</b> Di kelas, lebar papan sudah diberikan kepadamu (80 cm) dan kamu tinggal
     menyusun <span class="math">2p + 160</span>. Di sini tidak ada angka yang diberikan — <b>keduanya</b>
     belum diketahui, dan kamu sendiri yang harus mengukurnya.
   </div>
 
-  <nav class="trail" id="trail" aria-label="Peta ekspedisi">
+  <nav class="trail" id="trail" aria-label="Peta ekspedisi" data-t-attr="aria-label">
     <span class="rail"></span><span class="railfill" id="railfill"></span>
     <button class="node" data-go="cScan" data-state="now"><span class="dot" data-dot="cScan">1</span>
-      <span class="lbl">Pindai</span><span class="sub" data-st="cScan">belum</span></button>
+      <span class="lbl" data-t>Pindai</span><span class="sub" data-st="cScan">belum</span></button>
     <button class="node" data-go="cModel" data-state="lock"><span class="dot" data-dot="cModel">2</span>
-      <span class="lbl">Model</span><span class="sub" data-st="cModel">belum</span></button>
+      <span class="lbl" data-t>Model</span><span class="sub" data-st="cModel">belum</span></button>
     <button class="node" data-go="cMeasure" data-state="lock"><span class="dot" data-dot="cMeasure">3</span>
-      <span class="lbl">Ukur</span><span class="sub" data-st="cMeasure">belum</span></button>
+      <span class="lbl" data-t>Ukur</span><span class="sub" data-st="cMeasure">belum</span></button>
     <button class="node" data-go="cSub" data-state="lock"><span class="dot" data-dot="cSub">4</span>
-      <span class="lbl">Keliling</span><span class="sub" data-st="cSub">belum</span></button>
+      <span class="lbl" data-t>Keliling</span><span class="sub" data-st="cSub">belum</span></button>
   </nav>
 
   <div class="card" id="cScan">
-    <h2><span class="step">LANGKAH 1</span> Arahkan ke papan mading</h2>
-    <p class="ctx">Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas,
+    <h2 data-t><span class="step">LANGKAH 1</span> Arahkan ke papan mading</h2>
+    <p class="ctx" data-t>Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas,
       pakai <b>Contoh simulasi</b> atau unggah foto.</p>
     <div class="row">
-      <button class="act" id="btnCam">Nyalakan kamera</button>
-      <button class="act ghost small" id="btnSim">Contoh simulasi</button>
-      <button class="act ghost small" id="btnFile">Unggah foto</button>
+      <button class="act" id="btnCam" data-t>Nyalakan kamera</button>
+      <button class="act ghost small" id="btnSim" data-t>Contoh simulasi</button>
+      <button class="act ghost small" id="btnFile" data-t>Unggah foto</button>
       <input type="file" id="file" accept="image/*" style="display:none">
     </div>
     <div class="stage">
       <video id="vid" playsinline muted></video>
       <canvas id="cv" width="640" height="480"></canvas>
-      <div class="hud" id="hud">Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.</div>
+      <div class="hud" id="hud"></div>
     </div>
     <div class="row">
-      <button class="act small" id="btnDetect">Deteksi bangun</button>
-      <button class="act ghost small" id="btnLock" disabled>Kunci &amp; buat model</button>
-      <span style="font-size:12.5px;color:var(--ink-soft)">Sudut bisa digeser dengan jari.</span>
+      <button class="act small" id="btnDetect" data-t>Deteksi bangun</button>
+      <button class="act ghost small" id="btnLock" disabled data-t>Kunci &amp; buat model</button>
+      <span style="font-size:12.5px;color:var(--ink-soft)" data-t>Sudut bisa digeser dengan jari.</span>
     </div>
     <div class="fb" id="fb-det"></div>
   </div>
 
   <div class="card dim" id="cModel">
-    <h2><span class="step">LANGKAH 2</span> Model yang dibuat kamera</h2>
-    <p class="ctx">Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.</p>
+    <h2 data-t><span class="step">LANGKAH 2</span> Model yang dibuat kamera</h2>
+    <p class="ctx" data-t>Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.</p>
     <div class="saw" id="saw">—</div>
     <div class="model">
       <div class="eq" id="eqK">—</div>
       <div class="eq" id="eqL" style="font-size:.85em">—</div>
-      <div class="cap">Kamera berhenti di sini. Dua huruf itu belum punya nilai.</div>
+      <div class="cap" data-t>Kamera berhenti di sini. Dua huruf itu belum punya nilai.</div>
     </div>
-    <div class="note teal">
+    <div class="note teal" data-t>
       <b>Kenapa kamera tidak sekalian mengukurnya?</b> Satu kamera tidak bisa membedakan papan kecil yang dekat
       dari papan besar yang jauh — keduanya menghasilkan gambar yang persis sama. Yang bisa diketahui kamera hanyalah
       <b>perbandingan</b> antar sisi, bukan panjang sebenarnya. Panjang sebenarnya harus datang dari meteranmu.
@@ -389,96 +390,96 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
   </div>
 
   <div class="card dim" id="cMeasure">
-    <h2><span class="step">LANGKAH 3</span> Sekarang giliranmu mengukur</h2>
-    <p class="ctx">Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.</p>
+    <h2 data-t><span class="step">LANGKAH 3</span> Sekarang giliranmu mengukur</h2>
+    <p class="ctx" data-t>Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.</p>
     <div class="row">
-      <span><span class="math">p</span><span class="chip p">sisi panjang</span> =</span>
+      <span data-t><span class="math">p</span><span class="chip p">sisi panjang</span> =</span>
       <input type="number" id="inP" placeholder="cm" min="1" step="0.1"><span>cm</span>
     </div>
     <div class="row">
-      <span><span class="math">l</span><span class="chip l">sisi lebar</span> =</span>
+      <span data-t><span class="math">l</span><span class="chip l">sisi lebar</span> =</span>
       <input type="number" id="inL" placeholder="cm" min="1" step="0.1"><span>cm</span>
     </div>
-    <div class="row"><button class="act" id="btnCheck">Periksa hasil ukur</button></div>
+    <div class="row"><button class="act" id="btnCheck" data-t>Periksa hasil ukur</button></div>
     <div class="fb" id="fb-ukur"></div>
     <table class="rt" id="rt" style="display:none"></table>
   </div>
 
   <div class="card dim" id="cSub">
-    <h2><span class="step">LANGKAH 4</span> Masukkan ke model</h2>
-    <p class="ctx">Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.</p>
+    <h2 data-t><span class="step">LANGKAH 4</span> Masukkan ke model</h2>
+    <p class="ctx" data-t>Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.</p>
     <div class="row">
-      <span>Keliling =</span>
+      <span data-t>Keliling =</span>
       <input type="number" id="inK" placeholder="cm" step="0.1"><span>cm</span>
-      <button class="act small" id="btnK">Periksa</button>
+      <button class="act small" id="btnK" data-t>Periksa</button>
     </div>
     <div class="fb" id="fb-k"></div>
-    <div class="note">
+    <div class="note" data-t>
       <b>Uji ulang.</b> Pindai papan lain — pintu kelas, jendela, ubin lantai, meja guru. Rumusnya akan
       keluar sama persis, karena strukturnya sama. Yang berbeda hanya hasil ukuranmu.
     </div>
   </div>
 
   <div class="card dim" id="cSoal">
-    <h2><span class="step">LANGKAH 5 · PILIHAN</span> Buat soalmu sendiri</h2>
-    <p class="ctx">Papanmu sekarang punya model: <b>K = 2<i>p</i> + 2<i>l</i></b> dan <b>L = <i>p</i> × <i>l</i></b>.
+    <h2 data-t><span class="step">LANGKAH 5 · PILIHAN</span> Buat soalmu sendiri</h2>
+    <p class="ctx" data-t>Papanmu sekarang punya model: <b>K = 2<i>p</i> + 2<i>l</i></b> dan <b>L = <i>p</i> × <i>l</i></b>.
       Giliranmu membuat soal untuk teman sekelas. Media hanya memeriksa <b>kunci jawabanmu</b> —
       kalimat soalnya dibaca gurumu di kartu hasil.</p>
-    <div class="row" id="soalJenis" role="group" aria-label="Jenis soal">
+    <div class="row" id="soalJenis" role="group" aria-label="Jenis soal" data-t-attr="aria-label">
       <button class="act ghost small" data-soal="maju" aria-pressed="false">Maju</button>
       <button class="act ghost small" data-soal="mundur" aria-pressed="false">Mundur</button>
       <button class="act ghost small" data-soal="perubahan" aria-pressed="false">Perubahan</button>
     </div>
     <p class="ctx" id="soalKet">Pilih jenis soal dulu.</p>
     <div id="soalIsian" class="hide">
-      <label class="ctx" for="soalTeks"><b>Kalimat soalmu</b> — tulis untuk temanmu, sertakan angkanya.</label>
-      <textarea id="soalTeks" maxlength="180" placeholder="Contoh: Pak Budi punya lis 300 cm untuk…"></textarea>
+      <label class="ctx" for="soalTeks" data-t><b>Kalimat soalmu</b> — tulis untuk temanmu, sertakan angkanya.</label>
+      <textarea id="soalTeks" maxlength="180" data-t-attr="placeholder" placeholder="Contoh: Pak Budi punya lis 300 cm untuk…"></textarea>
       <div class="soalkunci" id="soalKunci"></div>
-      <div class="row"><button class="act small" id="btnSoal">Periksa kunci soal</button></div>
+      <div class="row"><button class="act small" id="btnSoal" data-t>Periksa kunci soal</button></div>
     </div>
     <div class="fb" id="fb-soal"></div>
   </div>
 
   <div class="card dim" id="cKirim">
-    <h2><span class="step">KIRIM</span> Kartu hasil untuk guru</h2>
-    <p class="ctx">Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera,
+    <h2 data-t><span class="step">KIRIM</span> Kartu hasil untuk guru</h2>
+    <p class="ctx" data-t>Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera,
       dan hasil ukurmu. Kirim ke grup WhatsApp kelas seperti foto biasa — gurumu membukanya di Panel Guru.</p>
-    <p class="ctx"><b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu
+    <p class="ctx" data-t><b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu
       di dalamnya, pindai ulang dari sudut lain.</p>
     <div class="row">
-      <button class="act" id="btnKartu">Buat kartu hasil</button>
-      <button class="act small hide" id="btnKartuBagi">Bagikan</button>
-      <button class="act ghost small hide" id="btnKartuUnduh">Unduh kartu</button>
+      <button class="act" id="btnKartu" data-t>Buat kartu hasil</button>
+      <button class="act small hide" id="btnKartuBagi" data-t>Bagikan</button>
+      <button class="act ghost small hide" id="btnKartuUnduh" data-t>Unduh kartu</button>
     </div>
     <div class="fb" id="fb-kirim"></div>
-    <img id="kartuLihat" class="hide" alt="Pratinjau kartu hasil yang akan dikirim"
+    <img id="kartuLihat" class="hide" data-t-attr="alt" alt="Pratinjau kartu hasil yang akan dikirim"
       style="display:block;width:100%;max-width:360px;margin-top:12px;border:1.5px solid var(--line-strong);border-radius:8px">
   </div>
 
   <div class="card">
-    <h2>Bekal Ekspedisi</h2>
-    <p class="ctx">Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang
+    <h2 data-t>Bekal Ekspedisi</h2>
+    <p class="ctx" data-t>Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang
       sempat meleset dibayar lebih mahal daripada tepat sejak awal.</b> Lencana diberikan untuk cara kerja,
       bukan untuk angka.</p>
     <div class="kstat">
-      <div><b id="pjXp">0</b>jejak terkumpul</div>
-      <div><b id="pjLv">—</b>peringkat</div>
-      <div><b id="pjBadge">0/8</b>lencana</div>
+      <div><b id="pjXp">0</b><span data-t>jejak terkumpul</span></div>
+      <div><b id="pjLv">—</b><span data-t>peringkat</span></div>
+      <div><b id="pjBadge">0/8</b><span data-t>lencana</span></div>
     </div>
     <div class="badgegrid" id="badgeGrid"></div>
 
-    <h2 style="margin-top:24px">Pindah ke perangkat lain</h2>
-    <p class="ctx">Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.</p>
+    <h2 style="margin-top:24px" data-t>Pindah ke perangkat lain</h2>
+    <p class="ctx" data-t>Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.</p>
     <div class="row">
-      <button class="act ghost small" id="btnBuatSimpan">Buat kode simpan</button>
-      <button class="act ghost small" id="btnSalinSimpan">Salin</button>
+      <button class="act ghost small" id="btnBuatSimpan" data-t>Buat kode simpan</button>
+      <button class="act ghost small" id="btnSalinSimpan" data-t>Salin</button>
     </div>
     <div id="simpanBox" style="display:none;font-family:Menlo,Consolas,monospace;font-weight:700;
       font-size:clamp(13px,3.2vw,18px);letter-spacing:.06em;background:#fffdf9;border:1.5px dashed var(--line-strong);
       border-radius:11px;padding:13px;text-align:center;user-select:all;margin:10px 0">—</div>
     <div class="row">
-      <input type="text" id="inSimpan" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
-      <button class="act small" id="btnPakaiSimpan">Pulihkan</button>
+      <input type="text" id="inSimpan" data-t-attr="placeholder" placeholder="Tempel kode simpan di sini…" style="flex:1;min-width:190px">
+      <button class="act small" id="btnPakaiSimpan" data-t>Pulihkan</button>
     </div>
     <div class="fb" id="fb-simpan"></div>
   </div>
@@ -486,14 +487,14 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
   <div class="handoff">
     <div class="icon">🏫</div>
     <div class="body">
-      <div class="t">Kembali ke Modul 1 · Di dalam kelas</div>
-      <div class="d">Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan,
+      <div class="t" data-t>Kembali ke Modul 1 · Di dalam kelas</div>
+      <div class="d" data-t>Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan,
         berdebat dengan teman sebaya AI, dan peta miskonsepsi. Dikerjakan sebelum turun ke lapangan.</div>
-      <a class="go" href="jejak-aljabar.html">← Buka Modul 1</a>
+      <a class="go" href="jejak-aljabar.html" data-t>← Buka Modul 1</a>
     </div>
   </div>
 
-  <footer>
+  <footer data-t>
     <b>JEJAK ALJABAR · Modul 2 — Pindai &amp; Ukur (prototipe).</b> Detektor bangun ditulis sendiri: Sobel → ambang persentil →
     transformasi Hough berbobot arah gradien → pemilihan dua pasang garis → perpotongan.
     Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak. Satu berkas, jalan luring.<br>
@@ -504,6 +505,895 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
   <div class="toastwrap" id="toastWrap" aria-live="polite"></div>
 </div>
 
+<script>
+/* =====================================================================
+   BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
+   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
+   sejak awal.
+
+   Teks sumber tetap bahasa Indonesia DI DALAM KODE. Kamus memetakan
+   kalimat Indonesia → terjemahan, jadi kode tetap terbaca oleh penulisnya.
+   Kalimat yang belum ada di kamus tampil dalam bahasa Indonesia — layar
+   tidak pernah kosong — dan dicatat di JEJAK_BHS.hilang untuk pengujian.
+
+     terj("Kalimat dengan {x}.", {x:3})  terjemahkan sekarang, isi {x}
+     tandai("Kalimat")                   kembalikan apa adanya; hanya
+                                          menandai kalimat yang diterjemahkan
+                                          belakangan (mis. nama lencana)
+     <p data-t>…</p>                      isi elemen diterjemahkan utuh;
+                                          JANGAN berisi elemen ber-id
+     data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+
+   Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
+   lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
+   menggambar ulang teks dinamisnya. Pilihan bahasa disimpan pada satu
+   kunci untuk semua berkas, terpisah dari kunci kemajuan.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.bahasa.v1";
+  var BAHASA = [
+    { id:"id", nm:"Bahasa Indonesia", pendek:"ID",     lang:"id",      ket:"Indonesia" },
+    { id:"en", nm:"English",          pendek:"EN",     lang:"en",      ket:"Inggris" },
+    { id:"zh", nm:"中文（简体）",       pendek:"中文",   lang:"zh-Hans", ket:"Mandarin (aksara sederhana)" },
+    { id:"ko", nm:"한국어",            pendek:"한국어", lang:"ko",      ket:"Korea" }
+  ];
+  var sah = {}; BAHASA.forEach(function(b){ sah[b.id] = b; });
+  var KAMUS = { en:{}, zh:{}, ko:{} };
+  var hilang = {};
+
+  /* localStorage bisa ditolak sepenuhnya. Bahasa tetap bisa diganti untuk
+     sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "id"; }
+    catch(e){ return "id"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+  var kini = baca();
+
+  function rapi(s){ return String(s).replace(/\s+/g, " ").trim(); }
+  function tambah(kamus){
+    for(var b in kamus) if(KAMUS[b]) for(var k in kamus[b]) KAMUS[b][rapi(k)] = kamus[b][k];
+  }
+  function terj(teks, nilai){
+    var hasil = teks;
+    if(kini !== "id"){
+      var k = rapi(teks), ada = KAMUS[kini][k];
+      if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
+    }
+    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
+      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+    });
+    return hasil;
+  }
+  function tandai(teks){ return teks; }
+
+  function terapkan(){
+    document.documentElement.setAttribute("lang", sah[kini].lang);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function(el){
+      if(el.__asli === undefined) el.__asli = el.innerHTML;
+      el.innerHTML = terj(el.__asli);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t-attr]"), function(el){
+      if(!el.__asliAttr) el.__asliAttr = {};
+      el.getAttribute("data-t-attr").split(/\s+/).forEach(function(a){
+        if(!a) return;
+        if(!(a in el.__asliAttr)) el.__asliAttr[a] = el.getAttribute(a);
+        if(el.__asliAttr[a] !== null) el.setAttribute(a, terj(el.__asliAttr[a]));
+      });
+    });
+    labelPemilih();
+  }
+
+  function labelPemilih(){
+    var b = document.getElementById("btnBahasa");
+    if(b){
+      b.lastChild.nodeValue = " " + sah[kini].pendek;
+      b.setAttribute("title", terj("Ganti bahasa") + " · Language");
+    }
+    var m = document.getElementById("bahasaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-bahasa]"), function(t){
+      var v = t.getAttribute("data-bahasa"), aktif = v === kini;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      t.querySelector(".ket").textContent = terj(sah[v].ket);
+      // Pilihan ditandai dengan kata, tidak hanya warna.
+      t.querySelector(".tick").textContent = aktif ? terj("dipakai") : "";
+    });
+  }
+
+  function pilih(v){
+    if(!sah[v]) v = "id";
+    kini = v;
+    terapkan();
+    var ev;
+    try{ ev = new CustomEvent("jejak:bahasa", { detail:{ bahasa:v } }); }
+    catch(e){ ev = document.createEvent("CustomEvent"); ev.initCustomEvent("jejak:bahasa", false, false, { bahasa:v }); }
+    document.dispatchEvent(ev);
+  }
+
+  /* Pemilih memakai kelas yang sama dengan pemilih tema, jadi tampilannya
+     ikut tema tanpa CSS tambahan. Judul menunya selalu menyebut keempat
+     bahasa: siswa yang tersesat di bahasa yang tidak ia baca tetap bisa
+     menemukan jalan pulang. */
+  function bangun(){
+    var w = document.getElementById("bhsWrap");
+    if(w){
+      var html = '<button class="temaBtn" id="btnBahasa" aria-haspopup="true" aria-expanded="false" ' +
+                 'aria-controls="bahasaMenu"><span aria-hidden="true">🌐</span> ID</button>' +
+                 '<div class="temaMenu" id="bahasaMenu" role="menu" hidden aria-label="Bahasa · Language">' +
+                 '<div class="hd">Bahasa · Language · 语言 · 언어</div>';
+      BAHASA.forEach(function(b){
+        html += '<button type="button" role="menuitemradio" aria-checked="false" data-bahasa="' + b.id +
+                '" lang="' + b.lang + '"><span><span class="nm">' + b.nm + '</span>' +
+                '<span class="ket"></span></span><span class="tick"></span></button>';
+      });
+      w.innerHTML = html + "</div>";
+      var btn = document.getElementById("btnBahasa"), menu = document.getElementById("bahasaMenu");
+      var tutup = function(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        if(menu.hidden){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); } else tutup();
+      });
+      menu.addEventListener("click", function(e){
+        var t = e.target.closest ? e.target.closest("button[data-bahasa]") : null;
+        if(!t) return;
+        var v = t.getAttribute("data-bahasa");
+        simpan(v); tutup(); btn.focus();
+        if(v !== kini) pilih(v);
+      });
+      document.addEventListener("click", function(e){ if(!menu.hidden && !w.contains(e.target)) tutup(); });
+      document.addEventListener("keydown", function(e){
+        if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+      });
+    }
+    terapkan();
+  }
+
+  tambah({
+    en:{ "Ganti bahasa":"Change language", "dipakai":"in use", "Indonesia":"Indonesian", "Inggris":"English",
+         "Mandarin (aksara sederhana)":"Chinese (Simplified)", "Korea":"Korean" },
+    zh:{ "Ganti bahasa":"切换语言", "dipakai":"使用中", "Indonesia":"印度尼西亚语", "Inggris":"英语",
+         "Mandarin (aksara sederhana)":"简体中文", "Korea":"韩语" },
+    ko:{ "Ganti bahasa":"언어 바꾸기", "dipakai":"사용 중", "Indonesia":"인도네시아어", "Inggris":"영어",
+         "Mandarin (aksara sederhana)":"중국어(간체)", "Korea":"한국어" }
+  });
+  // Teks cuplikan tema (tema-js.txt) — diterjemahkan di sini karena tema dipakai di semua halaman.
+  tambah({
+    en:{ "Tema":"Theme", "Ganti tema warna":"Change colour theme", "Tema warna":"Colour theme",
+         "Kertas":"Paper", "Laut":"Sea", "Malam":"Night", "Kontras Tinggi":"High Contrast",
+         "Hangat, silau rendah — bawaan":"Warm, low glare — default",
+         "Sejuk, untuk ruang berlampu kuning":"Cool, for rooms with yellow lighting",
+         "Gelap, untuk belajar malam":"Dark, for studying at night",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"Sharp lines, for projectors & low vision" },
+    zh:{ "Tema":"主题", "Ganti tema warna":"更换配色主题", "Tema warna":"配色主题",
+         "Kertas":"纸张", "Laut":"海洋", "Malam":"夜间", "Kontras Tinggi":"高对比度",
+         "Hangat, silau rendah — bawaan":"暖色、低眩光——默认",
+         "Sejuk, untuk ruang berlampu kuning":"冷色调，适合黄色灯光的教室",
+         "Gelap, untuk belajar malam":"深色，适合夜间学习",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"线条清晰，适合投影仪和视力较弱者" },
+    ko:{ "Tema":"테마", "Ganti tema warna":"색 테마 바꾸기", "Tema warna":"색 테마",
+         "Kertas":"종이", "Laut":"바다", "Malam":"밤", "Kontras Tinggi":"고대비",
+         "Hangat, silau rendah — bawaan":"따뜻하고 눈부심이 적음 — 기본",
+         "Sejuk, untuk ruang berlampu kuning":"시원한 색, 노란 조명 교실용",
+         "Gelap, untuk belajar malam":"어두운 색, 밤 공부용",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"선명한 선, 프로젝터·저시력용" }
+  });
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.terj = terj;
+  window.tandai = tandai;
+  window.JEJAK_BHS = { kini:function(){ return kini; }, terj:terj, tambah:tambah, pilih:pilih,
+                       BAHASA:BAHASA, KUNCI:KUNCI, KAMUS:KAMUS, hilang:hilang, baca:baca };
+})();
+</script>
+<script>
+/* =====================================================================
+   KAMUS MODUL 2 — kalimat Indonesia → terjemahan. Kunci harus SAMA dengan
+   kalimat di markup/kode (spasi boleh berbeda); test-bahasa.js memeriksanya.
+   Huruf variabel per bahasa: en l/w P/A · zh a/b C/S · ko a/b 둘레/넓이.
+   ===================================================================== */
+JEJAK_BHS.tambah({
+ "en": {
+  "<b>Ekspedisimu dipulihkan.</b> {n} dari 4 tahap selesai, {xp} jejak terkumpul. Tersimpan di peramban ini saja — bukan di server mana pun.": "<b>Your expedition has been restored.</b> {n} of 4 stages done, {xp} footprints collected. Saved in this browser only — not on any server.",
+  "Pindai": "Scan",
+  "Model": "Model",
+  "Ukur": "Measure",
+  "Keliling": "Perimeter",
+  "Pemindai": "Scanner",
+  "Mengunci bangun papan dari gambar kamera": "Locked the board's shape from the camera image",
+  "Tangan Sendiri": "Own Hands",
+  "Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera": "Fixed a corner with your finger instead of giving in to the camera's guess",
+  "Berdiri Tegak": "Standing Square",
+  "Memindai dari sudut yang cukup tegak lurus terhadap papan": "Scanned from an angle square enough to the board",
+  "Pembaca Struktur": "Structure Reader",
+  "Menerima model yang dibangun dari bentuk, bukan dari ukuran": "Accepted a model built from shape, not from size",
+  "Pemegang Meteran": "Tape Measure Holder",
+  "Hasil ukurmu cocok dengan perbandingan yang dilihat kamera": "Your measurements match the ratio the camera saw",
+  "Teliti": "Careful",
+  "Mengukur ulang setelah hasil pertamamu tidak masuk akal": "Measured again after your first result didn't make sense",
+  "Penutup Keliling": "Perimeter Finisher",
+  "Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri": "Substituted your measurements into the model you built yourself",
+  "Ekspedisi Tuntas": "Expedition Complete",
+  "Keempat tahap lapangan diselesaikan dalam satu perjalanan": "All four field stages finished in one trip",
+  "Pemula Lapangan": "Field Beginner",
+  "Juru Ukur": "Surveyor",
+  "Ahli Ekspedisi": "Expedition Expert",
+  "Peringkat naik: {lv}": "Rank up: {lv}",
+  "Terkumpul {n} jejak.": "{n} footprints collected.",
+  "+{n} jejak": "+{n} footprints",
+  "Lencana: {n}": "Badge: {n}",
+  "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal.": "Done after fixing it yourself — this earns the most.",
+  "Tahap {t} selesai.": "{t} stage complete.",
+  "selesai": "done",
+  "giliranmu": "your turn",
+  "terkunci": "locked",
+  "Contoh simulasi dibuat. Tekan <b>Deteksi bangun</b>.": "Simulated example created. Press <b>Detect shape</b>.",
+  "Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.": "Camera on. Stand <b>square</b> to the board, then press <b>Detect shape</b>.",
+  "Kamera tidak bisa dibuka ({e}). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "The camera couldn't be opened ({e}). This page needs HTTPS. Use <b>Simulated example</b> or <b>Upload photo</b>.",
+  "Kamu membetulkan sudutnya sendiri.": "You fixed the corner yourself.",
+  "Foto dimuat. Tekan <b>Deteksi bangun</b>.": "Photo loaded. Press <b>Detect shape</b>.",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu.": "No image yet. Press <b>Simulated example</b> first.",
+  "Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci.": "The shape wasn't detected automatically — usually because the background is too busy or the light is too low. A helper frame has been placed: <b>drag the four white dots</b> to the board's corners, then lock.",
+  "Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci.": "A four-sided shape was detected. If a corner is off, drag its white dot before locking.",
+  "<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya ({s}%). Kamu memotret terlalu menyerong, jadi perbandingan sisinya belum bisa dipercaya. Berdirilah lebih tegak lurus menghadap papan.": "<b>Careful:</b> opposite sides look very different in length ({s}%). You took the photo at too much of an angle, so the side ratio can't be trusted yet. Stand more squarely in front of the board.",
+  "Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan {s}%).": "Your viewing angle is square enough (opposite sides differ by {s}%).",
+  "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — bukan empat. Karena itu cukup dua huruf.": "<b>What the camera sees:</b> a closed shape with <b>4 sides</b>. Opposite sides are parallel and equal in length, so there are only <b>two</b> different lengths — not four. That is why two letters are enough.",
+  "Model terkunci. Perbandingan sisi yang terbaca kamera: <b>{r} : 1</b>. Ukuran sebenarnya belum diketahui.": "Model locked. Side ratio read by the camera: <b>{r} : 1</b>. The real lengths are still unknown.",
+  "Isi kedua ukuran dengan angka positif, dalam cm.": "Fill in both lengths as positive numbers, in cm.",
+  "Kunci modelnya dulu di Langkah 2.": "Lock the model first in Step 2.",
+  "Perbandingan menurut kamera": "Ratio according to the camera",
+  "Perbandingan menurut ukuranmu": "Ratio from your measurements",
+  "Selisih": "Difference",
+  "Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya.": "It matches. The camera doesn't know how many centimetres your board is, but it does know the <b>ratio</b> of its sides — and your measurements fit that ratio. Your measurements can be trusted.",
+  "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> Tanpa salah satunya, keliling papan ini tidak bisa dihitung.": "Notice the division of labour: <b>the camera gives the structure, you give the quantities.</b> Without either one, this board's perimeter can't be calculated.",
+  "Belum cocok. Menurut gambar, sisi panjang kira-kira <b>{r}×</b> sisi lebar, tapi hasil ukuranmu memberi <b>{u}×</b>.": "Not a match yet. According to the image, the long side is about <b>{r}×</b> the short side, but your measurements give <b>{u}×</b>.",
+  "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; (2) <span class=\"math\">p</span> dan <span class=\"math\">l</span> tertukar; (3) pengukurannya perlu diulang.": "Three possibilities: (1) a corner is in the wrong place — drag its white dot again; (2) <span class=\"math\">l</span> and <span class=\"math\">w</span> are swapped; (3) the measuring needs to be redone.",
+  "Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya.": "The photo is also at too much of an angle, so the camera's ratio is less reliable.",
+  "Selesaikan Langkah 3 dulu.": "Finish Step 3 first.",
+  "Isi dengan sebuah angka.": "Fill in a number.",
+  "Benar — <b>{k} cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.": "Correct — <b>{k} cm</b>. The formula hasn't changed at all since Step 2; the only thing that changed is the values placed into <span class=\"math\">l</span> and <span class=\"math\">w</span>.",
+  "Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.": "You've only added <b>two</b> sides. The board has four edges: two long, two short.",
+  "Terdeteksi M2 — sebagian struktur bangun terlewat.": "M2 detected — part of the shape's structure was missed.",
+  "Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.": "That's the <b>area</b>, not the perimeter. The perimeter is the length of trim that goes all the way around the board's edge.",
+  "Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.": "Not quite. Substitute your measurements into <span class=\"math\">2l + 2w</span>, then calculate.",
+  "Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim.": "Your results have grown since the card was made. Press <b>Make result card</b> again so they are included.",
+  "JEJAK ALJABAR · Kartu Lapangan": "JEJAK ALJABAR · Field Card",
+  "MODUL 2 · {tgl}": "MODULE 2 · {tgl}",
+  "{n}× hanya dua sisi (M2)": "{n}× only two sides (M2)",
+  "{n}× menghitung luas": "{n}× calculated the area",
+  "{n}× lainnya": "{n}× other",
+  "Dilihat kamera": "Seen by camera",
+  "sisi panjang = {r} × sisi pendek": "long side = {r} × short side",
+  "foto menyerong {m}%": "photo at an angle {m}%",
+  "Diukur siswa": "Measured by student",
+  "— belum mengukur": "— not measured yet",
+  "p = {p} cm, l = {l} cm ({r} ×)": "l = {p} cm, w = {l} cm ({r} ×)",
+  "✓ cocok": "✓ match",
+  "✗ belum cocok": "✗ no match yet",
+  "Mengukur ulang": "Re-measured",
+  "{n} kali": "{n} times",
+  "✓ benar · 2p + 2l = {k} cm": "✓ correct · 2l + 2w = {k} cm",
+  "✗ belum benar": "✗ not correct yet",
+  "— belum dikerjakan": "— not done yet",
+  "Kekeliruan keliling": "Perimeter mistakes",
+  "tidak ada": "none",
+  "Sudut papan": "Board corners",
+  "dibetulkan sendiri dengan jari": "fixed by hand",
+  "diterima dari deteksi kamera": "accepted from camera detection",
+  "Waktu kerja": "Working time",
+  "SOAL BUATAN SISWA": "STUDENT-MADE PROBLEM",
+  "kunci {k}": "key {k}",
+  "— belum membuat soal (Langkah 5 bersifat pilihan)": "— no problem made (Step 5 is optional)",
+  "Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong": "Data strip for the Teacher Panel — send this card whole, don't crop it",
+  "Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2.": "The photo only exists while this page is open. Scan and lock the board first in Steps 1–2.",
+  "Peramban ini tidak bisa membuat gambar kartunya.": "This browser can't create the card image.",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu tekan <b>Bagikan</b> dan pilih WhatsApp.": "Card made. Check the photo in the preview, then press <b>Share</b> and choose WhatsApp.",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu unduh dan kirim ke grup WhatsApp kelas sebagai foto.": "Card made. Check the photo in the preview, then download it and send it to the class WhatsApp group as a photo.",
+  "Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp.": "This card doesn't contain your name — your teacher knows it's you from the sender's name on WhatsApp.",
+  "Kartu Lapangan — Jejak Aljabar": "Field Card — Jejak Aljabar",
+  "Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.": "Direct sharing failed on this device. Use <b>Download card</b>, then send it from your gallery.",
+  "— penghitung waktu tidak dipakai": "— timer not used",
+  "30 menit atau lebih": "30 minutes or more",
+  "{m} menit": "{m} minutes",
+  "✓ {lama}, dalam batas {b}": "✓ {lama}, within the {b}-minute limit",
+  "{lama}, lewat batas {b} menit": "{lama}, over the {b}-minute limit",
+  "Waktu habis · lewat": "Time's up · over by",
+  "sisa": "time left",
+  "Waktu {b} menit habis": "The {b} minutes are up",
+  "Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu.": "If you're in the middle of measuring, finish first. Then make and send your result card.",
+  "5 menit lagi": "5 minutes left",
+  "Mulai siapkan kartu hasilmu untuk guru.": "Start getting your result card ready for your teacher.",
+  "Waktu mulai berjalan": "The timer has started",
+  "{b} menit untuk memindai, mengukur, dan mengirim kartu. Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.": "{b} minutes to scan, measure and send the card. If time runs out, you may still finish your measuring.",
+  "Maju": "Forward",
+  "Ukuran papan diketahui, temanmu menghitung keliling atau luasnya. Sama seperti Langkah 4 — soal paling mudah.": "The board's lengths are given; your friend calculates its perimeter or area. Same as Step 4 — the easiest kind.",
+  "Mundur": "Backward",
+  "Keliling atau luas diketahui bersama satu sisi; temanmu mencari sisi yang lain. Ia harus berjalan mundur dari rumus — menyelesaikan persamaan.": "The perimeter or area is given together with one side; your friend finds the other side. They have to work backwards from the formula — solving an equation.",
+  "Perubahan": "Change",
+  "Satu sisi papan diperpanjang; temanmu mencari berapa keliling atau luasnya ikut bertambah.": "One side of the board is lengthened; your friend finds how much the perimeter or area increases.",
+  "panjang p": "length l",
+  "lebar l": "width w",
+  "panjang": "long",
+  "lebar": "short",
+  "kelilingnya": "its perimeter",
+  "luasnya": "its area",
+  "Pilih jenis soal dulu.": "Choose a problem type first.",
+  "angka": "number",
+  "Diketahui <i>p</i> = {A} cm dan <i>l</i> = {B} cm. Ditanya: {T}.": "Given <i>l</i> = {A} cm and <i>w</i> = {B} cm. Find: {T}.",
+  "Diketahui {TAHU} = {A} dan {SISI} = {B} cm. Ditanya: sisi yang lain.": "Given {TAHU} = {A} and {SISI} = {B} cm. Find: the other side.",
+  "keliling": "perimeter",
+  "luas": "area",
+  "{SISI} ditambah {A} cm. Ditanya: {T} bertambah berapa?": "{SISI} is increased by {A} cm. Find: how much {T} increases.",
+  "Panjang p": "Length l",
+  "Lebar l": "Width w",
+  "Untuk papanmu: <i>p</i> = {p} cm, <i>l</i> = {l} cm.": "For your board: <i>l</i> = {p} cm, <i>w</i> = {l} cm.",
+  "Kunci jawabanmu =": "Your answer key =",
+  "Tulis dulu kalimat soalnya — minimal satu kalimat utuh untuk temanmu.": "Write the problem sentence first — at least one complete sentence for your friend.",
+  "Isi semua angka di kunci soal dengan bilangan positif.": "Fill in every number in the answer key with a positive number.",
+  "Substitusikan angka soalmu ke 2p + 2l, lalu hitung lagi.": "Substitute your problem's numbers into 2l + 2w, then calculate again.",
+  "Substitusikan angka soalmu ke p × l, lalu hitung lagi.": "Substitute your problem's numbers into l × w, then calculate again.",
+  "Kunci benar. Soal maju sama dengan Langkah 4 — temanmu cukup menyubstitusi. Coba juga soal <b>mundur</b> atau <b>perubahan</b>: lebih menantang untuk temanmu.": "Correct key. A forward problem is the same as Step 4 — your friend only needs to substitute. Try a <b>backward</b> or <b>change</b> problem too: more of a challenge for your friend.",
+  "Soalmu belum bisa dijawab: dua sisi {sisi} saja sudah {d} cm, padahal kelilingnya hanya {a} cm. Perbesar kelilingnya atau perkecil sisinya.": "Your problem can't be answered yet: the two sides of {sisi} alone already make {d} cm, but the perimeter is only {a} cm. Make the perimeter bigger or the side smaller.",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut keliling {a}.": "Check by putting your key back in: {hitung} = {balik}, but your problem says the perimeter is {a}.",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut luas {a}.": "Check by putting your key back in: {hitung} = {balik}, but your problem says the area is {a}.",
+  "Kunci benar. Soalmu memaksa temanmu berjalan mundur dari <b>{rumus}</b> — itu menyelesaikan persamaan, bukan sekadar menghitung.": "Correct key. Your problem makes your friend work backwards from <b>{rumus}</b> — that's solving an equation, not just calculating.",
+  "keliling +{k} cm": "perimeter +{k} cm",
+  "luas +{k} cm²": "area +{k} cm²",
+  "Bandingkan papan sesudah dan sebelum diubah: tulis kelilingnya dengan {s} + {a}, lalu kurangi 2p + 2l. Ingat, papan punya <b>dua</b> sisi {kata}.": "Compare the board after and before the change: write its perimeter using {s} + {a}, then subtract 2l + 2w. Remember, the board has <b>two</b> {kata} sides.",
+  "Bandingkan luas sesudah dan sebelum diubah, dengan {lain} = {v} cm.": "Compare the area after and before the change, with {lain} = {v} cm.",
+  "Kunci benar — dan perhatikan: jawabannya <b>tidak memakai ukuran papanmu sama sekali</b>. Papan berapa pun, menambah {kata} {a} cm selalu menambah keliling {dua} cm. Itulah gunanya huruf: <i>{s}</i> mewakili semua papan, bukan satu angka rahasia.": "Correct key — and notice: the answer <b>doesn't use your board's size at all</b>. Whatever the board, adding {a} cm to the {kata} side always adds {dua} cm to the perimeter. That's what letters are for: <i>{s}</i> stands for every board, not one secret number.",
+  "Kunci benar. Berbeda dengan keliling, perubahan luas <b>bergantung pada papanmu</b> ({lain} = {v} cm). Papan lain, jawaban lain.": "Correct key. Unlike the perimeter, the change in area <b>depends on your board</b> ({lain} = {v} cm). A different board gives a different answer.",
+  "Kunci jawabanmu belum cocok dengan soalnya.": "Your answer key doesn't match the problem yet.",
+  "Catatan: angka {daftar} belum terlihat di kalimat soalmu — temanmu butuh angka itu. Kalau kamu menulisnya dengan huruf, abaikan catatan ini.": "Note: {daftar} can't be seen in your problem sentence yet — your friend needs it. If you wrote it out in words, ignore this note.",
+  "{a} dan {b}": "{a} and {b}",
+  "Soalmu ikut tercetak di kartu hasil untuk gurumu.": "Your problem will be printed on the result card for your teacher.",
+  "Soalmu kamu perbaiki sendiri sampai kuncinya benar — ini yang dibayar paling mahal.": "You fixed your problem yourself until the key was right — this earns the most.",
+  "Soal {jenis} buatanmu sendiri.": "Your own {jenis} problem.",
+  "Soalmu berubah sejak diperiksa. Tekan <b>Periksa kunci soal</b> lagi supaya kartu memakai versi terbaru.": "Your problem has changed since it was checked. Press <b>Check answer key</b> again so the card uses the latest version.",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.": "No image yet. Press <b>Simulated example</b> to try it without a camera.",
+  "Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di perangkat lain dan tekan <b>Pulihkan</b>.": "Save code made. Write it down, photograph it or send it to yourself — then paste it on the other device and press <b>Restore</b>.",
+  "Tekan <b>Buat kode simpan</b> dulu.": "Press <b>Make save code</b> first.",
+  "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.": "This browser doesn't allow automatic copying. The code is highlighted — long-press and choose <b>Copy</b>.",
+  "Kode <b>{k}</b> tersalin.": "Code <b>{k}</b> copied.",
+  "Tempel kode simpannya dulu.": "Paste the save code first.",
+  "Kode itu tidak sah.": "That code isn't valid.",
+  "Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru.": "Its checksum doesn't match, so the code was rejected rather than restoring the wrong progress.",
+  "Kode itu dibuat oleh versi media yang berbeda.": "That code was made by a different version of the media.",
+  "Struktur datanya sudah berubah.": "Its data structure has changed.",
+  "Ekspedisi dipulihkan dari kode. {n} dari 4 tahap selesai, {xp} jejak.": "Expedition restored from the code. {n} of 4 stages done, {xp} footprints.",
+  "Modul 2 · Di luar kelas": "Module 2 · Outside the classroom",
+  "☰ Menu": "☰ Menu",
+  "← Modul 1 · Kelas": "← Module 1 · Classroom",
+  "jejak": "footprints",
+  "<span aria-hidden=\"true\">⏱</span> Mulai 20 menit": "<span aria-hidden=\"true\">⏱</span> Start 20 minutes",
+  "Pindai dulu, ukur sendiri.": "Scan first, measure yourself.",
+  "Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>. Justru di celah itulah aljabar dibutuhkan.": "A camera can see the <b>shape</b> of an object, but it never knows its <b>size</b>. That gap is exactly where algebra is needed.",
+  "Deteksi bangun tanpa penanda cetak": "Shape detection without printed markers",
+  "Tanpa pustaka luar · tanpa internet": "No external libraries · no internet",
+  "Dikerjakan di depan papan yang sebenarnya": "Done in front of a real board",
+  "Mulai dari awal": "Start over",
+  "<b>Lanjutan dari Modul 1.</b> Di kelas, lebar papan sudah diberikan kepadamu (80 cm) dan kamu tinggal menyusun <span class=\"math\">2p + 160</span>. Di sini tidak ada angka yang diberikan — <b>keduanya</b> belum diketahui, dan kamu sendiri yang harus mengukurnya.": "<b>Continuing from Module 1.</b> In class, the board's width was given to you (80 cm) and you only had to write <span class=\"math\">2l + 160</span>. Here no numbers are given — <b>both</b> are unknown, and you have to measure them yourself.",
+  "<span class=\"step\">LANGKAH 1</span> Arahkan ke papan mading": "<span class=\"step\">STEP 1</span> Point at the notice board",
+  "Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas, pakai <b>Contoh simulasi</b> atau unggah foto.": "Choose an image source. The camera needs HTTPS — if this file is opened directly from storage, use <b>Simulated example</b> or upload a photo.",
+  "Nyalakan kamera": "Turn on camera",
+  "Contoh simulasi": "Simulated example",
+  "Unggah foto": "Upload photo",
+  "Deteksi bangun": "Detect shape",
+  "Sudut bisa digeser dengan jari.": "Corners can be dragged with your finger.",
+  "<span class=\"step\">LANGKAH 2</span> Model yang dibuat kamera": "<span class=\"step\">STEP 2</span> The model the camera built",
+  "Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.": "The media reads the shape's <i>structure</i>, then builds its formula by itself — before there is a single number.",
+  "Kamera berhenti di sini. Dua huruf itu belum punya nilai.": "The camera stops here. Those two letters don't have values yet.",
+  "<b>Kenapa kamera tidak sekalian mengukurnya?</b> Satu kamera tidak bisa membedakan papan kecil yang dekat dari papan besar yang jauh — keduanya menghasilkan gambar yang persis sama. Yang bisa diketahui kamera hanyalah <b>perbandingan</b> antar sisi, bukan panjang sebenarnya. Panjang sebenarnya harus datang dari meteranmu.": "<b>Why doesn't the camera just measure it too?</b> A single camera can't tell a small board that is close from a big board that is far away — both produce exactly the same image. All the camera can know is the <b>ratio</b> between the sides, not the real lengths. The real lengths have to come from your tape measure.",
+  "<span class=\"step\">LANGKAH 3</span> Sekarang giliranmu mengukur": "<span class=\"step\">STEP 3</span> Now it's your turn to measure",
+  "Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.": "Take a tape measure or ruler, measure the real board, then fill in below.",
+  "<span class=\"math\">p</span><span class=\"chip p\">sisi panjang</span> =": "<span class=\"math\">l</span><span class=\"chip p\">length</span> =",
+  "<span class=\"math\">l</span><span class=\"chip l\">sisi lebar</span> =": "<span class=\"math\">w</span><span class=\"chip l\">width</span> =",
+  "Periksa hasil ukur": "Check measurements",
+  "<span class=\"step\">LANGKAH 4</span> Masukkan ke model": "<span class=\"step\">STEP 4</span> Put it into the model",
+  "Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.": "The formula doesn't change. Only the values placed into its letters change.",
+  "Keliling =": "Perimeter =",
+  "Periksa": "Check",
+  "<b>Uji ulang.</b> Pindai papan lain — pintu kelas, jendela, ubin lantai, meja guru. Rumusnya akan keluar sama persis, karena strukturnya sama. Yang berbeda hanya hasil ukuranmu.": "<b>Test again.</b> Scan another object — the classroom door, a window, a floor tile, the teacher's desk. The formula will come out exactly the same, because the structure is the same. Only your measurements differ.",
+  "<span class=\"step\">LANGKAH 5 · PILIHAN</span> Buat soalmu sendiri": "<span class=\"step\">STEP 5 · OPTIONAL</span> Make your own problem",
+  "Papanmu sekarang punya model: <b>K = 2<i>p</i> + 2<i>l</i></b> dan <b>L = <i>p</i> × <i>l</i></b>. Giliranmu membuat soal untuk teman sekelas. Media hanya memeriksa <b>kunci jawabanmu</b> — kalimat soalnya dibaca gurumu di kartu hasil.": "Your board now has a model: <b>P = 2<i>l</i> + 2<i>w</i></b> and <b>A = <i>l</i> × <i>w</i></b>. Now it's your turn to make a problem for a classmate. The media only checks your <b>answer key</b> — your teacher reads the problem sentence on the result card.",
+  "<b>Kalimat soalmu</b> — tulis untuk temanmu, sertakan angkanya.": "<b>Your problem sentence</b> — write it for your friend and include the numbers.",
+  "Periksa kunci soal": "Check answer key",
+  "<span class=\"step\">KIRIM</span> Kartu hasil untuk guru": "<span class=\"step\">SEND</span> Result card for your teacher",
+  "Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera, dan hasil ukurmu. Kirim ke grup WhatsApp kelas seperti foto biasa — gurumu membukanya di Panel Guru.": "This card contains a photo of your board with its shape lines, the side ratio the camera saw, and your measurements. Send it to the class WhatsApp group like a normal photo — your teacher opens it in the Teacher Panel.",
+  "<b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu di dalamnya, pindai ulang dari sudut lain.": "<b>The photo is sent exactly as it is.</b> Check the preview first: if a classmate's face is in it, scan again from a different angle.",
+  "Buat kartu hasil": "Make result card",
+  "Bagikan": "Share",
+  "Unduh kartu": "Download card",
+  "Bekal Ekspedisi": "Expedition Kit",
+  "Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang sempat meleset dibayar lebih mahal daripada tepat sejak awal.</b> Lencana diberikan untuk cara kerja, bukan untuk angka.": "Points here follow the same rule as Module 1: <b>fixing a result that was off earns more than being exact from the start.</b> Badges are given for how you work, not for numbers.",
+  "jejak terkumpul": "footprints collected",
+  "peringkat": "rank",
+  "lencana": "badges",
+  "Pindah ke perangkat lain": "Move to another device",
+  "Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.": "Make a save code, write it down or send it to yourself, then paste it on the new device.",
+  "Buat kode simpan": "Make save code",
+  "Salin": "Copy",
+  "Pulihkan": "Restore",
+  "Kembali ke Modul 1 · Di dalam kelas": "Back to Module 1 · In the classroom",
+  "Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan, berdebat dengan teman sebaya AI, dan peta miskonsepsi. Dikerjakan sebelum turun ke lapangan.": "Four concept stations: what a variable means on the notice board, the balance of equality, debating with an AI classmate, and the misconception map. Done before going out into the field.",
+  "← Buka Modul 1": "← Open Module 1",
+  "<b>JEJAK ALJABAR · Modul 2 — Pindai &amp; Ukur (prototipe).</b> Detektor bangun ditulis sendiri: Sobel → ambang persentil → transformasi Hough berbobot arah gradien → pemilihan dua pasang garis → perpotongan. Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak. Satu berkas, jalan luring.<br> Simpan berkas ini dalam <b>satu folder</b> dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi. Kamera membutuhkan HTTPS atau localhost — dari berkas lokal, pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "<b>JEJAK ALJABAR · Module 2 — Scan &amp; Measure (prototype).</b> The shape detector is written from scratch: Sobel → percentile threshold → Hough transform weighted by gradient direction → choosing two pairs of lines → intersections. No OpenCV, no WebXR, no printed markers. One file, runs offline.<br> Keep this file in <b>the same folder</b> as <i>jejak-aljabar.html</i> so the links between modules work. The camera needs HTTPS or localhost — from a local file, use <b>Simulated example</b> or <b>Upload photo</b>.",
+  "Peta ekspedisi": "Expedition map",
+  "Jenis soal": "Problem type",
+  "Contoh: Pak Budi punya lis 300 cm untuk…": "Example: Mr Budi has 300 cm of trim for…",
+  "Pratinjau kartu hasil yang akan dikirim": "Preview of the result card to be sent",
+  "Tempel kode simpan di sini…": "Paste a save code here…",
+  "Kunci &amp; buat model": "Lock &amp; build model"
+ },
+ "zh": {
+  "<b>Ekspedisimu dipulihkan.</b> {n} dari 4 tahap selesai, {xp} jejak terkumpul. Tersimpan di peramban ini saja — bukan di server mana pun.": "<b>你的探险进度已恢复。</b>4 个阶段完成了 {n} 个，已收集 {xp} 个足迹。只保存在这个浏览器里——不在任何服务器上。",
+  "Pindai": "扫描",
+  "Model": "模型",
+  "Ukur": "测量",
+  "Keliling": "周长",
+  "Pemindai": "扫描者",
+  "Mengunci bangun papan dari gambar kamera": "从摄像头画面锁定了布告栏的形状",
+  "Tangan Sendiri": "亲手调整",
+  "Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera": "用手指修正了角点，而不是屈从于摄像头的猜测",
+  "Berdiri Tegak": "站正",
+  "Memindai dari sudut yang cukup tegak lurus terhadap papan": "从足够正对布告栏的角度扫描",
+  "Pembaca Struktur": "结构解读者",
+  "Menerima model yang dibangun dari bentuk, bukan dari ukuran": "接受了由形状而不是尺寸建立的模型",
+  "Pemegang Meteran": "卷尺手",
+  "Hasil ukurmu cocok dengan perbandingan yang dilihat kamera": "你的测量结果与摄像头看到的比例一致",
+  "Teliti": "细心",
+  "Mengukur ulang setelah hasil pertamamu tidak masuk akal": "第一次结果不合理后重新测量",
+  "Penutup Keliling": "周长收官者",
+  "Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri": "把测量结果代入你自己建立的模型",
+  "Ekspedisi Tuntas": "探险完成",
+  "Keempat tahap lapangan diselesaikan dalam satu perjalanan": "一次完成全部四个实地阶段",
+  "Pemula Lapangan": "实地新手",
+  "Juru Ukur": "测量员",
+  "Ahli Ekspedisi": "探险高手",
+  "Peringkat naik: {lv}": "等级提升：{lv}",
+  "Terkumpul {n} jejak.": "已收集 {n} 个足迹。",
+  "+{n} jejak": "+{n} 个足迹",
+  "Lencana: {n}": "徽章：{n}",
+  "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal.": "自己改正后完成——这样得到的积分最多。",
+  "Tahap {t} selesai.": "「{t}」阶段完成。",
+  "selesai": "已完成",
+  "giliranmu": "轮到你",
+  "terkunci": "未解锁",
+  "Contoh simulasi dibuat. Tekan <b>Deteksi bangun</b>.": "模拟示例已生成。请按<b>检测形状</b>。",
+  "Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.": "摄像头已开启。请<b>正对</b>布告栏站好，然后按<b>检测形状</b>。",
+  "Kamera tidak bisa dibuka ({e}). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "无法打开摄像头（{e}）。本页面需要 HTTPS。请使用<b>模拟示例</b>或<b>上传照片</b>。",
+  "Kamu membetulkan sudutnya sendiri.": "你亲手修正了角点。",
+  "Foto dimuat. Tekan <b>Deteksi bangun</b>.": "照片已载入。请按<b>检测形状</b>。",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu.": "还没有图像。请先按<b>模拟示例</b>。",
+  "Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci.": "未能自动检测到形状——通常是因为背景太杂乱或光线不足。已放上辅助框：<b>把四个白点拖到</b>布告栏的四个角，然后锁定。",
+  "Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci.": "检测到一个四边形。如果有角点偏了，请在锁定前拖动它的白点。",
+  "<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya ({s}%). Kamu memotret terlalu menyerong, jadi perbandingan sisinya belum bisa dipercaya. Berdirilah lebih tegak lurus menghadap papan.": "<b>注意：</b>对边看起来长度差别很大（{s}%）。你拍得太斜了，所以边长比例还不可信。请更正对布告栏站好。",
+  "Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan {s}%).": "你的拍摄角度足够正（对边相差 {s}%）。",
+  "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — bukan empat. Karena itu cukup dua huruf.": "<b>摄像头看到的：</b>一个有 <b>4 条边</b>的封闭图形。对边平行且相等，所以只有<b>两种</b>不同的长度——不是四种。因此两个字母就够了。",
+  "Model terkunci. Perbandingan sisi yang terbaca kamera: <b>{r} : 1</b>. Ukuran sebenarnya belum diketahui.": "模型已锁定。摄像头读到的边长比：<b>{r} : 1</b>。实际长度仍然未知。",
+  "Isi kedua ukuran dengan angka positif, dalam cm.": "请用正数填写两个长度，单位 cm。",
+  "Kunci modelnya dulu di Langkah 2.": "请先在步骤 2 锁定模型。",
+  "Perbandingan menurut kamera": "摄像头给出的比例",
+  "Perbandingan menurut ukuranmu": "按你的测量得出的比例",
+  "Selisih": "差异",
+  "Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya.": "吻合。摄像头不知道布告栏有多少厘米，但它知道各边的<b>比例</b>——而你的测量结果符合这个比例。你的测量值可信。",
+  "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> Tanpa salah satunya, keliling papan ini tidak bisa dihitung.": "注意分工：<b>摄像头提供结构，你提供数值。</b>缺少任何一方，都算不出这块布告栏的周长。",
+  "Belum cocok. Menurut gambar, sisi panjang kira-kira <b>{r}×</b> sisi lebar, tapi hasil ukuranmu memberi <b>{u}×</b>.": "还不吻合。根据图像，长边大约是短边的 <b>{r}×</b>，但你的测量结果是 <b>{u}×</b>。",
+  "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; (2) <span class=\"math\">p</span> dan <span class=\"math\">l</span> tertukar; (3) pengukurannya perlu diulang.": "三种可能：（1）有角点位置不对——再拖一下白点；（2）<span class=\"math\">a</span> 和 <span class=\"math\">b</span> 填反了；（3）需要重新测量。",
+  "Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya.": "照片也拍得太斜，所以摄像头的比例不太可信。",
+  "Selesaikan Langkah 3 dulu.": "请先完成步骤 3。",
+  "Isi dengan sebuah angka.": "请填一个数。",
+  "Benar — <b>{k} cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.": "正确——<b>{k} cm</b>。公式从步骤 2 起完全没变；变的只是放进 <span class=\"math\">a</span> 和 <span class=\"math\">b</span> 的值。",
+  "Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.": "你只加了<b>两条</b>边。布告栏有四条边：两条长边，两条短边。",
+  "Terdeteksi M2 — sebagian struktur bangun terlewat.": "检测到 M2——遗漏了图形的一部分结构。",
+  "Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.": "那是<b>面积</b>，不是周长。周长是围绕布告栏边缘一圈的边框长度。",
+  "Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.": "还不对。把测量结果代入 <span class=\"math\">2a + 2b</span>，再计算。",
+  "Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim.": "生成卡片后你又有了新结果。请再按一次<b>生成结果卡</b>，让新结果一起发送。",
+  "JEJAK ALJABAR · Kartu Lapangan": "JEJAK ALJABAR · 实地卡",
+  "MODUL 2 · {tgl}": "模块 2 · {tgl}",
+  "{n}× hanya dua sisi (M2)": "{n}× 只算两条边（M2）",
+  "{n}× menghitung luas": "{n}× 算成了面积",
+  "{n}× lainnya": "{n}× 其他",
+  "Dilihat kamera": "摄像头所见",
+  "sisi panjang = {r} × sisi pendek": "长边 = {r} × 短边",
+  "foto menyerong {m}%": "照片倾斜 {m}%",
+  "Diukur siswa": "学生测量",
+  "— belum mengukur": "—— 尚未测量",
+  "p = {p} cm, l = {l} cm ({r} ×)": "a = {p} cm，b = {l} cm（{r} ×）",
+  "✓ cocok": "✓ 吻合",
+  "✗ belum cocok": "✗ 尚不吻合",
+  "Mengukur ulang": "重新测量",
+  "{n} kali": "{n} 次",
+  "✓ benar · 2p + 2l = {k} cm": "✓ 正确 · 2a + 2b = {k} cm",
+  "✗ belum benar": "✗ 尚未正确",
+  "— belum dikerjakan": "—— 尚未完成",
+  "Kekeliruan keliling": "周长错误",
+  "tidak ada": "无",
+  "Sudut papan": "布告栏角点",
+  "dibetulkan sendiri dengan jari": "亲手用手指修正",
+  "diterima dari deteksi kamera": "采用摄像头的检测结果",
+  "Waktu kerja": "用时",
+  "SOAL BUATAN SISWA": "学生自编题",
+  "kunci {k}": "答案 {k}",
+  "— belum membuat soal (Langkah 5 bersifat pilihan)": "—— 尚未出题（步骤 5 为选做）",
+  "Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong": "供教师面板读取的数据条——请完整发送此卡，不要裁剪",
+  "Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2.": "照片只在本页面打开期间存在。请先在步骤 1–2 扫描并锁定布告栏。",
+  "Peramban ini tidak bisa membuat gambar kartunya.": "此浏览器无法生成卡片图像。",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu tekan <b>Bagikan</b> dan pilih WhatsApp.": "卡片已生成。请在预览中检查照片，然后按<b>分享</b>并选择 WhatsApp。",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu unduh dan kirim ke grup WhatsApp kelas sebagai foto.": "卡片已生成。请在预览中检查照片，然后下载并作为照片发送到班级 WhatsApp 群。",
+  "Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp.": "这张卡片不含你的名字——老师会通过 WhatsApp 上的发送者名字认出你。",
+  "Kartu Lapangan — Jejak Aljabar": "实地卡 — Jejak Aljabar",
+  "Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.": "此设备无法直接分享。请用<b>下载卡片</b>，再从相册发送。",
+  "— penghitung waktu tidak dipakai": "—— 未使用计时器",
+  "30 menit atau lebih": "30 分钟或以上",
+  "{m} menit": "{m} 分钟",
+  "✓ {lama}, dalam batas {b}": "✓ {lama}，在 {b} 分钟以内",
+  "{lama}, lewat batas {b} menit": "{lama}，超过 {b} 分钟",
+  "Waktu habis · lewat": "时间到 · 已超出",
+  "sisa": "剩余",
+  "Waktu {b} menit habis": "{b} 分钟时间到",
+  "Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu.": "如果正在测量，请先完成。然后生成并发送你的结果卡。",
+  "5 menit lagi": "还剩 5 分钟",
+  "Mulai siapkan kartu hasilmu untuk guru.": "开始准备给老师的结果卡吧。",
+  "Waktu mulai berjalan": "计时开始",
+  "{b} menit untuk memindai, mengukur, dan mengirim kartu. Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.": "{b} 分钟用来扫描、测量并发送卡片。时间到了，你仍然可以完成测量。",
+  "Maju": "正向",
+  "Ukuran papan diketahui, temanmu menghitung keliling atau luasnya. Sama seperti Langkah 4 — soal paling mudah.": "已知布告栏的长和宽，同学求周长或面积。和步骤 4 一样——最简单的题型。",
+  "Mundur": "逆向",
+  "Keliling atau luas diketahui bersama satu sisi; temanmu mencari sisi yang lain. Ia harus berjalan mundur dari rumus — menyelesaikan persamaan.": "已知周长或面积以及一条边，同学求另一条边。他要从公式倒推——也就是解方程。",
+  "Perubahan": "变化",
+  "Satu sisi papan diperpanjang; temanmu mencari berapa keliling atau luasnya ikut bertambah.": "把布告栏的一条边加长，同学求周长或面积增加了多少。",
+  "panjang p": "长 a",
+  "lebar l": "宽 b",
+  "panjang": "长",
+  "lebar": "宽",
+  "kelilingnya": "周长",
+  "luasnya": "面积",
+  "Pilih jenis soal dulu.": "请先选择题型。",
+  "angka": "数字",
+  "Diketahui <i>p</i> = {A} cm dan <i>l</i> = {B} cm. Ditanya: {T}.": "已知 <i>a</i> = {A} cm，<i>b</i> = {B} cm。求：{T}。",
+  "Diketahui {TAHU} = {A} dan {SISI} = {B} cm. Ditanya: sisi yang lain.": "已知 {TAHU} = {A}，{SISI} = {B} cm。求：另一条边。",
+  "keliling": "周长",
+  "luas": "面积",
+  "{SISI} ditambah {A} cm. Ditanya: {T} bertambah berapa?": "{SISI}增加 {A} cm。求：{T}增加了多少？",
+  "Panjang p": "长 a",
+  "Lebar l": "宽 b",
+  "Untuk papanmu: <i>p</i> = {p} cm, <i>l</i> = {l} cm.": "你的布告栏：<i>a</i> = {p} cm，<i>b</i> = {l} cm。",
+  "Kunci jawabanmu =": "你的答案 =",
+  "Tulis dulu kalimat soalnya — minimal satu kalimat utuh untuk temanmu.": "请先写出题目——至少给同学写一个完整的句子。",
+  "Isi semua angka di kunci soal dengan bilangan positif.": "请把答案部分的每个空都填上正数。",
+  "Substitusikan angka soalmu ke 2p + 2l, lalu hitung lagi.": "把题目中的数代入 2a + 2b，再算一次。",
+  "Substitusikan angka soalmu ke p × l, lalu hitung lagi.": "把题目中的数代入 a × b，再算一次。",
+  "Kunci benar. Soal maju sama dengan Langkah 4 — temanmu cukup menyubstitusi. Coba juga soal <b>mundur</b> atau <b>perubahan</b>: lebih menantang untuk temanmu.": "答案正确。正向题和步骤 4 一样——同学只需代入。也试试<b>逆向</b>或<b>变化</b>题吧：对同学更有挑战性。",
+  "Soalmu belum bisa dijawab: dua sisi {sisi} saja sudah {d} cm, padahal kelilingnya hanya {a} cm. Perbesar kelilingnya atau perkecil sisinya.": "你的题目还无法作答：仅两条{sisi}就已经 {d} cm，而周长只有 {a} cm。请把周长调大或把这条边调小。",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut keliling {a}.": "把你的答案代回去检查：{hitung} = {balik}，可你的题目说周长是 {a}。",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut luas {a}.": "把你的答案代回去检查：{hitung} = {balik}，可你的题目说面积是 {a}。",
+  "Kunci benar. Soalmu memaksa temanmu berjalan mundur dari <b>{rumus}</b> — itu menyelesaikan persamaan, bukan sekadar menghitung.": "答案正确。你的题目让同学从 <b>{rumus}</b> 倒推——这是在解方程，而不只是计算。",
+  "keliling +{k} cm": "周长 +{k} cm",
+  "luas +{k} cm²": "面积 +{k} cm²",
+  "Bandingkan papan sesudah dan sebelum diubah: tulis kelilingnya dengan {s} + {a}, lalu kurangi 2p + 2l. Ingat, papan punya <b>dua</b> sisi {kata}.": "比较改变前后的布告栏：用 {s} + {a} 写出周长，再减去 2a + 2b。记住，布告栏有<b>两</b>条{kata}边。",
+  "Bandingkan luas sesudah dan sebelum diubah, dengan {lain} = {v} cm.": "比较改变前后的面积，其中 {lain} = {v} cm。",
+  "Kunci benar — dan perhatikan: jawabannya <b>tidak memakai ukuran papanmu sama sekali</b>. Papan berapa pun, menambah {kata} {a} cm selalu menambah keliling {dua} cm. Itulah gunanya huruf: <i>{s}</i> mewakili semua papan, bukan satu angka rahasia.": "答案正确——而且注意：答案<b>完全没有用到你这块布告栏的尺寸</b>。无论什么样的板，把{kata}边加长 {a} cm，周长总是增加 {dua} cm。这就是字母的作用：<i>{s}</i> 代表所有的板，而不是某一个秘密数字。",
+  "Kunci benar. Berbeda dengan keliling, perubahan luas <b>bergantung pada papanmu</b> ({lain} = {v} cm). Papan lain, jawaban lain.": "答案正确。和周长不同，面积的变化<b>取决于你的布告栏</b>（{lain} = {v} cm）。换一块板，答案就不同。",
+  "Kunci jawabanmu belum cocok dengan soalnya.": "你的答案和题目还对不上。",
+  "Catatan: angka {daftar} belum terlihat di kalimat soalmu — temanmu butuh angka itu. Kalau kamu menulisnya dengan huruf, abaikan catatan ini.": "提示：题目句子里还看不到 {daftar}——同学需要这个数。如果你是用文字写的，请忽略这条提示。",
+  "{a} dan {b}": "{a} 和 {b}",
+  "Soalmu ikut tercetak di kartu hasil untuk gurumu.": "你的题目会印在给老师的结果卡上。",
+  "Soalmu kamu perbaiki sendiri sampai kuncinya benar — ini yang dibayar paling mahal.": "你自己把题目改到答案正确——这样得到的积分最多。",
+  "Soal {jenis} buatanmu sendiri.": "你自编的{jenis}题。",
+  "Soalmu berubah sejak diperiksa. Tekan <b>Periksa kunci soal</b> lagi supaya kartu memakai versi terbaru.": "题目在检查后改过了。请再按一次<b>检查答案</b>，让卡片使用最新版本。",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.": "还没有图像。按<b>模拟示例</b>，不用摄像头也能试试。",
+  "Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di perangkat lain dan tekan <b>Pulihkan</b>.": "保存码已生成。抄下来、拍下来或发给自己——然后在另一台设备上粘贴并按<b>恢复</b>。",
+  "Tekan <b>Buat kode simpan</b> dulu.": "请先按<b>生成保存码</b>。",
+  "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.": "此浏览器不允许自动复制。代码已选中——长按后选择<b>复制</b>。",
+  "Kode <b>{k}</b> tersalin.": "代码 <b>{k}</b> 已复制。",
+  "Tempel kode simpannya dulu.": "请先粘贴保存码。",
+  "Kode itu tidak sah.": "这个代码无效。",
+  "Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru.": "校验码不符，因此拒绝了这个代码，以免恢复错误的进度。",
+  "Kode itu dibuat oleh versi media yang berbeda.": "这个代码是由另一个版本的媒体生成的。",
+  "Struktur datanya sudah berubah.": "数据结构已经改变。",
+  "Ekspedisi dipulihkan dari kode. {n} dari 4 tahap selesai, {xp} jejak.": "已从代码恢复探险进度。4 个阶段完成了 {n} 个，{xp} 个足迹。",
+  "Modul 2 · Di luar kelas": "模块 2 · 课堂之外",
+  "☰ Menu": "☰ 菜单",
+  "← Modul 1 · Kelas": "← 模块 1 · 课堂",
+  "jejak": "足迹",
+  "<span aria-hidden=\"true\">⏱</span> Mulai 20 menit": "<span aria-hidden=\"true\">⏱</span> 开始 20 分钟",
+  "Pindai dulu, ukur sendiri.": "先扫描，再亲手测量。",
+  "Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>. Justru di celah itulah aljabar dibutuhkan.": "摄像头能看见物体的<b>形状</b>，却永远不知道它的<b>大小</b>。正是在这个空缺里，才需要代数。",
+  "Deteksi bangun tanpa penanda cetak": "无需打印标记即可检测形状",
+  "Tanpa pustaka luar · tanpa internet": "无外部库 · 无需联网",
+  "Dikerjakan di depan papan yang sebenarnya": "在真实的布告栏前完成",
+  "Mulai dari awal": "从头开始",
+  "<b>Lanjutan dari Modul 1.</b> Di kelas, lebar papan sudah diberikan kepadamu (80 cm) dan kamu tinggal menyusun <span class=\"math\">2p + 160</span>. Di sini tidak ada angka yang diberikan — <b>keduanya</b> belum diketahui, dan kamu sendiri yang harus mengukurnya.": "<b>接续模块 1。</b>在课堂上，布告栏的宽已经给你了（80 cm），你只需列出 <span class=\"math\">2a + 160</span>。这里没有给出任何数——<b>两个</b>都是未知的，要你亲手测量。",
+  "<span class=\"step\">LANGKAH 1</span> Arahkan ke papan mading": "<span class=\"step\">步骤 1</span> 对准布告栏",
+  "Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas, pakai <b>Contoh simulasi</b> atau unggah foto.": "选择图像来源。摄像头需要 HTTPS——如果直接从文件打开本页，请使用<b>模拟示例</b>或上传照片。",
+  "Nyalakan kamera": "打开摄像头",
+  "Contoh simulasi": "模拟示例",
+  "Unggah foto": "上传照片",
+  "Deteksi bangun": "检测形状",
+  "Sudut bisa digeser dengan jari.": "可以用手指拖动角点。",
+  "<span class=\"step\">LANGKAH 2</span> Model yang dibuat kamera": "<span class=\"step\">步骤 2</span> 摄像头建立的模型",
+  "Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.": "媒体读取图形的<i>结构</i>，然后自己列出公式——在出现任何一个数之前。",
+  "Kamera berhenti di sini. Dua huruf itu belum punya nilai.": "摄像头到此为止。这两个字母还没有值。",
+  "<b>Kenapa kamera tidak sekalian mengukurnya?</b> Satu kamera tidak bisa membedakan papan kecil yang dekat dari papan besar yang jauh — keduanya menghasilkan gambar yang persis sama. Yang bisa diketahui kamera hanyalah <b>perbandingan</b> antar sisi, bukan panjang sebenarnya. Panjang sebenarnya harus datang dari meteranmu.": "<b>为什么摄像头不顺便测量？</b>单个摄像头分不清近处的小板和远处的大板——两者拍出的图像一模一样。摄像头只能知道各边之间的<b>比例</b>，而不是实际长度。实际长度必须来自你的卷尺。",
+  "<span class=\"step\">LANGKAH 3</span> Sekarang giliranmu mengukur": "<span class=\"step\">步骤 3</span> 现在轮到你测量了",
+  "Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.": "拿出卷尺或尺子，测量真实的布告栏，然后填在下面。",
+  "<span class=\"math\">p</span><span class=\"chip p\">sisi panjang</span> =": "<span class=\"math\">a</span><span class=\"chip p\">长</span> =",
+  "<span class=\"math\">l</span><span class=\"chip l\">sisi lebar</span> =": "<span class=\"math\">b</span><span class=\"chip l\">宽</span> =",
+  "Periksa hasil ukur": "检查测量结果",
+  "<span class=\"step\">LANGKAH 4</span> Masukkan ke model": "<span class=\"step\">步骤 4</span> 代入模型",
+  "Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.": "公式不变，变的只是放进字母里的值。",
+  "Keliling =": "周长 =",
+  "Periksa": "检查",
+  "<b>Uji ulang.</b> Pindai papan lain — pintu kelas, jendela, ubin lantai, meja guru. Rumusnya akan keluar sama persis, karena strukturnya sama. Yang berbeda hanya hasil ukuranmu.": "<b>再试一次。</b>扫描别的物体——教室门、窗户、地砖、讲台。公式会完全一样，因为结构相同。不同的只是你的测量结果。",
+  "<span class=\"step\">LANGKAH 5 · PILIHAN</span> Buat soalmu sendiri": "<span class=\"step\">步骤 5 · 选做</span> 自己出一道题",
+  "Papanmu sekarang punya model: <b>K = 2<i>p</i> + 2<i>l</i></b> dan <b>L = <i>p</i> × <i>l</i></b>. Giliranmu membuat soal untuk teman sekelas. Media hanya memeriksa <b>kunci jawabanmu</b> — kalimat soalnya dibaca gurumu di kartu hasil.": "你的布告栏现在有了模型：<b>C = 2<i>a</i> + 2<i>b</i></b> 和 <b>S = <i>a</i> × <i>b</i></b>。轮到你给同学出一道题了。媒体只检查你的<b>答案</b>——题目句子由老师在结果卡上阅读。",
+  "<b>Kalimat soalmu</b> — tulis untuk temanmu, sertakan angkanya.": "<b>你的题目</b>——写给同学，要包含数字。",
+  "Periksa kunci soal": "检查答案",
+  "<span class=\"step\">KIRIM</span> Kartu hasil untuk guru": "<span class=\"step\">发送</span> 给老师的结果卡",
+  "Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera, dan hasil ukurmu. Kirim ke grup WhatsApp kelas seperti foto biasa — gurumu membukanya di Panel Guru.": "这张卡片包含布告栏的照片和形状线、摄像头看到的边长比例，以及你的测量结果。像普通照片一样发送到班级 WhatsApp 群——老师会在教师面板中打开它。",
+  "<b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu di dalamnya, pindai ulang dari sudut lain.": "<b>照片会原样发送。</b>请先检查预览：如果里面有同学的脸，请换个角度重新扫描。",
+  "Buat kartu hasil": "生成结果卡",
+  "Bagikan": "分享",
+  "Unduh kartu": "下载卡片",
+  "Bekal Ekspedisi": "探险行囊",
+  "Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang sempat meleset dibayar lebih mahal daripada tepat sejak awal.</b> Lencana diberikan untuk cara kerja, bukan untuk angka.": "这里的积分规则和模块 1 相同：<b>改正一度出错的结果，比一开始就准确得到的更多。</b>徽章奖励的是做事的方法，而不是数字。",
+  "jejak terkumpul": "已收集的足迹",
+  "peringkat": "等级",
+  "lencana": "徽章",
+  "Pindah ke perangkat lain": "换到另一台设备",
+  "Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.": "生成保存码，抄下来或发给自己，然后在新设备上粘贴。",
+  "Buat kode simpan": "生成保存码",
+  "Salin": "复制",
+  "Pulihkan": "恢复",
+  "Kembali ke Modul 1 · Di dalam kelas": "回到模块 1 · 课堂内",
+  "Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan, berdebat dengan teman sebaya AI, dan peta miskonsepsi. Dikerjakan sebelum turun ke lapangan.": "四个概念站点：布告栏上变量的含义、等式天平、与 AI 同学辩论、误解地图。在去实地之前完成。",
+  "← Buka Modul 1": "← 打开模块 1",
+  "<b>JEJAK ALJABAR · Modul 2 — Pindai &amp; Ukur (prototipe).</b> Detektor bangun ditulis sendiri: Sobel → ambang persentil → transformasi Hough berbobot arah gradien → pemilihan dua pasang garis → perpotongan. Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak. Satu berkas, jalan luring.<br> Simpan berkas ini dalam <b>satu folder</b> dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi. Kamera membutuhkan HTTPS atau localhost — dari berkas lokal, pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "<b>JEJAK ALJABAR · 模块 2 — 扫描与测量（原型）。</b>形状检测器从零编写：Sobel → 百分位阈值 → 按梯度方向加权的霍夫变换 → 选出两对直线 → 求交点。不用 OpenCV，不用 WebXR，不用打印标记。单个文件，离线运行。<br> 请把本文件和 <i>jejak-aljabar.html</i> 放在<b>同一个文件夹</b>里，模块之间的链接才能使用。摄像头需要 HTTPS 或 localhost——从本地文件打开时，请使用<b>模拟示例</b>或<b>上传照片</b>。",
+  "Peta ekspedisi": "探险地图",
+  "Jenis soal": "题型",
+  "Contoh: Pak Budi punya lis 300 cm untuk…": "例如：Budi 老师有 300 cm 长的边条，用来……",
+  "Pratinjau kartu hasil yang akan dikirim": "即将发送的结果卡预览",
+  "Tempel kode simpan di sini…": "在此粘贴保存码…",
+  "Kunci &amp; buat model": "锁定并建立模型"
+ },
+ "ko": {
+  "<b>Ekspedisimu dipulihkan.</b> {n} dari 4 tahap selesai, {xp} jejak terkumpul. Tersimpan di peramban ini saja — bukan di server mana pun.": "<b>탐험 기록을 되살렸어요.</b> 4단계 중 {n}단계 완료, 발자국 {xp}개를 모았어요. 이 브라우저에만 저장돼요 — 어떤 서버에도 없어요.",
+  "Pindai": "스캔",
+  "Model": "모델",
+  "Ukur": "측정",
+  "Keliling": "둘레",
+  "Pemindai": "스캐너",
+  "Mengunci bangun papan dari gambar kamera": "카메라 화면에서 게시판의 모양을 고정했어요",
+  "Tangan Sendiri": "내 손으로",
+  "Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera": "카메라의 추측에 맡기지 않고 손가락으로 꼭짓점을 고쳤어요",
+  "Berdiri Tegak": "똑바로 서기",
+  "Memindai dari sudut yang cukup tegak lurus terhadap papan": "게시판을 충분히 정면에서 스캔했어요",
+  "Pembaca Struktur": "구조 읽기",
+  "Menerima model yang dibangun dari bentuk, bukan dari ukuran": "크기가 아니라 모양으로 세운 모델을 받아들였어요",
+  "Pemegang Meteran": "줄자 담당",
+  "Hasil ukurmu cocok dengan perbandingan yang dilihat kamera": "측정값이 카메라가 본 비율과 맞았어요",
+  "Teliti": "꼼꼼함",
+  "Mengukur ulang setelah hasil pertamamu tidak masuk akal": "첫 결과가 이상해서 다시 측정했어요",
+  "Penutup Keliling": "둘레 완성",
+  "Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri": "직접 세운 모델에 측정값을 대입했어요",
+  "Ekspedisi Tuntas": "탐험 완주",
+  "Keempat tahap lapangan diselesaikan dalam satu perjalanan": "네 가지 현장 단계를 한 번에 끝냈어요",
+  "Pemula Lapangan": "현장 초보",
+  "Juru Ukur": "측량사",
+  "Ahli Ekspedisi": "탐험 전문가",
+  "Peringkat naik: {lv}": "등급 상승: {lv}",
+  "Terkumpul {n} jejak.": "발자국 {n}개를 모았어요.",
+  "+{n} jejak": "발자국 +{n}",
+  "Lencana: {n}": "배지: {n}",
+  "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal.": "스스로 고친 뒤에 끝냈어요 — 이게 가장 많은 점수를 받아요.",
+  "Tahap {t} selesai.": "'{t}' 단계 완료.",
+  "selesai": "완료",
+  "giliranmu": "내 차례",
+  "terkunci": "잠김",
+  "Contoh simulasi dibuat. Tekan <b>Deteksi bangun</b>.": "모의 예시를 만들었어요. <b>모양 찾기</b>를 누르세요.",
+  "Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.": "카메라가 켜졌어요. 게시판을 <b>정면으로</b> 마주 서서 <b>모양 찾기</b>를 누르세요.",
+  "Kamera tidak bisa dibuka ({e}). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "카메라를 열 수 없어요({e}). 이 페이지는 HTTPS가 필요해요. <b>모의 예시</b>나 <b>사진 올리기</b>를 쓰세요.",
+  "Kamu membetulkan sudutnya sendiri.": "꼭짓점을 직접 고쳤어요.",
+  "Foto dimuat. Tekan <b>Deteksi bangun</b>.": "사진을 불러왔어요. <b>모양 찾기</b>를 누르세요.",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu.": "아직 이미지가 없어요. 먼저 <b>모의 예시</b>를 누르세요.",
+  "Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci.": "모양을 자동으로 찾지 못했어요 — 보통 배경이 너무 복잡하거나 빛이 부족해서예요. 도움 틀을 놓아 두었어요: <b>흰 점 네 개를</b> 게시판 모서리로 옮긴 뒤 고정하세요.",
+  "Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci.": "네 변으로 된 모양을 찾았어요. 어긋난 꼭짓점이 있으면 고정하기 전에 흰 점을 옮기세요.",
+  "<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya ({s}%). Kamu memotret terlalu menyerong, jadi perbandingan sisinya belum bisa dipercaya. Berdirilah lebih tegak lurus menghadap papan.": "<b>주의:</b> 마주 보는 변의 길이가 많이 달라 보여요({s}%). 너무 비스듬히 찍어서 변의 비율을 아직 믿을 수 없어요. 게시판을 더 정면으로 마주 서세요.",
+  "Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan {s}%).": "보는 각도가 충분히 정면이에요(마주 보는 변 차이 {s}%).",
+  "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — bukan empat. Karena itu cukup dua huruf.": "<b>카메라가 본 것:</b> <b>변이 4개</b>인 닫힌 도형. 마주 보는 변은 평행하고 길이가 같아서, 서로 다른 길이는 네 개가 아니라 <b>두</b> 개뿐이에요. 그래서 문자 두 개면 충분해요.",
+  "Model terkunci. Perbandingan sisi yang terbaca kamera: <b>{r} : 1</b>. Ukuran sebenarnya belum diketahui.": "모델을 고정했어요. 카메라가 읽은 변의 비: <b>{r} : 1</b>. 실제 길이는 아직 몰라요.",
+  "Isi kedua ukuran dengan angka positif, dalam cm.": "두 길이를 cm 단위의 양수로 채우세요.",
+  "Kunci modelnya dulu di Langkah 2.": "먼저 2단계에서 모델을 고정하세요.",
+  "Perbandingan menurut kamera": "카메라가 본 비율",
+  "Perbandingan menurut ukuranmu": "내 측정값의 비율",
+  "Selisih": "차이",
+  "Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya.": "맞아요. 카메라는 게시판이 몇 센티미터인지 모르지만, 변의 <b>비율</b>은 알아요 — 그리고 측정값이 그 비율과 맞아요. 측정값을 믿을 수 있어요.",
+  "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> Tanpa salah satunya, keliling papan ini tidak bisa dihitung.": "역할 분담을 보세요: <b>카메라는 구조를, 나는 크기를 줘요.</b> 둘 중 하나라도 없으면 이 게시판의 둘레를 구할 수 없어요.",
+  "Belum cocok. Menurut gambar, sisi panjang kira-kira <b>{r}×</b> sisi lebar, tapi hasil ukuranmu memberi <b>{u}×</b>.": "아직 안 맞아요. 이미지로 보면 긴 변은 짧은 변의 약 <b>{r}×</b>인데, 측정값은 <b>{u}×</b>예요.",
+  "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; (2) <span class=\"math\">p</span> dan <span class=\"math\">l</span> tertukar; (3) pengukurannya perlu diulang.": "세 가지 가능성: (1) 꼭짓점 하나가 잘못된 자리에 있어요 — 흰 점을 다시 옮기세요; (2) <span class=\"math\">a</span>와 <span class=\"math\">b</span>가 바뀌었어요; (3) 다시 측정해야 해요.",
+  "Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya.": "사진도 너무 비스듬해서 카메라의 비율을 믿기 어려워요.",
+  "Selesaikan Langkah 3 dulu.": "먼저 3단계를 끝내세요.",
+  "Isi dengan sebuah angka.": "숫자를 하나 넣으세요.",
+  "Benar — <b>{k} cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.": "맞아요 — <b>{k} cm</b>. 식은 2단계 이후 전혀 바뀌지 않았어요. 바뀐 건 <span class=\"math\">a</span>와 <span class=\"math\">b</span>에 넣은 값뿐이에요.",
+  "Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.": "변을 <b>두</b> 개만 더했어요. 게시판에는 변이 네 개 있어요: 긴 변 둘, 짧은 변 둘.",
+  "Terdeteksi M2 — sebagian struktur bangun terlewat.": "M2 감지 — 도형 구조의 일부를 빠뜨렸어요.",
+  "Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.": "그건 둘레가 아니라 <b>넓이</b>예요. 둘레는 게시판 가장자리를 한 바퀴 두르는 테두리의 길이예요.",
+  "Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.": "아직 아니에요. 측정값을 <span class=\"math\">2a + 2b</span>에 대입해서 계산하세요.",
+  "Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim.": "카드를 만든 뒤에 결과가 늘었어요. 함께 보내려면 <b>결과 카드 만들기</b>를 다시 누르세요.",
+  "JEJAK ALJABAR · Kartu Lapangan": "JEJAK ALJABAR · 현장 카드",
+  "MODUL 2 · {tgl}": "모듈 2 · {tgl}",
+  "{n}× hanya dua sisi (M2)": "{n}× 두 변만 (M2)",
+  "{n}× menghitung luas": "{n}× 넓이를 계산",
+  "{n}× lainnya": "{n}× 기타",
+  "Dilihat kamera": "카메라가 본 것",
+  "sisi panjang = {r} × sisi pendek": "긴 변 = {r} × 짧은 변",
+  "foto menyerong {m}%": "사진 기울기 {m}%",
+  "Diukur siswa": "학생 측정",
+  "— belum mengukur": "— 아직 측정 안 함",
+  "p = {p} cm, l = {l} cm ({r} ×)": "a = {p} cm, b = {l} cm ({r} ×)",
+  "✓ cocok": "✓ 맞음",
+  "✗ belum cocok": "✗ 아직 안 맞음",
+  "Mengukur ulang": "다시 측정",
+  "{n} kali": "{n}번",
+  "✓ benar · 2p + 2l = {k} cm": "✓ 정답 · 2a + 2b = {k} cm",
+  "✗ belum benar": "✗ 아직 틀림",
+  "— belum dikerjakan": "— 아직 안 함",
+  "Kekeliruan keliling": "둘레 실수",
+  "tidak ada": "없음",
+  "Sudut papan": "게시판 꼭짓점",
+  "dibetulkan sendiri dengan jari": "손가락으로 직접 고침",
+  "diterima dari deteksi kamera": "카메라 감지를 그대로 받아들임",
+  "Waktu kerja": "작업 시간",
+  "SOAL BUATAN SISWA": "학생이 만든 문제",
+  "kunci {k}": "정답 {k}",
+  "— belum membuat soal (Langkah 5 bersifat pilihan)": "— 문제를 만들지 않음 (5단계는 선택)",
+  "Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong": "교사 패널용 데이터 띠 — 이 카드를 자르지 말고 통째로 보내세요",
+  "Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2.": "사진은 이 페이지가 열려 있는 동안만 있어요. 먼저 1–2단계에서 게시판을 스캔하고 고정하세요.",
+  "Peramban ini tidak bisa membuat gambar kartunya.": "이 브라우저에서는 카드 이미지를 만들 수 없어요.",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu tekan <b>Bagikan</b> dan pilih WhatsApp.": "카드를 만들었어요. 미리보기에서 사진을 확인한 뒤 <b>공유</b>를 누르고 WhatsApp을 고르세요.",
+  "Kartu dibuat. Periksa fotonya di pratinjau, lalu unduh dan kirim ke grup WhatsApp kelas sebagai foto.": "카드를 만들었어요. 미리보기에서 사진을 확인한 뒤 내려받아서 반 WhatsApp 단체방에 사진으로 보내세요.",
+  "Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp.": "이 카드에는 이름이 들어 있지 않아요 — 선생님은 WhatsApp 보낸 사람 이름으로 알아봐요.",
+  "Kartu Lapangan — Jejak Aljabar": "현장 카드 — Jejak Aljabar",
+  "Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.": "이 기기에서는 바로 공유가 안 돼요. <b>카드 내려받기</b>를 누른 뒤 갤러리에서 보내세요.",
+  "— penghitung waktu tidak dipakai": "— 타이머 사용 안 함",
+  "30 menit atau lebih": "30분 이상",
+  "{m} menit": "{m}분",
+  "✓ {lama}, dalam batas {b}": "✓ {lama}, {b}분 이내",
+  "{lama}, lewat batas {b} menit": "{lama}, {b}분 초과",
+  "Waktu habis · lewat": "시간 끝 · 초과",
+  "sisa": "남은 시간",
+  "Waktu {b} menit habis": "{b}분이 끝났어요",
+  "Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu.": "측정하는 중이면 먼저 끝내세요. 그다음 결과 카드를 만들어 보내세요.",
+  "5 menit lagi": "5분 남았어요",
+  "Mulai siapkan kartu hasilmu untuk guru.": "선생님께 보낼 결과 카드를 준비하기 시작하세요.",
+  "Waktu mulai berjalan": "시간이 흐르기 시작했어요",
+  "{b} menit untuk memindai, mengukur, dan mengirim kartu. Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.": "{b}분 동안 스캔하고, 측정하고, 카드를 보내요. 시간이 끝나도 측정은 마저 끝낼 수 있어요.",
+  "Maju": "순방향",
+  "Ukuran papan diketahui, temanmu menghitung keliling atau luasnya. Sama seperti Langkah 4 — soal paling mudah.": "게시판의 길이가 주어지고, 친구가 둘레나 넓이를 구해요. 4단계와 같아요 — 가장 쉬운 문제예요.",
+  "Mundur": "역방향",
+  "Keliling atau luas diketahui bersama satu sisi; temanmu mencari sisi yang lain. Ia harus berjalan mundur dari rumus — menyelesaikan persamaan.": "둘레나 넓이와 한 변이 주어지고, 친구가 다른 변을 구해요. 식에서 거꾸로 가야 해요 — 방정식을 푸는 거예요.",
+  "Perubahan": "변화",
+  "Satu sisi papan diperpanjang; temanmu mencari berapa keliling atau luasnya ikut bertambah.": "게시판의 한 변을 늘리고, 친구가 둘레나 넓이가 얼마나 늘어나는지 구해요.",
+  "panjang p": "긴 변 a",
+  "lebar l": "짧은 변 b",
+  "panjang": "긴 변",
+  "lebar": "짧은 변",
+  "kelilingnya": "둘레",
+  "luasnya": "넓이",
+  "Pilih jenis soal dulu.": "먼저 문제 종류를 고르세요.",
+  "angka": "숫자",
+  "Diketahui <i>p</i> = {A} cm dan <i>l</i> = {B} cm. Ditanya: {T}.": "알려진 것: <i>a</i> = {A} cm, <i>b</i> = {B} cm. 구할 것: {T}.",
+  "Diketahui {TAHU} = {A} dan {SISI} = {B} cm. Ditanya: sisi yang lain.": "알려진 것: {TAHU} = {A}, {SISI} = {B} cm. 구할 것: 다른 변.",
+  "keliling": "둘레",
+  "luas": "넓이",
+  "{SISI} ditambah {A} cm. Ditanya: {T} bertambah berapa?": "{SISI} {A} cm 늘리기. 구할 것: {T}의 증가량.",
+  "Panjang p": "긴 변 a",
+  "Lebar l": "짧은 변 b",
+  "Untuk papanmu: <i>p</i> = {p} cm, <i>l</i> = {l} cm.": "내 게시판: <i>a</i> = {p} cm, <i>b</i> = {l} cm.",
+  "Kunci jawabanmu =": "내 정답 =",
+  "Tulis dulu kalimat soalnya — minimal satu kalimat utuh untuk temanmu.": "먼저 문제 문장을 쓰세요 — 친구를 위해 적어도 완전한 문장 하나.",
+  "Isi semua angka di kunci soal dengan bilangan positif.": "정답 칸의 숫자를 모두 양수로 채우세요.",
+  "Substitusikan angka soalmu ke 2p + 2l, lalu hitung lagi.": "문제의 숫자를 2a + 2b에 대입해서 다시 계산하세요.",
+  "Substitusikan angka soalmu ke p × l, lalu hitung lagi.": "문제의 숫자를 a × b에 대입해서 다시 계산하세요.",
+  "Kunci benar. Soal maju sama dengan Langkah 4 — temanmu cukup menyubstitusi. Coba juga soal <b>mundur</b> atau <b>perubahan</b>: lebih menantang untuk temanmu.": "정답이 맞아요. 순방향 문제는 4단계와 같아요 — 친구는 대입만 하면 돼요. <b>역방향</b>이나 <b>변화</b> 문제도 만들어 보세요: 친구에게 더 도전이 돼요.",
+  "Soalmu belum bisa dijawab: dua sisi {sisi} saja sudah {d} cm, padahal kelilingnya hanya {a} cm. Perbesar kelilingnya atau perkecil sisinya.": "이 문제는 아직 풀 수 없어요: {sisi} 두 개만으로도 {d} cm인데, 둘레는 {a} cm뿐이에요. 둘레를 늘리거나 변을 줄이세요.",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut keliling {a}.": "정답을 다시 넣어서 확인해 보세요: {hitung} = {balik}인데, 문제에는 둘레가 {a}라고 되어 있어요.",
+  "Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut luas {a}.": "정답을 다시 넣어서 확인해 보세요: {hitung} = {balik}인데, 문제에는 넓이가 {a}라고 되어 있어요.",
+  "Kunci benar. Soalmu memaksa temanmu berjalan mundur dari <b>{rumus}</b> — itu menyelesaikan persamaan, bukan sekadar menghitung.": "정답이 맞아요. 이 문제는 친구가 <b>{rumus}</b>에서 거꾸로 가게 만들어요 — 그냥 계산이 아니라 방정식을 푸는 거예요.",
+  "keliling +{k} cm": "둘레 +{k} cm",
+  "luas +{k} cm²": "넓이 +{k} cm²",
+  "Bandingkan papan sesudah dan sebelum diubah: tulis kelilingnya dengan {s} + {a}, lalu kurangi 2p + 2l. Ingat, papan punya <b>dua</b> sisi {kata}.": "바꾸기 전과 후의 게시판을 비교해 보세요: {s} + {a}로 둘레를 쓴 다음 2a + 2b를 빼세요. 게시판에는 {kata}이 <b>두</b> 개 있다는 걸 기억하세요.",
+  "Bandingkan luas sesudah dan sebelum diubah, dengan {lain} = {v} cm.": "바꾸기 전과 후의 넓이를 비교해 보세요. 이때 {lain} = {v} cm예요.",
+  "Kunci benar — dan perhatikan: jawabannya <b>tidak memakai ukuran papanmu sama sekali</b>. Papan berapa pun, menambah {kata} {a} cm selalu menambah keliling {dua} cm. Itulah gunanya huruf: <i>{s}</i> mewakili semua papan, bukan satu angka rahasia.": "정답이 맞아요 — 그리고 보세요: 이 답은 <b>게시판의 크기를 전혀 쓰지 않아요</b>. 어떤 게시판이든 {kata}을 {a} cm 늘리면 둘레는 언제나 {dua} cm 늘어나요. 그게 문자의 쓸모예요: <i>{s}</i>는 비밀의 수 하나가 아니라 모든 게시판을 나타내요.",
+  "Kunci benar. Berbeda dengan keliling, perubahan luas <b>bergantung pada papanmu</b> ({lain} = {v} cm). Papan lain, jawaban lain.": "정답이 맞아요. 둘레와 달리 넓이의 변화는 <b>게시판에 따라 달라요</b>({lain} = {v} cm). 게시판이 다르면 답도 달라요.",
+  "Kunci jawabanmu belum cocok dengan soalnya.": "정답이 아직 문제와 맞지 않아요.",
+  "Catatan: angka {daftar} belum terlihat di kalimat soalmu — temanmu butuh angka itu. Kalau kamu menulisnya dengan huruf, abaikan catatan ini.": "참고: 문제 문장에 {daftar}이(가) 아직 보이지 않아요 — 친구에게 필요한 숫자예요. 글자로 썼다면 이 참고는 무시하세요.",
+  "{a} dan {b}": "{a}, {b}",
+  "Soalmu ikut tercetak di kartu hasil untuk gurumu.": "이 문제는 선생님께 보낼 결과 카드에 함께 실려요.",
+  "Soalmu kamu perbaiki sendiri sampai kuncinya benar — ini yang dibayar paling mahal.": "스스로 문제를 고쳐서 정답을 맞혔어요 — 이게 가장 많은 점수를 받아요.",
+  "Soal {jenis} buatanmu sendiri.": "내가 만든 {jenis} 문제.",
+  "Soalmu berubah sejak diperiksa. Tekan <b>Periksa kunci soal</b> lagi supaya kartu memakai versi terbaru.": "확인한 뒤에 문제가 바뀌었어요. 카드에 최신 문제가 들어가도록 <b>정답 확인</b>을 다시 누르세요.",
+  "Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.": "아직 이미지가 없어요. 카메라 없이 해 보려면 <b>모의 예시</b>를 누르세요.",
+  "Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di perangkat lain dan tekan <b>Pulihkan</b>.": "저장 코드를 만들었어요. 적어 두거나, 사진을 찍거나, 나에게 보내세요 — 그다음 다른 기기에 붙여 넣고 <b>복원</b>을 누르세요.",
+  "Tekan <b>Buat kode simpan</b> dulu.": "먼저 <b>저장 코드 만들기</b>를 누르세요.",
+  "Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.": "이 브라우저는 자동 복사를 허용하지 않아요. 코드를 선택해 두었어요 — 길게 누른 뒤 <b>복사</b>를 고르세요.",
+  "Kode <b>{k}</b> tersalin.": "코드 <b>{k}</b> 복사 완료.",
+  "Tempel kode simpannya dulu.": "먼저 저장 코드를 붙여 넣으세요.",
+  "Kode itu tidak sah.": "올바른 코드가 아니에요.",
+  "Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru.": "검사 값이 맞지 않아서, 잘못된 진행 상황을 되살리는 대신 코드를 거부했어요.",
+  "Kode itu dibuat oleh versi media yang berbeda.": "이 코드는 다른 버전의 매체에서 만들어졌어요.",
+  "Struktur datanya sudah berubah.": "데이터 구조가 바뀌었어요.",
+  "Ekspedisi dipulihkan dari kode. {n} dari 4 tahap selesai, {xp} jejak.": "코드로 탐험을 되살렸어요. 4단계 중 {n}단계 완료, 발자국 {xp}개.",
+  "Modul 2 · Di luar kelas": "모듈 2 · 교실 밖에서",
+  "☰ Menu": "☰ 메뉴",
+  "← Modul 1 · Kelas": "← 모듈 1 · 교실",
+  "jejak": "발자국",
+  "<span aria-hidden=\"true\">⏱</span> Mulai 20 menit": "<span aria-hidden=\"true\">⏱</span> 20분 시작",
+  "Pindai dulu, ukur sendiri.": "먼저 스캔하고, 직접 재세요.",
+  "Kamera bisa melihat <b>bentuk</b> sebuah benda, tapi tidak pernah tahu <b>ukurannya</b>. Justru di celah itulah aljabar dibutuhkan.": "카메라는 물체의 <b>모양</b>은 볼 수 있지만, <b>크기</b>는 결코 알지 못해요. 바로 그 틈에서 대수가 필요해요.",
+  "Deteksi bangun tanpa penanda cetak": "인쇄 표식 없이 모양 찾기",
+  "Tanpa pustaka luar · tanpa internet": "외부 라이브러리 없음 · 인터넷 없음",
+  "Dikerjakan di depan papan yang sebenarnya": "실제 게시판 앞에서 해요",
+  "Mulai dari awal": "처음부터 시작",
+  "<b>Lanjutan dari Modul 1.</b> Di kelas, lebar papan sudah diberikan kepadamu (80 cm) dan kamu tinggal menyusun <span class=\"math\">2p + 160</span>. Di sini tidak ada angka yang diberikan — <b>keduanya</b> belum diketahui, dan kamu sendiri yang harus mengukurnya.": "<b>모듈 1에서 이어져요.</b> 교실에서는 게시판의 짧은 변(80 cm)이 주어져서 <span class=\"math\">2a + 160</span>만 세우면 됐어요. 여기서는 아무 숫자도 주어지지 않아요 — <b>둘 다</b> 모르는 값이고, 직접 재야 해요.",
+  "<span class=\"step\">LANGKAH 1</span> Arahkan ke papan mading": "<span class=\"step\">1단계</span> 게시판을 향하기",
+  "Pilih sumber gambar. Kamera butuh HTTPS — kalau file ini dibuka langsung dari berkas, pakai <b>Contoh simulasi</b> atau unggah foto.": "이미지 소스를 고르세요. 카메라는 HTTPS가 필요해요 — 이 파일을 직접 열었다면 <b>모의 예시</b>를 쓰거나 사진을 올리세요.",
+  "Nyalakan kamera": "카메라 켜기",
+  "Contoh simulasi": "모의 예시",
+  "Unggah foto": "사진 올리기",
+  "Deteksi bangun": "모양 찾기",
+  "Sudut bisa digeser dengan jari.": "꼭짓점은 손가락으로 옮길 수 있어요.",
+  "<span class=\"step\">LANGKAH 2</span> Model yang dibuat kamera": "<span class=\"step\">2단계</span> 카메라가 만든 모델",
+  "Media membaca <i>struktur</i> bangun, lalu menyusun rumusnya sendiri — sebelum ada satu angka pun.": "매체가 도형의 <i>구조</i>를 읽고 스스로 식을 세워요 — 숫자가 하나도 나오기 전에.",
+  "Kamera berhenti di sini. Dua huruf itu belum punya nilai.": "카메라는 여기서 멈춰요. 두 문자는 아직 값이 없어요.",
+  "<b>Kenapa kamera tidak sekalian mengukurnya?</b> Satu kamera tidak bisa membedakan papan kecil yang dekat dari papan besar yang jauh — keduanya menghasilkan gambar yang persis sama. Yang bisa diketahui kamera hanyalah <b>perbandingan</b> antar sisi, bukan panjang sebenarnya. Panjang sebenarnya harus datang dari meteranmu.": "<b>왜 카메라가 길이까지 재지 않을까요?</b> 카메라 하나로는 가까이 있는 작은 게시판과 멀리 있는 큰 게시판을 구별할 수 없어요 — 둘 다 똑같은 이미지가 나와요. 카메라가 알 수 있는 건 변 사이의 <b>비율</b>뿐, 실제 길이가 아니에요. 실제 길이는 줄자에서 나와야 해요.",
+  "<span class=\"step\">LANGKAH 3</span> Sekarang giliranmu mengukur": "<span class=\"step\">3단계</span> 이제 내가 잴 차례",
+  "Ambil meteran atau penggaris, ukur papan yang sebenarnya, lalu isikan di bawah.": "줄자나 자를 들고 실제 게시판을 잰 다음 아래에 적으세요.",
+  "<span class=\"math\">p</span><span class=\"chip p\">sisi panjang</span> =": "<span class=\"math\">a</span><span class=\"chip p\">긴 변</span> =",
+  "<span class=\"math\">l</span><span class=\"chip l\">sisi lebar</span> =": "<span class=\"math\">b</span><span class=\"chip l\">짧은 변</span> =",
+  "Periksa hasil ukur": "측정값 확인",
+  "<span class=\"step\">LANGKAH 4</span> Masukkan ke model": "<span class=\"step\">4단계</span> 모델에 넣기",
+  "Rumusnya tidak berubah. Yang berubah hanya nilai yang dititipkan ke dalam hurufnya.": "식은 바뀌지 않아요. 문자에 넣는 값만 바뀌어요.",
+  "Keliling =": "둘레 =",
+  "Periksa": "확인",
+  "<b>Uji ulang.</b> Pindai papan lain — pintu kelas, jendela, ubin lantai, meja guru. Rumusnya akan keluar sama persis, karena strukturnya sama. Yang berbeda hanya hasil ukuranmu.": "<b>다시 해 보기.</b> 다른 것을 스캔해 보세요 — 교실 문, 창문, 바닥 타일, 선생님 책상. 구조가 같아서 식은 똑같이 나와요. 달라지는 건 측정값뿐이에요.",
+  "<span class=\"step\">LANGKAH 5 · PILIHAN</span> Buat soalmu sendiri": "<span class=\"step\">5단계 · 선택</span> 나만의 문제 만들기",
+  "Papanmu sekarang punya model: <b>K = 2<i>p</i> + 2<i>l</i></b> dan <b>L = <i>p</i> × <i>l</i></b>. Giliranmu membuat soal untuk teman sekelas. Media hanya memeriksa <b>kunci jawabanmu</b> — kalimat soalnya dibaca gurumu di kartu hasil.": "이제 게시판에는 모델이 있어요: <b>둘레 = 2<i>a</i> + 2<i>b</i></b>, <b>넓이 = <i>a</i> × <i>b</i></b>. 이번엔 반 친구를 위한 문제를 만들 차례예요. 매체는 <b>정답</b>만 확인해요 — 문제 문장은 선생님이 결과 카드에서 읽어요.",
+  "<b>Kalimat soalmu</b> — tulis untuk temanmu, sertakan angkanya.": "<b>문제 문장</b> — 친구를 위해 쓰고, 숫자도 넣으세요.",
+  "Periksa kunci soal": "정답 확인",
+  "<span class=\"step\">KIRIM</span> Kartu hasil untuk guru": "<span class=\"step\">보내기</span> 선생님께 보낼 결과 카드",
+  "Kartu ini memuat foto papanmu beserta garis bangunnya, perbandingan sisi yang dilihat kamera, dan hasil ukurmu. Kirim ke grup WhatsApp kelas seperti foto biasa — gurumu membukanya di Panel Guru.": "이 카드에는 게시판 사진과 도형 선, 카메라가 본 변의 비율, 그리고 측정값이 담겨 있어요. 반 WhatsApp 단체방에 보통 사진처럼 보내세요 — 선생님이 교사 패널에서 열어요.",
+  "<b>Fotonya ikut terkirim apa adanya.</b> Periksa pratinjaunya dulu: kalau ada wajah temanmu di dalamnya, pindai ulang dari sudut lain.": "<b>사진은 그대로 보내져요.</b> 먼저 미리보기를 확인하세요: 친구 얼굴이 들어 있으면 다른 각도에서 다시 스캔하세요.",
+  "Buat kartu hasil": "결과 카드 만들기",
+  "Bagikan": "공유",
+  "Unduh kartu": "카드 내려받기",
+  "Bekal Ekspedisi": "탐험 준비물",
+  "Poin di sini dihitung dengan aturan yang sama seperti Modul 1: <b>memperbaiki hasil yang sempat meleset dibayar lebih mahal daripada tepat sejak awal.</b> Lencana diberikan untuk cara kerja, bukan untuk angka.": "여기 점수는 모듈 1과 같은 규칙을 따라요: <b>한때 어긋났던 결과를 고치면 처음부터 정확한 것보다 더 많이 받아요.</b> 배지는 숫자가 아니라 일하는 방식에 주어져요.",
+  "jejak terkumpul": "모은 발자국",
+  "peringkat": "등급",
+  "lencana": "배지",
+  "Pindah ke perangkat lain": "다른 기기로 옮기기",
+  "Buat kode simpan, catat atau kirim ke dirimu sendiri, lalu tempel di perangkat baru.": "저장 코드를 만들어 적어 두거나 나에게 보낸 뒤, 새 기기에 붙여 넣으세요.",
+  "Buat kode simpan": "저장 코드 만들기",
+  "Salin": "복사",
+  "Pulihkan": "복원",
+  "Kembali ke Modul 1 · Di dalam kelas": "모듈 1로 돌아가기 · 교실 안에서",
+  "Empat pos konseptual: makna variabel di papan mading, neraca kesetaraan, berdebat dengan teman sebaya AI, dan peta miskonsepsi. Dikerjakan sebelum turun ke lapangan.": "네 개의 개념 정거장: 게시판에서 변수의 의미, 등식의 저울, AI 친구와 토론하기, 오개념 지도. 현장에 나가기 전에 해요.",
+  "← Buka Modul 1": "← 모듈 1 열기",
+  "<b>JEJAK ALJABAR · Modul 2 — Pindai &amp; Ukur (prototipe).</b> Detektor bangun ditulis sendiri: Sobel → ambang persentil → transformasi Hough berbobot arah gradien → pemilihan dua pasang garis → perpotongan. Tanpa OpenCV, tanpa WebXR, tanpa penanda cetak. Satu berkas, jalan luring.<br> Simpan berkas ini dalam <b>satu folder</b> dengan <i>jejak-aljabar.html</i> agar tautan antar modul berfungsi. Kamera membutuhkan HTTPS atau localhost — dari berkas lokal, pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.": "<b>JEJAK ALJABAR · 모듈 2 — 스캔과 측정 (프로토타입).</b> 도형 검출기는 처음부터 직접 만들었어요: Sobel → 백분위 임계값 → 기울기 방향으로 가중한 허프 변환 → 두 쌍의 직선 고르기 → 교점. OpenCV도, WebXR도, 인쇄 표식도 없어요. 파일 하나, 오프라인으로 작동해요.<br> 모듈 사이의 링크가 작동하도록 이 파일을 <i>jejak-aljabar.html</i>과 <b>같은 폴더</b>에 두세요. 카메라는 HTTPS나 localhost가 필요해요 — 로컬 파일에서는 <b>모의 예시</b>나 <b>사진 올리기</b>를 쓰세요.",
+  "Peta ekspedisi": "탐험 지도",
+  "Jenis soal": "문제 종류",
+  "Contoh: Pak Budi punya lis 300 cm untuk…": "예: Budi 선생님에게 300 cm짜리 테두리가 있는데…",
+  "Pratinjau kartu hasil yang akan dikirim": "보낼 결과 카드 미리보기",
+  "Tempel kode simpan di sini…": "여기에 저장 코드를 붙여 넣으세요…",
+  "Kunci &amp; buat model": "고정하고 모델 만들기"
+ }
+});
+</script>
 <script>
 "use strict";
 /* =====================================================================
@@ -524,6 +1414,20 @@ const ST = { img:null, quad:null, locked:false, ratio:null, skew:0, live:false, 
    membetulkan sudut dengan tangan sendiri — bukan untuk ketepatan angka.
    ===================================================================== */
 const G = { xp:0, badges:{}, done:{}, gagalUkur:0, gagalKeliling:0, pernahGeser:false };
+
+/* Huruf variabel mengikuti bahasa: huruf itu bebas, strukturnya yang tidak.
+   p = panjang, l = lebar dalam bahasa Indonesia; dalam bahasa Inggris "l"
+   justru berarti length, jadi siswa Inggris membaca l (length) dan w
+   (width). Buku pelajaran Mandarin memakai a, b dengan C (周长) dan
+   S (面积); bahasa Korea menulis 둘레 dan 넓이 sebagai kata. Kunci p/l/K/L
+   di kode tidak berubah — hanya yang tampil ke siswa. */
+const LAMBANG = {
+  id:{ p:"p", l:"l", K:"K",    L:"L" },
+  en:{ p:"l", l:"w", K:"P",    L:"A" },
+  zh:{ p:"a", l:"b", K:"C",    L:"S" },
+  ko:{ p:"a", l:"b", K:"둘레", L:"넓이" }
+};
+function lambang(x){ return (LAMBANG[JEJAK_BHS.kini()] || LAMBANG.id)[x]; }
 
 
 /* =====================================================================
@@ -796,30 +1700,33 @@ function pulihkan(){
   G.pernahGeser = !!d.pernahGeser;
   const umur = Date.now() - d.mulai;
   if(typeof d.mulai === "number" && umur >= 0 && umur < TIMER_BASI_MS) TM.mulai = d.mulai;
+  tulisPulih();
+}
+function tulisPulih(){
   const bar = document.getElementById("restoreBar");
   if(bar){
     const n = STEPS.filter(k => G.done[k]).length;
     document.getElementById("restoreTxt").innerHTML =
-      "<b>Ekspedisimu dipulihkan.</b> " + n + " dari 4 tahap selesai, " + G.xp + " jejak terkumpul. " +
-      "Tersimpan di peramban ini saja — bukan di server mana pun.";
+      terj("<b>Ekspedisimu dipulihkan.</b> {n} dari 4 tahap selesai, {xp} jejak terkumpul. " +
+           "Tersimpan di peramban ini saja — bukan di server mana pun.", {n:n, xp:G.xp});
     bar.classList.remove("hide");
   }
 }
 const STEPS = ["cScan","cModel","cMeasure","cSub"];
-const STEP_LBL = { cScan:"Pindai", cModel:"Model", cMeasure:"Ukur", cSub:"Keliling" };
+const STEP_LBL = { cScan:tandai("Pindai"), cModel:tandai("Model"), cMeasure:tandai("Ukur"), cSub:tandai("Keliling") };
 const XP_STEP = { cScan:12, cModel:15, cMeasure:20, cSub:18 };
 const XP_PULIH = 10;
 const BADGES = [
-  { id:"pemindai", n:"Pemindai",         d:"Mengunci bangun papan dari gambar kamera" },
-  { id:"tangan",   n:"Tangan Sendiri",   d:"Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera" },
-  { id:"tegak",    n:"Berdiri Tegak",    d:"Memindai dari sudut yang cukup tegak lurus terhadap papan" },
-  { id:"struktur", n:"Pembaca Struktur", d:"Menerima model yang dibangun dari bentuk, bukan dari ukuran" },
-  { id:"meteran",  n:"Pemegang Meteran", d:"Hasil ukurmu cocok dengan perbandingan yang dilihat kamera" },
-  { id:"teliti",   n:"Teliti",           d:"Mengukur ulang setelah hasil pertamamu tidak masuk akal" },
-  { id:"keliling", n:"Penutup Keliling", d:"Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri" },
-  { id:"tuntas",   n:"Ekspedisi Tuntas", d:"Keempat tahap lapangan diselesaikan dalam satu perjalanan" }
+  { id:"pemindai", n:tandai("Pemindai"),         d:tandai("Mengunci bangun papan dari gambar kamera") },
+  { id:"tangan",   n:tandai("Tangan Sendiri"),   d:tandai("Membetulkan sudut dengan jari, tidak menyerah pada tebakan kamera") },
+  { id:"tegak",    n:tandai("Berdiri Tegak"),    d:tandai("Memindai dari sudut yang cukup tegak lurus terhadap papan") },
+  { id:"struktur", n:tandai("Pembaca Struktur"), d:tandai("Menerima model yang dibangun dari bentuk, bukan dari ukuran") },
+  { id:"meteran",  n:tandai("Pemegang Meteran"), d:tandai("Hasil ukurmu cocok dengan perbandingan yang dilihat kamera") },
+  { id:"teliti",   n:tandai("Teliti"),           d:tandai("Mengukur ulang setelah hasil pertamamu tidak masuk akal") },
+  { id:"keliling", n:tandai("Penutup Keliling"), d:tandai("Menyubstitusikan hasil ukur ke dalam model yang kamu buat sendiri") },
+  { id:"tuntas",   n:tandai("Ekspedisi Tuntas"), d:tandai("Keempat tahap lapangan diselesaikan dalam satu perjalanan") }
 ];
-const LEVELS = [ [0,"Pemula Lapangan"], [30,"Pemindai"], [70,"Juru Ukur"], [110,"Ahli Ekspedisi"] ];
+const LEVELS = [ [0,tandai("Pemula Lapangan")], [30,tandai("Pemindai")], [70,tandai("Juru Ukur")], [110,tandai("Ahli Ekspedisi")] ];
 function levelName(xp){ let n = LEVELS[0][1]; LEVELS.forEach(function(a){ if(xp >= a[0]) n = a[1]; }); return n; }
 function toast(kind, title, desc, medal){
   const w = document.getElementById("toastWrap"); if(!w) return;
@@ -837,14 +1744,14 @@ function addXp(n, why, diam){
   const before = levelName(G.xp);
   G.xp += n; renderGame();
   const after = levelName(G.xp);
-  if(after !== before){ toast("xp", "Peringkat naik: " + after, "Terkumpul " + G.xp + " jejak.", "★"); return; }
-  if(!diam) toast("xp", "+" + n + " jejak", why, "+");
+  if(after !== before){ toast("xp", terj("Peringkat naik: {lv}", {lv:terj(after)}), terj("Terkumpul {n} jejak.", {n:G.xp}), "★"); return; }
+  if(!diam) toast("xp", terj("+{n} jejak", {n:n}), why, "+");
 }
 function grant(id, extra){
   if(G.badges[id]) return false;
   const b = BADGES.find(function(x){ return x.id === id; }); if(!b) return false;
   G.badges[id] = true; renderGame();
-  toast("", "Lencana: " + b.n, b.d + (extra ? " · +" + extra + " jejak" : ""), b.n[0]);
+  toast("", terj("Lencana: {n}", {n:terj(b.n)}), terj(b.d) + (extra ? " · " + terj("+{n} jejak", {n:extra}) : ""), terj(b.n)[0]);
   return true;
 }
 function stepDone(id, pulih, badgeId){
@@ -852,8 +1759,8 @@ function stepDone(id, pulih, badgeId){
   G.done[id] = true;
   const n = (XP_STEP[id] || 10) + (pulih ? XP_PULIH : 0);
   const adaLencana = badgeId && !G.badges[badgeId];
-  addXp(n, pulih ? "Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal."
-                 : "Tahap " + STEP_LBL[id] + " selesai.", adaLencana);
+  addXp(n, pulih ? terj("Selesai setelah kamu perbaiki sendiri — ini yang dibayar paling mahal.")
+                 : terj("Tahap {t} selesai.", {t:terj(STEP_LBL[id])}), adaLencana);
   if(badgeId) grant(badgeId, n);
   renderGame();
   if(STEPS.every(function(k){ return G.done[k]; })) grant("tuntas");
@@ -863,15 +1770,15 @@ function renderGame(){
   const el = function(i){ return document.getElementById(i); };
   const lv = levelName(G.xp), got = Object.keys(G.badges).length;
   if(el("xpVal")) el("xpVal").textContent = G.xp;
-  if(el("xpLv"))  el("xpLv").textContent = lv;
+  if(el("xpLv"))  el("xpLv").textContent = terj(lv);
   if(el("pjXp"))  el("pjXp").textContent = G.xp;
-  if(el("pjLv"))  el("pjLv").textContent = lv;
+  if(el("pjLv"))  el("pjLv").textContent = terj(lv);
   if(el("pjBadge")) el("pjBadge").textContent = got + "/" + BADGES.length;
   const grid = el("badgeGrid");
   if(grid) grid.innerHTML = BADGES.map(function(b){
     const has = !!G.badges[b.id];
-    return '<div class="badge ' + (has ? "got" : "locked") + '"><span class="m">' + (has ? b.n[0] : "?") +
-      '</span><div><div class="n">' + b.n + '</div><div class="d">' + b.d + "</div></div></div>";
+    return '<div class="badge ' + (has ? "got" : "locked") + '"><span class="m">' + (has ? terj(b.n)[0] : "?") +
+      '</span><div><div class="n">' + terj(b.n) + '</div><div class="d">' + terj(b.d) + "</div></div></div>";
   }).join("");
   const n = STEPS.filter(function(k){ return G.done[k]; }).length;
   const rf = el("railfill"); if(rf) rf.style.width = (75 * n / STEPS.length) + "%";
@@ -884,7 +1791,7 @@ function renderGame(){
     const buka = i === 0 || G.done[STEPS[i - 1]];
     node.dataset.state = G.done[k] ? "done" : (k === sekarang && buka ? "now" : (buka ? "open" : "lock"));
     node.disabled = !buka;
-    if(sub) sub.textContent = G.done[k] ? "selesai" : (buka ? "giliranmu" : "terkunci");
+    if(sub) sub.textContent = G.done[k] ? terj("selesai") : (buka ? terj("giliranmu") : terj("terkunci"));
     if(dot) dot.textContent = G.done[k] ? "✓" : String(i + 1);
   });
 }
@@ -894,7 +1801,10 @@ document.addEventListener("click", function(e){
   if(t) t.scrollIntoView({ behavior:"smooth", block:"start" });
 });
 
-function hud(html){ HUD.innerHTML = html; }
+/* Pesan HUD diterjemahkan di sini dan disimpan, supaya bisa ditulis ulang
+   ketika siswa mengganti bahasa. Panggil dengan kalimat Indonesia utuh. */
+let hudKini = null;
+function hud(teks, nilai){ hudKini = [teks, nilai]; HUD.innerHTML = terj(teks, nilai); }
 function fb(id, kind, html, diag){
   const el = document.getElementById("fb-" + id);
   el.className = "fb show " + kind;
@@ -930,7 +1840,7 @@ function overlay(){
   // label sisi
   X.font = "bold " + Math.max(15, CV.width/28) + "px Palatino, Georgia, serif";
   X.textAlign = "center"; X.textBaseline = "middle";
-  const labs = ["p", "l", "p", "l"];
+  const labs = [lambang("p"), lambang("l"), lambang("p"), lambang("l")];
   for(let i = 0; i < 4; i++){
     const a = q[i], b = q[(i+1)%4], mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
     X.fillStyle = "rgba(31,42,46,.82)";
@@ -992,7 +1902,7 @@ async function startCam(){
     hud("Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.");
     drawSource();
   }catch(e){
-    hud("Kamera tidak bisa dibuka (" + e.name + "). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.");
+    hud("Kamera tidak bisa dibuka ({e}). Halaman ini perlu HTTPS. Pakai <b>Contoh simulasi</b> atau <b>Unggah foto</b>.", {e:e.name});
   }
 }
 function stopCam(){
@@ -1175,7 +2085,7 @@ CV.addEventListener("pointerup", () => {
   if(ST.drag >= 0) ST.digeser = true;
   if(ST.drag >= 0 && !G.pernahGeser){
     G.pernahGeser = true;
-    grant("tangan"); addXp(8, "Kamu membetulkan sudutnya sendiri.", true);
+    grant("tangan"); addXp(8, terj("Kamu membetulkan sudutnya sendiri."), true);
   }
   ST.drag = -1;
 });
@@ -1206,7 +2116,7 @@ function resetFlow(){
   ST.digeser = false;
 }
 document.getElementById("btnDetect").onclick = () => {
-  if(!ST.img && !ST.live){ fb("det","hint","Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu."); return; }
+  if(!ST.img && !ST.live){ fb("det","hint",terj("Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu.")); return; }
   if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
   const q = detectQuad();
   if(!q){
@@ -1215,24 +2125,33 @@ document.getElementById("btnDetect").onclick = () => {
       {x:CV.width*.78, y:CV.height*.76},{x:CV.width*.22, y:CV.height*.76}
     ];
     overlay();
-    fb("det","hint","Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. " +
-      "Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci.");
+    fb("det","hint",terj("Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. " +
+      "Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci."));
     document.getElementById("btnLock").disabled = false;
     return;
   }
   ST.quad = q; overlay();
   const sp = sidePairs(q);
   ST.skew = sp.skew;
-  fb("det","ok","Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci." +
-    (sp.skew > 0.25 ? "" : ""), sp.skew > 0.25
-      ? "<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya (" +
-        Math.round(sp.skew*100) + "%). Kamu memotret terlalu menyerong, jadi perbandingan sisinya belum bisa dipercaya. " +
-        "Berdirilah lebih tegak lurus menghadap papan."
-      : "Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan " + Math.round(sp.skew*100) + "%).");
+  fb("det","ok",terj("Terdeteksi bangun bersisi empat. Kalau ada sudut yang meleset, geser titik putihnya sebelum dikunci."),
+    sp.skew > 0.25
+      ? terj("<b>Perhatian:</b> sisi berseberangan terlihat sangat berbeda panjangnya ({s}%). Kamu memotret terlalu " +
+             "menyerong, jadi perbandingan sisinya belum bisa dipercaya. Berdirilah lebih tegak lurus menghadap papan.",
+             {s:Math.round(sp.skew*100)})
+      : terj("Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan {s}%).", {s:Math.round(sp.skew*100)}));
   if(sp.skew <= 0.25) grant("tegak");
   stepDone("cScan", false, "pemindai");
   document.getElementById("btnLock").disabled = false;
 };
+function gambarModel(){
+  const p = '<span class="p">' + lambang("p") + "</span>", l = '<span class="l">' + lambang("l") + "</span>";
+  document.getElementById("saw").innerHTML =
+    terj("<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. " +
+         "Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — " +
+         "bukan empat. Karena itu cukup dua huruf.");
+  document.getElementById("eqK").innerHTML = lambang("K") + " = " + p + " + " + l + " + " + p + " + " + l + " = 2" + p + " + 2" + l;
+  document.getElementById("eqL").innerHTML = lambang("L") + " = " + p + " × " + l;
+}
 document.getElementById("btnLock").onclick = () => {
   if(!ST.quad) return;
   ST.locked = true; stopCam();
@@ -1252,42 +2171,35 @@ document.getElementById("btnLock").onclick = () => {
                soal:"", soalOk:false, soalTeks:"", soalKunci:"", soalXp:{}, soalSalah:{} };
   kartuBasi(); undim("cKirim"); resetSoal();
 
-  document.getElementById("saw").innerHTML =
-    "<b>Yang dilihat kamera:</b> bangun tertutup dengan <b>4 sisi</b>. " +
-    "Sisi yang berseberangan sejajar dan sama panjang, jadi hanya ada <b>dua</b> ukuran berbeda — " +
-    "bukan empat. Karena itu cukup dua huruf.";
-  document.getElementById("eqK").innerHTML =
-    'K = <span class="p">p</span> + <span class="l">l</span> + <span class="p">p</span> + <span class="l">l</span> ' +
-    '= 2<span class="p">p</span> + 2<span class="l">l</span>';
-  document.getElementById("eqL").innerHTML = 'L = <span class="p">p</span> × <span class="l">l</span>';
+  gambarModel();
   undim("cModel"); undim("cMeasure");
   stepDone("cScan", false, "pemindai");
   stepDone("cModel", false, "struktur");
-  hud("Model terkunci. Perbandingan sisi yang terbaca kamera: <b>" + ST.ratio.toFixed(2) + " : 1</b>. " +
-      "Ukuran sebenarnya belum diketahui.");
+  hud("Model terkunci. Perbandingan sisi yang terbaca kamera: <b>{r} : 1</b>. Ukuran sebenarnya belum diketahui.",
+      {r:ST.ratio.toFixed(2)});
   document.getElementById("inP").focus();
 };
 
 document.getElementById("btnCheck").onclick = () => {
   const p = parseFloat(document.getElementById("inP").value);
   const l = parseFloat(document.getElementById("inL").value);
-  if(!(p > 0) || !(l > 0)){ fb("ukur","hint","Isi kedua ukuran dengan angka positif, dalam cm."); return; }
-  if(!ST.ratio){ fb("ukur","hint","Kunci modelnya dulu di Langkah 2."); return; }
+  if(!(p > 0) || !(l > 0)){ fb("ukur","hint",terj("Isi kedua ukuran dengan angka positif, dalam cm.")); return; }
+  if(!ST.ratio){ fb("ukur","hint",terj("Kunci modelnya dulu di Langkah 2.")); return; }
   const rUkur = Math.max(p,l) / Math.min(p,l);
   const beda = Math.abs(rUkur - ST.ratio) / ST.ratio;
   const tol = ST.skew > 0.25 ? 0.35 : 0.22;
   const rt = document.getElementById("rt");
   rt.style.display = "";
   rt.innerHTML =
-    "<tr><td>Perbandingan menurut kamera</td><td>" + ST.ratio.toFixed(2) + " : 1</td></tr>" +
-    "<tr><td>Perbandingan menurut ukuranmu</td><td>" + rUkur.toFixed(2) + " : 1</td></tr>" +
-    "<tr><td>Selisih</td><td>" + Math.round(beda*100) + "%</td></tr>";
+    "<tr><td>" + terj("Perbandingan menurut kamera") + "</td><td>" + ST.ratio.toFixed(2) + " : 1</td></tr>" +
+    "<tr><td>" + terj("Perbandingan menurut ukuranmu") + "</td><td>" + rUkur.toFixed(2) + " : 1</td></tr>" +
+    "<tr><td>" + terj("Selisih") + "</td><td>" + Math.round(beda*100) + "%</td></tr>";
 
   if(beda <= tol){
-    fb("ukur","ok","Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — " +
-      "dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya.",
-      "Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> " +
-      "Tanpa salah satunya, keliling papan ini tidak bisa dihitung.");
+    fb("ukur","ok",terj("Cocok. Kamera tidak tahu papanmu berapa sentimeter, tapi ia tahu <b>perbandingan</b> sisinya — " +
+      "dan hasil ukuranmu sesuai dengan perbandingan itu. Ukuranmu bisa dipercaya."),
+      terj("Perhatikan pembagian kerjanya: <b>kamera memberi struktur, kamu memberi besaran.</b> " +
+      "Tanpa salah satunya, keliling papan ini tidak bisa dihitung."));
     ST.p = p; ST.l = l;
     if(ST.jejak){ ST.jejak.statusUkur = 1; ST.jejak.p = p; ST.jejak.l = l; kartuBasi(); }
     undim("cSub");
@@ -1296,36 +2208,37 @@ document.getElementById("btnCheck").onclick = () => {
   }else{
     G.gagalUkur++;
     if(ST.jejak){ ST.jejak.statusUkur = 2; ST.jejak.p = p; ST.jejak.l = l; ST.jejak.ukurUlang++; kartuBasi(); }
-    fb("ukur","bad","Belum cocok. Menurut gambar, sisi panjang kira-kira <b>" + ST.ratio.toFixed(2) +
-      "×</b> sisi lebar, tapi hasil ukuranmu memberi <b>" + rUkur.toFixed(2) + "×</b>.",
-      "Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; " +
+    fb("ukur","bad",terj("Belum cocok. Menurut gambar, sisi panjang kira-kira <b>{r}×</b> sisi lebar, " +
+      "tapi hasil ukuranmu memberi <b>{u}×</b>.", {r:ST.ratio.toFixed(2), u:rUkur.toFixed(2)}),
+      terj("Tiga kemungkinan: (1) ada sudut yang salah tempat — geser lagi titik putihnya; " +
       "(2) <span class=\"math\">p</span> dan <span class=\"math\">l</span> tertukar; " +
-      "(3) pengukurannya perlu diulang." +
-      (ST.skew > 0.25 ? " Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya." : ""));
+      "(3) pengukurannya perlu diulang.") +
+      (ST.skew > 0.25 ? " " + terj("Fotonya juga terlalu menyerong, jadi perbandingan kamera kurang bisa dipercaya.") : ""));
   }
 };
 document.getElementById("btnK").onclick = () => {
-  if(!ST.p){ fb("k","hint","Selesaikan Langkah 3 dulu."); return; }
+  if(!ST.p){ fb("k","hint",terj("Selesaikan Langkah 3 dulu.")); return; }
   const want = 2*ST.p + 2*ST.l;
   const got = parseFloat(document.getElementById("inK").value);
-  if(!(got > 0)){ fb("k","hint","Isi dengan sebuah angka."); return; }
+  if(!(got > 0)){ fb("k","hint",terj("Isi dengan sebuah angka.")); return; }
   kartuBasi();
   if(Math.abs(got - want) < 0.6){
-    fb("k","ok","Benar — <b>" + want.toFixed(1) + " cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; " +
-      "yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.");
+    fb("k","ok",terj("Benar — <b>{k} cm</b>. Rumusnya sama sekali tidak berubah sejak Langkah 2; " +
+      "yang berubah hanya nilai yang dititipkan ke dalam <span class=\"math\">p</span> dan <span class=\"math\">l</span>.",
+      {k:want.toFixed(1)}));
       if(ST.jejak) ST.jejak.kBenar = true;
       undim("cSoal");
       stepDone("cSub", G.gagalKeliling > 0, "keliling");
   }else if(G.gagalKeliling++, Math.abs(got - (ST.p + ST.l)) < 0.6){
     if(ST.jejak) ST.jejak.kDua++;
-    fb("k","bad","Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar.",
-      "Terdeteksi M2 — sebagian struktur bangun terlewat.");
+    fb("k","bad",terj("Kamu baru menjumlahkan <b>dua</b> sisi. Papan punya empat tepi: dua panjang, dua lebar."),
+      terj("Terdeteksi M2 — sebagian struktur bangun terlewat."));
   }else if(Math.abs(got - ST.p*ST.l) < 0.6){
     if(ST.jejak) ST.jejak.kLuas++;
-    fb("k","bad","Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan.");
+    fb("k","bad",terj("Itu <b>luas</b>, bukan keliling. Keliling adalah panjang lis yang mengelilingi tepi papan."));
   }else{
     if(ST.jejak) ST.jejak.kLain++;
-    fb("k","bad","Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung.");
+    fb("k","bad",terj("Belum tepat. Substitusikan hasil ukurmu ke <span class=\"math\">2p + 2l</span>, lalu hitung."));
   }
 };
 
@@ -1338,6 +2251,18 @@ document.getElementById("btnK").onclick = () => {
 let kartuURL = null, kartuBerkas = null;
 const BULAN_ID = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
                   "Agustus","September","Oktober","November","Desember"];
+/* Tanggal di kartu mengikuti bahasa siswa. Intl bawaan peramban, tanpa pustaka;
+   kalau tidak tersedia, kembali ke format Indonesia. */
+function tanggalKartu(t){
+  const b = JEJAK_BHS.kini();
+  if(b !== "id"){
+    try{
+      const kode = (JEJAK_BHS.BAHASA.find(function(x){ return x.id === b; }) || {}).lang || b;
+      return new Intl.DateTimeFormat(kode, { day:"numeric", month:"long", year:"numeric" }).format(t);
+    }catch(e){}
+  }
+  return t.getDate() + " " + BULAN_ID[t.getMonth()] + " " + t.getFullYear();
+}
 let bisaBagi = false;
 try{
   bisaBagi = !!(navigator.canShare &&
@@ -1356,7 +2281,7 @@ function hapusKartu(){
 function kartuBasi(){
   if(!kartuURL) return;
   hapusKartu();
-  fb("kirim","hint","Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim.");
+  fb("kirim","hint",terj("Hasilmu bertambah sejak kartu dibuat. Tekan <b>Buat kartu hasil</b> lagi supaya ikut terkirim."));
 }
 function kartuData(){
   const j = ST.jejak;
@@ -1398,10 +2323,10 @@ function gambarKartu(){
   x.fillStyle = "#1f2a2e"; x.fillRect(0, 0, W, 64);
   x.textBaseline = "middle";
   x.textAlign = "left"; x.fillStyle = "#ffffff"; x.font = "bold 22px " + HURUF;
-  x.fillText("JEJAK ALJABAR · Kartu Lapangan", 20, 33);
+  x.fillText(terj("JEJAK ALJABAR · Kartu Lapangan"), 20, 33);
   const t = new Date(2026, 0, 1 + d.hari);
   x.textAlign = "right"; x.fillStyle = "#f2c27a"; x.font = "bold 15px " + HURUF;
-  x.fillText("MODUL 2 · " + t.getDate() + " " + BULAN_ID[t.getMonth()] + " " + t.getFullYear(), W - 20, 33);
+  x.fillText(terj("MODUL 2 · {tgl}", {tgl:tanggalKartu(t)}), W - 20, 33);
 
   const BX = 16, BY = 80, BW = W - 32, BH = 516, f = ST.kartuFoto;
   x.fillStyle = "#26302f"; x.fillRect(BX, BY, BW, BH);
@@ -1411,21 +2336,21 @@ function gambarKartu(){
   // Setiap status memakai lambang + kata, tidak pernah warna saja.
   const rUkur = d.statusUkur ? Math.max(d.p, d.l) / Math.min(d.p, d.l) : 0;
   const salahK = [];
-  if(d.kDua)  salahK.push(d.kDua + "× hanya dua sisi (M2)");
-  if(d.kLuas) salahK.push(d.kLuas + "× menghitung luas");
-  if(d.kLain) salahK.push(d.kLain + "× lainnya");
+  if(d.kDua)  salahK.push(terj("{n}× hanya dua sisi (M2)", {n:d.kDua}));
+  if(d.kLuas) salahK.push(terj("{n}× menghitung luas", {n:d.kLuas}));
+  if(d.kLain) salahK.push(terj("{n}× lainnya", {n:d.kLain}));
   const baris = [
-    ["Dilihat kamera", "sisi panjang = " + angka(d.rasio, 2) + " × sisi pendek" +
-      (d.miring > 0.25 ? " · foto menyerong " + Math.round(d.miring * 100) + "%" : "")],
-    ["Diukur siswa", d.statusUkur === 0 ? "— belum mengukur" :
-      "p = " + angka(d.p, 1) + " cm, l = " + angka(d.l, 1) + " cm (" + angka(rUkur, 2) + " ×) " +
-      (d.statusUkur === 1 ? "✓ cocok" : "✗ belum cocok")],
-    ["Mengukur ulang", d.ukurUlang + " kali"],
-    ["Keliling", d.selesai.cSub ? "✓ benar · 2p + 2l = " + angka(2*d.p + 2*d.l, 1) + " cm"
-      : (salahK.length ? "✗ belum benar" : "— belum dikerjakan")],
-    ["Kekeliruan keliling", salahK.length ? salahK.join(" · ") : "tidak ada"],
-    ["Sudut papan", d.digeser ? "dibetulkan sendiri dengan jari" : "diterima dari deteksi kamera"],
-    ["Waktu kerja", teksWaktuKartu(d.waktu)]
+    [terj("Dilihat kamera"), terj("sisi panjang = {r} × sisi pendek", {r:angka(d.rasio, 2)}) +
+      (d.miring > 0.25 ? " · " + terj("foto menyerong {m}%", {m:Math.round(d.miring * 100)}) : "")],
+    [terj("Diukur siswa"), d.statusUkur === 0 ? terj("— belum mengukur") :
+      terj("p = {p} cm, l = {l} cm ({r} ×)", {p:angka(d.p, 1), l:angka(d.l, 1), r:angka(rUkur, 2)}) + " " +
+      (d.statusUkur === 1 ? terj("✓ cocok") : terj("✗ belum cocok"))],
+    [terj("Mengukur ulang"), terj("{n} kali", {n:d.ukurUlang})],
+    [terj("Keliling"), d.selesai.cSub ? terj("✓ benar · 2p + 2l = {k} cm", {k:angka(2*d.p + 2*d.l, 1)})
+      : (salahK.length ? terj("✗ belum benar") : terj("— belum dikerjakan"))],
+    [terj("Kekeliruan keliling"), salahK.length ? salahK.join(" · ") : terj("tidak ada")],
+    [terj("Sudut papan"), d.digeser ? terj("dibetulkan sendiri dengan jari") : terj("diterima dari deteksi kamera")],
+    [terj("Waktu kerja"), teksWaktuKartu(d.waktu)]
   ];
   let y = 624;
   baris.forEach(function(b){
@@ -1439,18 +2364,18 @@ function gambarKartu(){
   const SY = 862, jj = ST.jejak;
   x.fillStyle = "#f3eee4"; x.fillRect(16, SY, W - 32, 144);
   x.textAlign = "left"; x.fillStyle = "#5b6668"; x.font = "bold 13px " + HURUF;
-  x.fillText("SOAL BUATAN SISWA" + (jj.soal ? " · " + SOAL_INFO[jj.soal].label.toUpperCase() : ""), 28, SY + 20);
+  x.fillText(terj("SOAL BUATAN SISWA") + (jj.soal ? " · " + terj(SOAL_INFO[jj.soal].label).toUpperCase() : ""), 28, SY + 20);
   if(jj.soal){
     x.textAlign = "right"; x.fillStyle = "#1f2a2e"; x.font = "bold 14px " + HURUF;
-    x.fillText("kunci " + jj.soalKunci + (jj.soalOk ? " · ✓ cocok" : " · ✗ belum cocok"), W - 28, SY + 20, 380);
+    x.fillText(terj("kunci {k}", {k:jj.soalKunci}) + " · " + (jj.soalOk ? terj("✓ cocok") : terj("✗ belum cocok")), W - 28, SY + 20, 380);
     x.textAlign = "left"; x.font = "17px " + HURUF;
     bungkus(x, jj.soalTeks, W - 56, 4).forEach(function(b, i){ x.fillText(b, 28, SY + 50 + i * 25); });
   }else{
     x.font = "16px " + HURUF;
-    x.fillText("— belum membuat soal (Langkah 5 bersifat pilihan)", 28, SY + 50);
+    x.fillText(terj("— belum membuat soal (Langkah 5 bersifat pilihan)"), 28, SY + 50);
   }
   x.textAlign = "center"; x.fillStyle = "#5b6668"; x.font = "13px " + HURUF;
-  x.fillText("Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong",
+  x.fillText(terj("Pita data untuk Panel Guru — kirim kartu ini utuh, jangan dipotong"),
              W / 2, KARTU.SEKARANG.PY - 2 * KARTU.SEL - 16);
   kartuGambarPita(x, kartuSandi(d));
   return c;
@@ -1458,11 +2383,11 @@ function gambarKartu(){
 
 document.getElementById("btnKartu").onclick = () => {
   if(!ST.jejak || !ST.kartuFoto){
-    fb("kirim","hint","Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2.");
+    fb("kirim","hint",terj("Foto hanya ada selama halaman ini terbuka. Pindai dan kunci papannya dulu di Langkah 1–2."));
     return;
   }
   gambarKartu().toBlob(function(blob){
-    if(!blob){ fb("kirim","bad","Peramban ini tidak bisa membuat gambar kartunya."); return; }
+    if(!blob){ fb("kirim","bad",terj("Peramban ini tidak bisa membuat gambar kartunya.")); return; }
     hapusKartu();
     const nama = "kartu-lapangan-" + ST.jejak.id.toString(36) + ".png";
     kartuURL = URL.createObjectURL(blob);
@@ -1472,9 +2397,10 @@ document.getElementById("btnKartu").onclick = () => {
     document.getElementById("btnKartuUnduh").classList.remove("hide");
     document.getElementById("btnKartuUnduh").dataset.nama = nama;
     if(bisaBagi && kartuBerkas) document.getElementById("btnKartuBagi").classList.remove("hide");
-    fb("kirim","ok","Kartu dibuat. Periksa fotonya di pratinjau, lalu " +
-      (bisaBagi ? "tekan <b>Bagikan</b> dan pilih WhatsApp." : "unduh dan kirim ke grup WhatsApp kelas sebagai foto."),
-      "Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp.");
+    fb("kirim","ok", bisaBagi
+      ? terj("Kartu dibuat. Periksa fotonya di pratinjau, lalu tekan <b>Bagikan</b> dan pilih WhatsApp.")
+      : terj("Kartu dibuat. Periksa fotonya di pratinjau, lalu unduh dan kirim ke grup WhatsApp kelas sebagai foto."),
+      terj("Kartu ini tidak memuat namamu — gurumu mengenalimu dari nama pengirim di WhatsApp."));
   }, "image/png");
 };
 document.getElementById("btnKartuUnduh").onclick = function(){
@@ -1485,9 +2411,9 @@ document.getElementById("btnKartuUnduh").onclick = function(){
 };
 document.getElementById("btnKartuBagi").onclick = () => {
   if(!kartuBerkas) return;
-  navigator.share({ files:[kartuBerkas], title:"Kartu Lapangan — Jejak Aljabar" }).catch(function(e){
+  navigator.share({ files:[kartuBerkas], title:terj("Kartu Lapangan — Jejak Aljabar") }).catch(function(e){
     if(e && e.name === "AbortError") return;           // siswa membatalkan sendiri
-    fb("kirim","hint","Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.");
+    fb("kirim","hint",terj("Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri."));
   });
 };
 
@@ -1504,10 +2430,10 @@ function jamMenit(detik){
   return String(Math.floor(detik / 60)).padStart(2, "0") + ":" + String(detik % 60).padStart(2, "0");
 }
 function teksWaktuKartu(m){
-  if(m === null) return "— penghitung waktu tidak dipakai";
-  const lama = m >= 30 ? "30 menit atau lebih" : m + " menit";
-  return m < KARTU.BATAS_MENIT ? "✓ " + lama + ", dalam batas " + KARTU.BATAS_MENIT
-                               : lama + ", lewat batas " + KARTU.BATAS_MENIT + " menit";
+  if(m === null) return terj("— penghitung waktu tidak dipakai");
+  const lama = m >= 30 ? terj("30 menit atau lebih") : terj("{m} menit", { m:m });
+  return m < KARTU.BATAS_MENIT ? terj("✓ {lama}, dalam batas {b}", { lama:lama, b:KARTU.BATAS_MENIT })
+                               : terj("{lama}, lewat batas {b} menit", { lama:lama, b:KARTU.BATAS_MENIT });
 }
 function renderTimer(){
   const btn = document.getElementById("btnTimer"), chip = document.getElementById("tmChip");
@@ -1520,24 +2446,24 @@ function renderTimer(){
   chip.classList.toggle("habis", habis);
   // Status selalu berkata, tidak hanya berganti warna.
   document.getElementById("tmIkon").textContent = habis ? "⏰" : "⏱";
-  document.getElementById("tmLabel").textContent = habis ? "Waktu habis · lewat" : "sisa";
+  document.getElementById("tmLabel").textContent = habis ? terj("Waktu habis · lewat") : terj("sisa");
   document.getElementById("tmAngka").textContent =
     habis ? jamMenit(Math.floor(-sisa / 1000)) : jamMenit(Math.ceil(sisa / 1000));
   if(habis && !TM.habisDiumumkan){
     TM.habisDiumumkan = TM.diingatkan = true;
-    toast("waktu", "Waktu " + KARTU.BATAS_MENIT + " menit habis",
-      "Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu.", "⏰");
+    toast("waktu", terj("Waktu {b} menit habis", { b:KARTU.BATAS_MENIT }),
+      terj("Kalau sedang mengukur, selesaikan dulu. Lalu buat dan kirim kartu hasilmu."), "⏰");
   }else if(akhir && !TM.diingatkan){
     TM.diingatkan = true;
-    toast("waktu", "5 menit lagi", "Mulai siapkan kartu hasilmu untuk guru.", "⏱");
+    toast("waktu", terj("5 menit lagi"), terj("Mulai siapkan kartu hasilmu untuk guru."), "⏱");
   }
 }
 document.getElementById("btnTimer").onclick = () => {
   if(TM.mulai !== null) return;
   TM.mulai = Date.now();
   simpan(); renderTimer();
-  toast("waktu", "Waktu mulai berjalan", KARTU.BATAS_MENIT + " menit untuk memindai, mengukur, dan mengirim kartu. " +
-    "Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.", "⏱");
+  toast("waktu", terj("Waktu mulai berjalan"), terj("{b} menit untuk memindai, mengukur, dan mengirim kartu. " +
+    "Kalau habis, kamu tetap boleh menyelesaikan ukuranmu.", { b:KARTU.BATAS_MENIT }), "⏱");
 };
 setInterval(renderTimer, 1000);
 document.addEventListener("visibilitychange", renderTimer);
@@ -1552,46 +2478,59 @@ document.addEventListener("visibilitychange", renderTimer);
    menulis "berapa keliling papan?" — soal Langkah 4, tanpa variabel. */
 const SOAL = { jenis:"", berubah:false };
 const SOAL_INFO = {
-  maju:      { label:"Maju", xp:5,
-               ket:"Ukuran papan diketahui, temanmu menghitung keliling atau luasnya. Sama seperti Langkah 4 — soal paling mudah." },
-  mundur:    { label:"Mundur", xp:12,
-               ket:"Keliling atau luas diketahui bersama satu sisi; temanmu mencari sisi yang lain. Ia harus berjalan mundur dari rumus — menyelesaikan persamaan." },
-  perubahan: { label:"Perubahan", xp:12,
-               ket:"Satu sisi papan diperpanjang; temanmu mencari berapa keliling atau luasnya ikut bertambah." }
+  maju:      { label:tandai("Maju"), xp:5,
+               ket:tandai("Ukuran papan diketahui, temanmu menghitung keliling atau luasnya. Sama seperti Langkah 4 — soal paling mudah.") },
+  mundur:    { label:tandai("Mundur"), xp:12,
+               ket:tandai("Keliling atau luas diketahui bersama satu sisi; temanmu mencari sisi yang lain. Ia harus berjalan mundur dari rumus — menyelesaikan persamaan.") },
+  perubahan: { label:tandai("Perubahan"), xp:12,
+               ket:tandai("Satu sisi papan diperpanjang; temanmu mencari berapa keliling atau luasnya ikut bertambah.") }
 };
-const SISI = { p:"panjang p", l:"lebar l" };
+// Nama sisi beserta hurufnya. Hurufnya berbeda per bahasa, jadi ikut diterjemahkan utuh.
+const SISI = { p:tandai("panjang p"), l:tandai("lebar l") };
+const SISI_KATA = { p:tandai("panjang"), l:tandai("lebar") };
+const TANYA = [["K", tandai("kelilingnya")], ["L", tandai("luasnya")]];
 function pilihan(id, daftar){
   return '<select id="' + id + '">' + daftar.map(function(o){
-    return '<option value="' + o[0] + '">' + o[1] + "</option>"; }).join("") + "</select>";
+    return '<option value="' + o[0] + '">' + terj(o[1]) + "</option>"; }).join("") + "</select>";
 }
 function isianAngka(id, ket){
   return '<input type="number" id="' + id + '" step="0.1" min="0" placeholder="' + ket + '">';
 }
-function renderSoal(){
+const ISIAN_SOAL = ["soalA", "soalB", "soalJawab", "soalTanya", "soalTahu", "soalSisi"];
+/* pertahankan = true ketika hanya bahasanya yang berganti: isian siswa
+   tidak boleh hilang hanya karena labelnya diterjemahkan ulang. */
+function renderSoal(pertahankan){
   document.querySelectorAll("[data-soal]").forEach(function(b){
     const aktif = b.dataset.soal === SOAL.jenis;
     b.setAttribute("aria-pressed", String(aktif));
     // Pilihan ditandai lambang + kata, bukan warna saja.
-    b.textContent = (aktif ? "✓ " : "") + SOAL_INFO[b.dataset.soal].label;
+    b.textContent = (aktif ? "✓ " : "") + terj(SOAL_INFO[b.dataset.soal].label);
   });
   const isian = document.getElementById("soalIsian"), ket = document.getElementById("soalKet");
-  if(!SOAL.jenis){ isian.classList.add("hide"); ket.textContent = "Pilih jenis soal dulu."; return; }
-  ket.textContent = SOAL_INFO[SOAL.jenis].ket;
+  if(!SOAL.jenis){ isian.classList.add("hide"); ket.textContent = terj("Pilih jenis soal dulu."); return; }
+  ket.textContent = terj(SOAL_INFO[SOAL.jenis].ket);
+  const lama = {};
+  if(pertahankan) ISIAN_SOAL.forEach(function(id){ const el = document.getElementById(id); if(el) lama[id] = el.value; });
+  const kataAngka = terj("angka");
   let h = "";
   if(SOAL.jenis === "maju"){
-    h = "Diketahui <i>p</i> = " + isianAngka("soalA", "cm") + " cm dan <i>l</i> = " + isianAngka("soalB", "cm") +
-      " cm. Ditanya: " + pilihan("soalTanya", [["K","kelilingnya"],["L","luasnya"]]) + ".";
+    h = terj("Diketahui <i>p</i> = {A} cm dan <i>l</i> = {B} cm. Ditanya: {T}.",
+      { A:isianAngka("soalA", "cm"), B:isianAngka("soalB", "cm"), T:pilihan("soalTanya", TANYA) });
   }else if(SOAL.jenis === "mundur"){
-    h = "Diketahui " + pilihan("soalTahu", [["K","keliling"],["L","luas"]]) + " = " + isianAngka("soalA", "angka") +
-      " dan " + pilihan("soalSisi", [["l","lebar l"],["p","panjang p"]]) + " = " + isianAngka("soalB", "cm") +
-      " cm. Ditanya: sisi yang lain.";
+    h = terj("Diketahui {TAHU} = {A} dan {SISI} = {B} cm. Ditanya: sisi yang lain.",
+      { TAHU:pilihan("soalTahu", [["K", tandai("keliling")], ["L", tandai("luas")]]), A:isianAngka("soalA", kataAngka),
+        SISI:pilihan("soalSisi", [["l", SISI.l], ["p", SISI.p]]), B:isianAngka("soalB", "cm") });
   }else{
-    h = pilihan("soalSisi", [["p","Panjang p"],["l","Lebar l"]]) + " ditambah " + isianAngka("soalA", "cm") +
-      " cm. Ditanya: " + pilihan("soalTanya", [["K","kelilingnya"],["L","luasnya"]]) + " bertambah berapa?" +
-      '<br><span class="ctx">Untuk papanmu: <i>p</i> = ' + angka(ST.p, 1) + " cm, <i>l</i> = " + angka(ST.l, 1) + " cm.</span>";
+    h = terj("{SISI} ditambah {A} cm. Ditanya: {T} bertambah berapa?",
+      { SISI:pilihan("soalSisi", [["p", tandai("Panjang p")], ["l", tandai("Lebar l")]]), A:isianAngka("soalA", "cm"),
+        T:pilihan("soalTanya", TANYA) }) +
+      '<br><span class="ctx">' + terj("Untuk papanmu: <i>p</i> = {p} cm, <i>l</i> = {l} cm.",
+        { p:angka(ST.p, 1), l:angka(ST.l, 1) }) + "</span>";
   }
   document.getElementById("soalKunci").innerHTML = h +
-    '<div class="row" style="margin-top:8px"><span>Kunci jawabanmu =</span>' + isianAngka("soalJawab", "angka") + "</div>";
+    '<div class="row" style="margin-top:8px"><span>' + terj("Kunci jawabanmu =") + "</span>" +
+    isianAngka("soalJawab", kataAngka) + "</div>";
+  ISIAN_SOAL.forEach(function(id){ const el = document.getElementById(id); if(el && id in lama) el.value = lama[id]; });
   isian.classList.remove("hide");
 }
 function resetSoal(){
@@ -1610,55 +2549,62 @@ function angkaDiTeks(teks){
 
 function periksaSoal(){
   const j = SOAL.jenis, jj = ST.jejak;
-  if(!jj || !j){ fb("soal","hint","Pilih jenis soal dulu."); return; }
+  if(!jj || !j){ fb("soal","hint",terj("Pilih jenis soal dulu.")); return; }
   const teks = document.getElementById("soalTeks").value.trim();
-  if(teks.length < 15){ fb("soal","hint","Tulis dulu kalimat soalnya — minimal satu kalimat utuh untuk temanmu."); return; }
+  if(teks.length < 15){ fb("soal","hint",terj("Tulis dulu kalimat soalnya — minimal satu kalimat utuh untuk temanmu.")); return; }
   const a = nilai("soalA"), b = j === "perubahan" ? 1 : nilai("soalB"), k = nilai("soalJawab");
-  if(!(a > 0) || !(b > 0) || !(k > 0)){ fb("soal","hint","Isi semua angka di kunci soal dengan bilangan positif."); return; }
+  if(!(a > 0) || !(b > 0) || !(k > 0)){ fb("soal","hint",terj("Isi semua angka di kunci soal dengan bilangan positif.")); return; }
 
   let harap, kunciTeks, cekUlang, benar, diketahui;
   if(j === "maju"){
     const t = pilih("soalTanya");
     harap = t === "K" ? 2*a + 2*b : a * b;
-    kunciTeks = t === "K" ? "K = " + angka(k, 2) + " cm" : "L = " + angka(k, 2) + " cm²";
-    cekUlang = "Substitusikan angka soalmu ke " + (t === "K" ? "2p + 2l" : "p × l") + ", lalu hitung lagi.";
-    benar = "Kunci benar. Soal maju sama dengan Langkah 4 — temanmu cukup menyubstitusi. " +
-      "Coba juga soal <b>mundur</b> atau <b>perubahan</b>: lebih menantang untuk temanmu.";
+    kunciTeks = t === "K" ? lambang("K") + " = " + angka(k, 2) + " cm" : lambang("L") + " = " + angka(k, 2) + " cm²";
+    cekUlang = t === "K" ? terj("Substitusikan angka soalmu ke 2p + 2l, lalu hitung lagi.")
+                         : terj("Substitusikan angka soalmu ke p × l, lalu hitung lagi.");
+    benar = terj("Kunci benar. Soal maju sama dengan Langkah 4 — temanmu cukup menyubstitusi. " +
+      "Coba juga soal <b>mundur</b> atau <b>perubahan</b>: lebih menantang untuk temanmu.");
     diketahui = [a, b];
   }else if(j === "mundur"){
     const t = pilih("soalTahu"), s = pilih("soalSisi"), lain = s === "l" ? "p" : "l";
     harap = t === "K" ? a / 2 - b : a / b;
     if(t === "K" && harap <= 0){
       jj.soalSalah[j] = true;
-      fb("soal","bad","Soalmu belum bisa dijawab: dua sisi " + SISI[s] + " saja sudah " + angka(2*b, 1) +
-        " cm, padahal kelilingnya hanya " + angka(a, 1) + " cm. Perbesar kelilingnya atau perkecil sisinya.");
+      fb("soal","bad",terj("Soalmu belum bisa dijawab: dua sisi {sisi} saja sudah {d} cm, padahal kelilingnya hanya " +
+        "{a} cm. Perbesar kelilingnya atau perkecil sisinya.", { sisi:terj(SISI[s]), d:angka(2*b, 1), a:angka(a, 1) }));
       return;
     }
-    kunciTeks = lain + " = " + angka(k, 2) + " cm";
+    kunciTeks = lambang(lain) + " = " + angka(k, 2) + " cm";
     // Cara memeriksa yang diajarkan: masukkan kunci kembali ke model.
     const balik = t === "K" ? 2*k + 2*b : k * b;
-    cekUlang = "Periksa dengan memasukkan kuncimu kembali: " +
-      (t === "K" ? "2 × " + angka(k, 2) + " + 2 × " + angka(b, 2) : angka(k, 2) + " × " + angka(b, 2)) +
-      " = " + angka(balik, 2) + ", padahal soalmu menyebut " + (t === "K" ? "keliling " : "luas ") + angka(a, 2) + ".";
-    benar = "Kunci benar. Soalmu memaksa temanmu berjalan mundur dari <b>" +
-      (t === "K" ? "2p + 2l = " + angka(a, 2) : "p × l = " + angka(a, 2)) +
-      "</b> — itu menyelesaikan persamaan, bukan sekadar menghitung.";
+    const hitung = t === "K" ? "2 × " + angka(k, 2) + " + 2 × " + angka(b, 2) : angka(k, 2) + " × " + angka(b, 2);
+    cekUlang = t === "K"
+      ? terj("Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut keliling {a}.",
+             { hitung:hitung, balik:angka(balik, 2), a:angka(a, 2) })
+      : terj("Periksa dengan memasukkan kuncimu kembali: {hitung} = {balik}, padahal soalmu menyebut luas {a}.",
+             { hitung:hitung, balik:angka(balik, 2), a:angka(a, 2) });
+    const rumus = (t === "K" ? "2" + lambang("p") + " + 2" + lambang("l") : lambang("p") + " × " + lambang("l")) +
+                  " = " + angka(a, 2);
+    benar = terj("Kunci benar. Soalmu memaksa temanmu berjalan mundur dari <b>{rumus}</b> — itu menyelesaikan " +
+      "persamaan, bukan sekadar menghitung.", { rumus:rumus });
     diketahui = [a, b];
   }else{
     const t = pilih("soalTanya"), s = pilih("soalSisi"), lain = s === "p" ? "l" : "p";
     const sisiLain = s === "p" ? ST.l : ST.p;
     harap = t === "K" ? 2*a : a * sisiLain;
-    kunciTeks = (t === "K" ? "keliling +" + angka(k, 2) + " cm" : "luas +" + angka(k, 2) + " cm²");
+    kunciTeks = t === "K" ? terj("keliling +{k} cm", { k:angka(k, 2) }) : terj("luas +{k} cm²", { k:angka(k, 2) });
     cekUlang = t === "K"
-      ? "Bandingkan papan sesudah dan sebelum diubah: tulis kelilingnya dengan " + s + " + " + angka(a, 2) +
-        ", lalu kurangi 2p + 2l. Ingat, papan punya <b>dua</b> sisi " + SISI[s].split(" ")[0] + "."
-      : "Bandingkan luas sesudah dan sebelum diubah, dengan " + lain + " = " + angka(sisiLain, 1) + " cm.";
+      ? terj("Bandingkan papan sesudah dan sebelum diubah: tulis kelilingnya dengan {s} + {a}, lalu kurangi 2p + 2l. " +
+             "Ingat, papan punya <b>dua</b> sisi {kata}.", { s:lambang(s), a:angka(a, 2), kata:terj(SISI_KATA[s]) })
+      : terj("Bandingkan luas sesudah dan sebelum diubah, dengan {lain} = {v} cm.",
+             { lain:lambang(lain), v:angka(sisiLain, 1) });
     benar = t === "K"
-      ? "Kunci benar — dan perhatikan: jawabannya <b>tidak memakai ukuran papanmu sama sekali</b>. Papan berapa pun, " +
-        "menambah " + SISI[s].split(" ")[0] + " " + angka(a, 2) + " cm selalu menambah keliling " + angka(2*a, 2) +
-        " cm. Itulah gunanya huruf: <i>" + s + "</i> mewakili semua papan, bukan satu angka rahasia."
-      : "Kunci benar. Berbeda dengan keliling, perubahan luas <b>bergantung pada papanmu</b> (" + lain + " = " +
-        angka(sisiLain, 1) + " cm). Papan lain, jawaban lain.";
+      ? terj("Kunci benar — dan perhatikan: jawabannya <b>tidak memakai ukuran papanmu sama sekali</b>. Papan berapa " +
+             "pun, menambah {kata} {a} cm selalu menambah keliling {dua} cm. Itulah gunanya huruf: <i>{s}</i> mewakili " +
+             "semua papan, bukan satu angka rahasia.",
+             { kata:terj(SISI_KATA[s]), a:angka(a, 2), dua:angka(2*a, 2), s:lambang(s) })
+      : terj("Kunci benar. Berbeda dengan keliling, perubahan luas <b>bergantung pada papanmu</b> ({lain} = {v} cm). " +
+             "Papan lain, jawaban lain.", { lain:lambang(lain), v:angka(sisiLain, 1) });
     diketahui = [a];
   }
 
@@ -1668,20 +2614,22 @@ function periksaSoal(){
   kartuBasi();
   if(!ok){
     jj.soalSalah[j] = true;
-    fb("soal","bad","Kunci jawabanmu belum cocok dengan soalnya.", cekUlang);
+    fb("soal","bad",terj("Kunci jawabanmu belum cocok dengan soalnya."), cekUlang);
     return;
   }
-  const hilang = diketahui.filter(function(v){ return !angkaDiTeks(teks).some(function(t){ return dekat(t, v); }); });
+  const hilang = diketahui.filter(function(v){ return !angkaDiTeks(teks).some(function(t){ return dekat(t, v); }); })
+                          .map(function(v){ return angka(v, 2); });
   fb("soal","ok", benar, (hilang.length
-    ? "Catatan: angka " + hilang.map(function(v){ return angka(v, 2); }).join(" dan ") +
-      " belum terlihat di kalimat soalmu — temanmu butuh angka itu. Kalau kamu menulisnya dengan huruf, abaikan catatan ini. "
-    : "") + "Soalmu ikut tercetak di kartu hasil untuk gurumu.");
+    ? terj("Catatan: angka {daftar} belum terlihat di kalimat soalmu — temanmu butuh angka itu. Kalau kamu " +
+           "menulisnya dengan huruf, abaikan catatan ini.",
+           { daftar: hilang.length === 2 ? terj("{a} dan {b}", { a:hilang[0], b:hilang[1] }) : hilang[0] }) + " "
+    : "") + terj("Soalmu ikut tercetak di kartu hasil untuk gurumu."));
   if(!jj.soalXp[j]){
     jj.soalXp[j] = true;
     const pulih = !!jj.soalSalah[j];
     addXp(SOAL_INFO[j].xp + (pulih ? XP_PULIH : 0),
-      pulih ? "Soalmu kamu perbaiki sendiri sampai kuncinya benar — ini yang dibayar paling mahal."
-            : "Soal " + SOAL_INFO[j].label.toLowerCase() + " buatanmu sendiri.");
+      pulih ? terj("Soalmu kamu perbaiki sendiri sampai kuncinya benar — ini yang dibayar paling mahal.")
+            : terj("Soal {jenis} buatanmu sendiri.", { jenis:terj(SOAL_INFO[j].label).toLowerCase() }));
   }
 }
 
@@ -1697,44 +2645,56 @@ document.getElementById("cSoal").addEventListener("input", function(){
   // Kartu memakai soal yang terakhir DIPERIKSA; beri tahu bila sudah berubah sejak itu.
   if(!ST.jejak || !ST.jejak.soal || SOAL.berubah) return;
   SOAL.berubah = true;
-  fb("soal","hint","Soalmu berubah sejak diperiksa. Tekan <b>Periksa kunci soal</b> lagi supaya kartu memakai versi terbaru.");
+  fb("soal","hint",terj("Soalmu berubah sejak diperiksa. Tekan <b>Periksa kunci soal</b> lagi supaya kartu memakai versi terbaru."));
 });
 
 /* dipakai oleh berkas pengujian */
 pulihkan();          // harus mendahului render pertama
 renderGame();
 renderTimer();
+renderSoal();
+hud("Belum ada gambar. Tekan <b>Contoh simulasi</b> untuk mencoba tanpa kamera.");
+/* Bahasa berganti di tengah kegiatan: semua yang digambar dari keadaan
+   ditulis ulang. Umpan balik yang sudah tampil dibiarkan — itu jawaban atas
+   tindakan yang sudah lewat; tindakan berikutnya memakai bahasa baru. */
+document.addEventListener("jejak:bahasa", function(){
+  renderGame(); renderTimer(); renderSoal(true);
+  if(hudKini) hud(hudKini[0], hudKini[1]);
+  if(ST.locked) gambarModel();
+  if(!document.getElementById("restoreBar").classList.contains("hide")) tulisPulih();
+  if(ST.quad && ST.img && !ST.live){ X.drawImage(ST.img, 0, 0, CV.width, CV.height); overlay(); }
+});
 document.getElementById("btnMulaiBaru").addEventListener("click", function(){ hapusSimpanan(); location.reload(); });
 document.getElementById("btnBuatSimpan").addEventListener("click", function(){
   const box = document.getElementById("simpanBox");
   box.textContent = buatKodeSimpan(); box.style.display = "";
-  fb("simpan","ok","Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di " +
-    "perangkat lain dan tekan <b>Pulihkan</b>.");
+  fb("simpan","ok",terj("Kode simpan dibuat. Catat, potret, atau kirim ke dirimu sendiri — lalu tempel di " +
+    "perangkat lain dan tekan <b>Pulihkan</b>."));
 });
 document.getElementById("btnSalinSimpan").addEventListener("click", function(){
   const box = document.getElementById("simpanBox");
-  if(box.style.display === "none"){ fb("simpan","hint","Tekan <b>Buat kode simpan</b> dulu."); return; }
+  if(box.style.display === "none"){ fb("simpan","hint",terj("Tekan <b>Buat kode simpan</b> dulu.")); return; }
   const t = box.textContent;
   const gagal = function(){
     const r = document.createRange(); r.selectNodeContents(box);
     const sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
-    fb("simpan","hint","Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>.");
+    fb("simpan","hint",terj("Peramban ini tidak mengizinkan salin otomatis. Kodenya sudah disorot — tekan lama lalu <b>Copy</b>."));
   };
   if(navigator.clipboard && navigator.clipboard.writeText)
-    navigator.clipboard.writeText(t).then(function(){ fb("simpan","ok","Kode <b>" + t + "</b> tersalin."); }, gagal);
+    navigator.clipboard.writeText(t).then(function(){ fb("simpan","ok",terj("Kode <b>{k}</b> tersalin.", {k:t})); }, gagal);
   else gagal();
 });
 document.getElementById("btnPakaiSimpan").addEventListener("click", function(){
   const v = document.getElementById("inSimpan").value.trim();
-  if(!v){ fb("simpan","hint","Tempel kode simpannya dulu."); return; }
+  if(!v){ fb("simpan","hint",terj("Tempel kode simpannya dulu.")); return; }
   const h = pakaiKodeSimpan(v);
-  if(h === "gagal"){ fb("simpan","bad","Kode itu tidak sah.",
-    "Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru."); return; }
-  if(h === "versi"){ fb("simpan","bad","Kode itu dibuat oleh versi media yang berbeda.",
-    "Struktur datanya sudah berubah."); return; }
+  if(h === "gagal"){ fb("simpan","bad",terj("Kode itu tidak sah."),
+    terj("Checksum-nya tidak cocok, jadi kodenya ditolak daripada memulihkan kemajuan yang keliru.")); return; }
+  if(h === "versi"){ fb("simpan","bad",terj("Kode itu dibuat oleh versi media yang berbeda."),
+    terj("Struktur datanya sudah berubah.")); return; }
   renderGame();
-  fb("simpan","ok","Ekspedisi dipulihkan dari kode. " + STEPS.filter(function(k){ return G.done[k]; }).length +
-    " dari 4 tahap selesai, " + G.xp + " jejak.");
+  fb("simpan","ok",terj("Ekspedisi dipulihkan dari kode. {n} dari 4 tahap selesai, {xp} jejak.",
+    {n:STEPS.filter(function(k){ return G.done[k]; }).length, xp:G.xp}));
 });
 window.__ar = {ST:ST, detectQuad:detectQuad, sidePairs:sidePairs, simulate:simulate, polyArea:polyArea};
 window.__snap = function(){ return JSON.stringify({xp:G.xp, b:Object.keys(G.badges).sort(),
@@ -1765,6 +2725,9 @@ window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PUL
     { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
   ];
   var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+  /* Terjemahan hanya ada di halaman yang memuat cuplikan BAHASA
+     (bahasa-js.txt). Di halaman lain teksnya tetap bahasa Indonesia. */
+  function tr(s){ return window.terj ? window.terj(s) : s; }
 
   /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
      perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
@@ -1779,13 +2742,13 @@ window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PUL
     if(!sah[v]) v = "kertas";
     document.documentElement.setAttribute("data-tema", v);
     var b = document.getElementById("btnTema");
-    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    if(b) b.lastChild.nodeValue = " " + tr(sah[v].nm);
     var m = document.getElementById("temaMenu");
     if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
       var aktif = t.getAttribute("data-tema") === v;
       t.setAttribute("aria-checked", aktif ? "true" : "false");
       var tk = t.querySelector(".tick");
-      if(tk) tk.textContent = aktif ? "dipakai" : "";
+      if(tk) tk.textContent = aktif ? tr("dipakai") : "";
     });
   }
 
@@ -1793,17 +2756,17 @@ window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PUL
     var w = document.getElementById("temaWrap");
     if(!w) return;
     var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
-               'aria-controls="temaMenu" title="Ganti tema warna">' +
-               '<span aria-hidden="true">◐</span> Tema</button>' +
-               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
-               '<div class="hd">Tema warna</div>';
+               'aria-controls="temaMenu" title="' + tr("Ganti tema warna") + '">' +
+               '<span aria-hidden="true">◐</span> ' + tr("Tema") + '</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="' + tr("Tema warna") + '">' +
+               '<div class="hd">' + tr("Tema warna") + '</div>';
     TEMA.forEach(function(t){
       html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
               '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
               '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
               '"></i><i style="background:' + t.a + '"></i></span>' +
-              '<span><span class="nm">' + t.nm + '</span>' +
-              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span><span class="nm">' + tr(t.nm) + '</span>' +
+              '<span class="ket">' + tr(t.ket) + '</span></span>' +
               '<span class="tick"></span></button>';
     });
     html += "</div>";
@@ -1835,6 +2798,18 @@ window.__g  = {G:G, BADGES:BADGES, STEPS:STEPS, XP_STEP:XP_STEP, XP_PULIH:XP_PUL
     });
 
     pakai(baca());
+    // Bahasa berganti → label tema ikut berganti, pilihan tema tidak berubah.
+    document.addEventListener("jejak:bahasa", function(){
+      btn.setAttribute("title", tr("Ganti tema warna"));
+      menu.setAttribute("aria-label", tr("Tema warna"));
+      menu.querySelector(".hd").textContent = tr("Tema warna");
+      Array.prototype.forEach.call(menu.querySelectorAll("button[data-tema]"), function(t){
+        var x = sah[t.getAttribute("data-tema")];
+        t.querySelector(".nm").textContent = tr(x.nm);
+        t.querySelector(".ket").textContent = tr(x.ket);
+      });
+      pakai(document.documentElement.getAttribute("data-tema"));
+    });
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);

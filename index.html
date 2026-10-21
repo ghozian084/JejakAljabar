@@ -235,6 +235,7 @@ body{
 .bar i{display:block;height:100%;border-radius:99px;transition:width .5s ease}
 .meta{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--ink-soft);gap:10px}
 .meta b{color:var(--ink);font-variant-numeric:tabular-nums}
+.bhsNote{margin:0;font-size:12px;font-weight:600;color:var(--amber-ink);background:var(--amber-bg);border:1px solid var(--amber-soft);border-radius:7px;padding:4px 9px}
 .go{
   margin-top:2px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;
 }
@@ -325,17 +326,17 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 <div class="wrap">
 
   <div class="sign">
-    <div class="tag">Media Pembelajaran Matematika</div>
+    <div class="tag" data-t>Media Pembelajaran Matematika</div>
     <h1>JEJAK <span>ALJABAR</span></h1>
-    <div class="sub">Dari benda yang bisa dipegang, menuju lambang yang bisa dipikirkan.</div>
+    <div class="sub" data-t>Dari benda yang bisa dipegang, menuju lambang yang bisa dipikirkan.</div>
   </div>
 
-  <div class="temabar"><span class="temaWrap" id="temaWrap"></span></div>
+  <div class="temabar" style="gap:8px"><span class="temaWrap" id="temaWrap"></span><span class="temaWrap" id="bhsWrap"></span></div>
   <div class="summary" id="summary" aria-live="polite"></div>
 
   <!-- ============ PETA ============ -->
   <div class="mapbox">
-    <svg viewBox="0 0 1000 330" role="img" aria-label="Peta empat modul: Jejak Aljabar, Petualangan Lapangan, Jelajah Enam Rimba, Bengkel Kartu">
+    <svg viewBox="0 0 1000 330" role="img" data-t-attr="aria-label" aria-label="Peta empat modul: Jejak Aljabar, Petualangan Lapangan, Jelajah Enam Rimba, Bengkel Kartu">
       <defs>
         <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="var(--m-sky1)"/><stop offset="100%" stop-color="var(--m-sky2)"/>
@@ -404,7 +405,7 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <g id="nodes"></g>
     </svg>
   </div>
-  <p class="maplegend">Cincin di sekeliling angka menunjukkan bagian yang sudah kamu tuntaskan. Boleh dimulai dari mana saja — tetapi Modul 1 yang membangun dasarnya.</p>
+  <p class="maplegend" data-t>Cincin di sekeliling angka menunjukkan bagian yang sudah kamu tuntaskan. Boleh dimulai dari mana saja — tetapi Modul 1 yang membangun dasarnya.</p>
 
   <!-- ============ KARTU MODUL ============ -->
   <div class="grid">
@@ -414,12 +415,13 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
         <div class="num">1</div>
         <div>
           <h2>Jejak Aljabar</h2>
-          <div class="role">Memahami Konsep</div>
+          <div class="role" data-t>Memahami Konsep</div>
         </div>
       </div>
-      <span class="where">◐ Di dalam kelas</span>
-      <p>Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga
+      <span class="where" data-t>◐ Di dalam kelas</span>
+      <p data-t>Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga
          neraca tetap setara, lalu berdebat melawan Budi — teman sebaya yang keliru.</p>
+      <p class="bhsNote hide" data-bhs-belum><span aria-hidden="true">ⓘ</span> <span data-t>Modul ini masih berbahasa Indonesia.</span></p>
       <div class="bar"><i id="b1" style="width:0%"></i></div>
       <div class="meta"><span id="m1a">Belum dimulai</span><span id="m1b"></span></div>
       <div class="go"><span id="g1">Mulai</span> <span class="arrow" aria-hidden="true">→</span></div>
@@ -429,12 +431,12 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <div class="top">
         <div class="num">2</div>
         <div>
-          <h2>Petualangan Lapangan</h2>
-          <div class="role">Penerapan Konsep</div>
+          <h2 data-t>Petualangan Lapangan</h2>
+          <div class="role" data-t>Penerapan Konsep</div>
         </div>
       </div>
-      <span class="where">◑ Di depan papan mading</span>
-      <p>Kamera memindai papan dan menyusun <span class="math">K = 2p + 2l</span> — tetapi tidak
+      <span class="where" data-t>◑ Di depan papan mading</span>
+      <p data-t>Kamera memindai papan dan menyusun <span class="math">K = 2p + 2l</span> — tetapi tidak
          sanggup memberi nilai <span class="math">p</span> dan <span class="math">l</span>.
          Itu bagianmu: berdiri, mengukur, membuktikan.</p>
       <div class="bar"><i id="b2" style="width:0%"></i></div>
@@ -446,13 +448,14 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <div class="top">
         <div class="num">3</div>
         <div>
-          <h2>Jelajah Enam Rimba</h2>
-          <div class="role">Latihan &amp; Penguatan</div>
+          <h2 data-t>Jelajah Enam Rimba</h2>
+          <div class="role" data-t>Latihan &amp; Penguatan</div>
         </div>
       </div>
-      <span class="where">◒ Mandiri atau PR</span>
-      <p>Enam wilayah, satu untuk tiap jenis salah paham — Rimba Lambang sampai Gua Berubah.
+      <span class="where" data-t>◒ Mandiri atau PR</span>
+      <p data-t>Enam wilayah, satu untuk tiap jenis salah paham — Rimba Lambang sampai Gua Berubah.
          Nyawa yang hilang <b>kembali</b> begitu kekeliruannya kamu perbaiki.</p>
+      <p class="bhsNote hide" data-bhs-belum><span aria-hidden="true">ⓘ</span> <span data-t>Modul ini masih berbahasa Indonesia.</span></p>
       <div class="bar"><i id="b3" style="width:0%"></i></div>
       <div class="meta"><span id="m3a">Belum dimulai</span><span id="m3b"></span></div>
       <div class="go"><span id="g3">Mulai</span> <span class="arrow" aria-hidden="true">→</span></div>
@@ -462,13 +465,14 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <div class="top">
         <div class="num">4</div>
         <div>
-          <h2>Bengkel Kartu</h2>
-          <div class="role">Menyusun &amp; Membaca</div>
+          <h2 data-t>Bengkel Kartu</h2>
+          <div class="role" data-t>Menyusun &amp; Membaca</div>
         </div>
       </div>
-      <span class="where">◓ Di meja, dengan kartu cetak</span>
-      <p>Delapan misi berganti arah. Kadang kamera membaca susunanmu, kadang kamu yang
+      <span class="where" data-t>◓ Di meja, dengan kartu cetak</span>
+      <p data-t>Delapan misi berganti arah. Kadang kamera membaca susunanmu, kadang kamu yang
          harus <b>membangun</b> ekspresi dari nol dengan tangan sendiri.</p>
+      <p class="bhsNote hide" data-bhs-belum><span aria-hidden="true">ⓘ</span> <span data-t>Modul ini masih berbahasa Indonesia.</span></p>
       <div class="bar"><i id="b4" style="width:0%"></i></div>
       <div class="meta"><span id="m4a">Belum dimulai</span><span id="m4b"></span></div>
       <div class="go"><span id="g4">Mulai</span> <span class="arrow" aria-hidden="true">→</span></div>
@@ -481,40 +485,40 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
     <a class="mini" href="jejak-aljabar.html#panelGuru">
       <div class="ic" aria-hidden="true">▤</div>
       <div>
-        <h3>Panel Guru</h3>
-        <p>Tempel KODE JEJAK sekelas, lihat peta miskonsepsi yang muncul. Tanpa internet, tanpa akun.</p>
+        <h3 data-t>Panel Guru</h3>
+        <p data-t>Tempel KODE JEJAK sekelas, lihat peta miskonsepsi yang muncul. Tanpa internet, tanpa akun.</p>
       </div>
     </a>
     <a class="mini" href="ar-ekspresi.html#lembar">
       <div class="ic" aria-hidden="true">✂</div>
       <div>
-        <h3>Lembar Kartu Cetak</h3>
-        <p>24 kartu hitam-putih di HVS biasa. Cetak sekali, pakai sekelas.</p>
+        <h3 data-t>Lembar Kartu Cetak</h3>
+        <p data-t>24 kartu hitam-putih di HVS biasa. Cetak sekali, pakai sekelas.</p>
       </div>
     </a>
     <a class="mini" href="#tentang">
       <div class="ic" aria-hidden="true">✦</div>
       <div>
-        <h3>Tentang</h3>
-        <p>Pengembang, gagasan di balik media, dan batasan yang perlu diketahui.</p>
+        <h3 data-t>Tentang</h3>
+        <p data-t>Pengembang, gagasan di balik media, dan batasan yang perlu diketahui.</p>
       </div>
     </a>
   </div>
 
   <!-- ============ TENTANG ============ -->
   <section class="about" id="tentang">
-    <h2>Tentang</h2>
-    <p class="lead">Media ini ditulis sendiri dari nol — satu berkas per modul, tanpa pustaka luar,
+    <h2 data-t>Tentang</h2>
+    <p class="lead" data-t>Media ini ditulis sendiri dari nol — satu berkas per modul, tanpa pustaka luar,
        tanpa kunci API, dan sanggup berjalan tanpa internet.</p>
 
     <div class="dev">
       <div class="avatar" aria-hidden="true">GK</div>
       <div class="who">
         <div class="nm">Muhammad Ghozian Kafi Ahsan, M.Pd.</div>
-        <div class="rl">Guru Matematika &amp; Robotika · Semesta Bilingual Boarding School, Semarang</div>
-        <div class="rl">S1 &amp; S2 Pendidikan Matematika · Universitas Negeri Semarang</div>
+        <div class="rl" data-t>Guru Matematika &amp; Robotika · Semesta Bilingual Boarding School, Semarang</div>
+        <div class="rl" data-t>S1 &amp; S2 Pendidikan Matematika · Universitas Negeri Semarang</div>
         <div class="chips">
-          <span class="chip">Pemodelan Matematika</span>
+          <span class="chip" data-t>Pemodelan Matematika</span>
           <span class="chip">Math Trails · MathCityMap</span>
           <span class="chip">Augmented Reality</span>
           <span class="chip">Computational Thinking</span>
@@ -524,26 +528,26 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 
     <div class="facts">
       <div class="fact">
-        <div class="k">Gagasan pokok</div>
-        <div class="v">Kamera memberi <b>struktur</b>, siswa memberi <b>besaran</b>. Kalau kamera ikut
+        <div class="k" data-t>Gagasan pokok</div>
+        <div class="v" data-t>Kamera memberi <b>struktur</b>, siswa memberi <b>besaran</b>. Kalau kamera ikut
           mengukur, variabelnya mati.</div>
       </div>
       <div class="fact">
-        <div class="k">Cara menilai</div>
-        <div class="v">Yang dicatat bukan skor, melainkan <b>jenis</b> salah paham — enam kode, M1 sampai M6.</div>
+        <div class="k" data-t>Cara menilai</div>
+        <div class="v" data-t>Yang dicatat bukan skor, melainkan <b>jenis</b> salah paham — enam kode, M1 sampai M6.</div>
       </div>
       <div class="fact">
-        <div class="k">Aturan poin</div>
-        <div class="v">Memperbaiki kekeliruan dibayar <b>lebih mahal</b> daripada benar sejak awal.</div>
+        <div class="k" data-t>Aturan poin</div>
+        <div class="v" data-t>Memperbaiki kekeliruan dibayar <b>lebih mahal</b> daripada benar sejak awal.</div>
       </div>
       <div class="fact">
-        <div class="k">Data siswa</div>
-        <div class="v">Tidak pernah meninggalkan perangkat. Tidak ada server, tidak ada akun,
+        <div class="k" data-t>Data siswa</div>
+        <div class="v" data-t>Tidak pernah meninggalkan perangkat. Tidak ada server, tidak ada akun,
           tidak ada kunci API.</div>
       </div>
     </div>
 
-    <div class="note">
+    <div class="note" data-t>
       <b>Perlu diketahui.</b> Modul 2 dan 4 memakai kamera, dan peramban hanya mengizinkannya lewat
       <b>HTTPS</b> atau <b>localhost</b> — dari berkas biasa kamera akan ditolak. Karena itu keduanya
       selalu menyediakan <b>Contoh simulasi</b>, <b>Unggah foto</b>, dan penghitung manual, sehingga
@@ -552,12 +556,393 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
   </section>
 
   <footer>
-    <div>Kemajuanmu tersimpan di perangkat ini saja. Ganti perangkat? Pakai <b>kode simpan</b> di dalam tiap modul.</div>
-    <button class="rst" id="btnReset" type="button">Hapus semua kemajuan di perangkat ini</button>
+    <div data-t>Kemajuanmu tersimpan di perangkat ini saja. Ganti perangkat? Pakai <b>kode simpan</b> di dalam tiap modul.</div>
+    <button class="rst" id="btnReset" type="button" data-t>Hapus semua kemajuan di perangkat ini</button>
   </footer>
 
 </div>
 
+<script>
+/* =====================================================================
+   BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
+   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
+   sejak awal.
+
+   Teks sumber tetap bahasa Indonesia DI DALAM KODE. Kamus memetakan
+   kalimat Indonesia → terjemahan, jadi kode tetap terbaca oleh penulisnya.
+   Kalimat yang belum ada di kamus tampil dalam bahasa Indonesia — layar
+   tidak pernah kosong — dan dicatat di JEJAK_BHS.hilang untuk pengujian.
+
+     terj("Kalimat dengan {x}.", {x:3})  terjemahkan sekarang, isi {x}
+     tandai("Kalimat")                   kembalikan apa adanya; hanya
+                                          menandai kalimat yang diterjemahkan
+                                          belakangan (mis. nama lencana)
+     <p data-t>…</p>                      isi elemen diterjemahkan utuh;
+                                          JANGAN berisi elemen ber-id
+     data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+
+   Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
+   lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
+   menggambar ulang teks dinamisnya. Pilihan bahasa disimpan pada satu
+   kunci untuk semua berkas, terpisah dari kunci kemajuan.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var KUNCI = "jejak.bahasa.v1";
+  var BAHASA = [
+    { id:"id", nm:"Bahasa Indonesia", pendek:"ID",     lang:"id",      ket:"Indonesia" },
+    { id:"en", nm:"English",          pendek:"EN",     lang:"en",      ket:"Inggris" },
+    { id:"zh", nm:"中文（简体）",       pendek:"中文",   lang:"zh-Hans", ket:"Mandarin (aksara sederhana)" },
+    { id:"ko", nm:"한국어",            pendek:"한국어", lang:"ko",      ket:"Korea" }
+  ];
+  var sah = {}; BAHASA.forEach(function(b){ sah[b.id] = b; });
+  var KAMUS = { en:{}, zh:{}, ko:{} };
+  var hilang = {};
+
+  /* localStorage bisa ditolak sepenuhnya. Bahasa tetap bisa diganti untuk
+     sesi ini — hanya tidak diingat. */
+  function baca(){
+    try{ var v = localStorage.getItem(KUNCI); return sah[v] ? v : "id"; }
+    catch(e){ return "id"; }
+  }
+  function simpan(v){ try{ localStorage.setItem(KUNCI, v); }catch(e){} }
+  var kini = baca();
+
+  function rapi(s){ return String(s).replace(/\s+/g, " ").trim(); }
+  function tambah(kamus){
+    for(var b in kamus) if(KAMUS[b]) for(var k in kamus[b]) KAMUS[b][rapi(k)] = kamus[b][k];
+  }
+  function terj(teks, nilai){
+    var hasil = teks;
+    if(kini !== "id"){
+      var k = rapi(teks), ada = KAMUS[kini][k];
+      if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
+    }
+    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
+      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+    });
+    return hasil;
+  }
+  function tandai(teks){ return teks; }
+
+  function terapkan(){
+    document.documentElement.setAttribute("lang", sah[kini].lang);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function(el){
+      if(el.__asli === undefined) el.__asli = el.innerHTML;
+      el.innerHTML = terj(el.__asli);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t-attr]"), function(el){
+      if(!el.__asliAttr) el.__asliAttr = {};
+      el.getAttribute("data-t-attr").split(/\s+/).forEach(function(a){
+        if(!a) return;
+        if(!(a in el.__asliAttr)) el.__asliAttr[a] = el.getAttribute(a);
+        if(el.__asliAttr[a] !== null) el.setAttribute(a, terj(el.__asliAttr[a]));
+      });
+    });
+    labelPemilih();
+  }
+
+  function labelPemilih(){
+    var b = document.getElementById("btnBahasa");
+    if(b){
+      b.lastChild.nodeValue = " " + sah[kini].pendek;
+      b.setAttribute("title", terj("Ganti bahasa") + " · Language");
+    }
+    var m = document.getElementById("bahasaMenu");
+    if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-bahasa]"), function(t){
+      var v = t.getAttribute("data-bahasa"), aktif = v === kini;
+      t.setAttribute("aria-checked", aktif ? "true" : "false");
+      t.querySelector(".ket").textContent = terj(sah[v].ket);
+      // Pilihan ditandai dengan kata, tidak hanya warna.
+      t.querySelector(".tick").textContent = aktif ? terj("dipakai") : "";
+    });
+  }
+
+  function pilih(v){
+    if(!sah[v]) v = "id";
+    kini = v;
+    terapkan();
+    var ev;
+    try{ ev = new CustomEvent("jejak:bahasa", { detail:{ bahasa:v } }); }
+    catch(e){ ev = document.createEvent("CustomEvent"); ev.initCustomEvent("jejak:bahasa", false, false, { bahasa:v }); }
+    document.dispatchEvent(ev);
+  }
+
+  /* Pemilih memakai kelas yang sama dengan pemilih tema, jadi tampilannya
+     ikut tema tanpa CSS tambahan. Judul menunya selalu menyebut keempat
+     bahasa: siswa yang tersesat di bahasa yang tidak ia baca tetap bisa
+     menemukan jalan pulang. */
+  function bangun(){
+    var w = document.getElementById("bhsWrap");
+    if(w){
+      var html = '<button class="temaBtn" id="btnBahasa" aria-haspopup="true" aria-expanded="false" ' +
+                 'aria-controls="bahasaMenu"><span aria-hidden="true">🌐</span> ID</button>' +
+                 '<div class="temaMenu" id="bahasaMenu" role="menu" hidden aria-label="Bahasa · Language">' +
+                 '<div class="hd">Bahasa · Language · 语言 · 언어</div>';
+      BAHASA.forEach(function(b){
+        html += '<button type="button" role="menuitemradio" aria-checked="false" data-bahasa="' + b.id +
+                '" lang="' + b.lang + '"><span><span class="nm">' + b.nm + '</span>' +
+                '<span class="ket"></span></span><span class="tick"></span></button>';
+      });
+      w.innerHTML = html + "</div>";
+      var btn = document.getElementById("btnBahasa"), menu = document.getElementById("bahasaMenu");
+      var tutup = function(){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        if(menu.hidden){ menu.hidden = false; btn.setAttribute("aria-expanded", "true"); } else tutup();
+      });
+      menu.addEventListener("click", function(e){
+        var t = e.target.closest ? e.target.closest("button[data-bahasa]") : null;
+        if(!t) return;
+        var v = t.getAttribute("data-bahasa");
+        simpan(v); tutup(); btn.focus();
+        if(v !== kini) pilih(v);
+      });
+      document.addEventListener("click", function(e){ if(!menu.hidden && !w.contains(e.target)) tutup(); });
+      document.addEventListener("keydown", function(e){
+        if(e.key === "Escape" && !menu.hidden){ tutup(); btn.focus(); }
+      });
+    }
+    terapkan();
+  }
+
+  tambah({
+    en:{ "Ganti bahasa":"Change language", "dipakai":"in use", "Indonesia":"Indonesian", "Inggris":"English",
+         "Mandarin (aksara sederhana)":"Chinese (Simplified)", "Korea":"Korean" },
+    zh:{ "Ganti bahasa":"切换语言", "dipakai":"使用中", "Indonesia":"印度尼西亚语", "Inggris":"英语",
+         "Mandarin (aksara sederhana)":"简体中文", "Korea":"韩语" },
+    ko:{ "Ganti bahasa":"언어 바꾸기", "dipakai":"사용 중", "Indonesia":"인도네시아어", "Inggris":"영어",
+         "Mandarin (aksara sederhana)":"중국어(간체)", "Korea":"한국어" }
+  });
+  // Teks cuplikan tema (tema-js.txt) — diterjemahkan di sini karena tema dipakai di semua halaman.
+  tambah({
+    en:{ "Tema":"Theme", "Ganti tema warna":"Change colour theme", "Tema warna":"Colour theme",
+         "Kertas":"Paper", "Laut":"Sea", "Malam":"Night", "Kontras Tinggi":"High Contrast",
+         "Hangat, silau rendah — bawaan":"Warm, low glare — default",
+         "Sejuk, untuk ruang berlampu kuning":"Cool, for rooms with yellow lighting",
+         "Gelap, untuk belajar malam":"Dark, for studying at night",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"Sharp lines, for projectors & low vision" },
+    zh:{ "Tema":"主题", "Ganti tema warna":"更换配色主题", "Tema warna":"配色主题",
+         "Kertas":"纸张", "Laut":"海洋", "Malam":"夜间", "Kontras Tinggi":"高对比度",
+         "Hangat, silau rendah — bawaan":"暖色、低眩光——默认",
+         "Sejuk, untuk ruang berlampu kuning":"冷色调，适合黄色灯光的教室",
+         "Gelap, untuk belajar malam":"深色，适合夜间学习",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"线条清晰，适合投影仪和视力较弱者" },
+    ko:{ "Tema":"테마", "Ganti tema warna":"색 테마 바꾸기", "Tema warna":"색 테마",
+         "Kertas":"종이", "Laut":"바다", "Malam":"밤", "Kontras Tinggi":"고대비",
+         "Hangat, silau rendah — bawaan":"따뜻하고 눈부심이 적음 — 기본",
+         "Sejuk, untuk ruang berlampu kuning":"시원한 색, 노란 조명 교실용",
+         "Gelap, untuk belajar malam":"어두운 색, 밤 공부용",
+         "Garis tegas, untuk proyektor & penglihatan rendah":"선명한 선, 프로젝터·저시력용" }
+  });
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
+  else bangun();
+
+  window.terj = terj;
+  window.tandai = tandai;
+  window.JEJAK_BHS = { kini:function(){ return kini; }, terj:terj, tambah:tambah, pilih:pilih,
+                       BAHASA:BAHASA, KUNCI:KUNCI, KAMUS:KAMUS, hilang:hilang, baca:baca };
+})();
+</script>
+<script>
+/* =====================================================================
+   KAMUS MENU UTAMA — kalimat Indonesia → terjemahan.
+   Kunci harus SAMA dengan kalimat di markup/kode (spasi boleh berbeda).
+   test-bahasa.js memastikan setiap kalimat punya terjemahan di sini.
+   Nama tombol Modul 2 ("Contoh simulasi", "Unggah foto") harus sama
+   dengan terjemahannya di ar-ukur.html.
+   ===================================================================== */
+JEJAK_BHS.tambah({
+en:{
+  "Media Pembelajaran Matematika":"Mathematics Learning Media",
+  "Dari benda yang bisa dipegang, menuju lambang yang bisa dipikirkan.":"From objects you can hold to symbols you can think with.",
+  "Peta empat modul: Jejak Aljabar, Petualangan Lapangan, Jelajah Enam Rimba, Bengkel Kartu":"Map of four modules: Jejak Aljabar, Field Adventure, Six Forests Expedition, Card Workshop",
+  "Cincin di sekeliling angka menunjukkan bagian yang sudah kamu tuntaskan. Boleh dimulai dari mana saja — tetapi Modul 1 yang membangun dasarnya.":"The ring around each number shows how much you have completed. You can start anywhere — but Module 1 builds the foundation.",
+  "Memahami Konsep":"Understanding Concepts",
+  "◐ Di dalam kelas":"◐ In the classroom",
+  "Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga neraca tetap setara, lalu berdebat melawan Budi — teman sebaya yang keliru.":"Four stations: naming what is still unknown, building expressions, keeping the balance level, then debating Budi — a classmate who has it wrong.",
+  "Petualangan Lapangan":"Field Adventure",
+  "Penerapan Konsep":"Applying Concepts",
+  "◑ Di depan papan mading":"◑ In front of the notice board",
+  "Kamera memindai papan dan menyusun <span class=\"math\">K = 2p + 2l</span> — tetapi tidak sanggup memberi nilai <span class=\"math\">p</span> dan <span class=\"math\">l</span>. Itu bagianmu: berdiri, mengukur, membuktikan.":"The camera scans the board and builds <span class=\"math\">P = 2l + 2w</span> — but it cannot give values to <span class=\"math\">l</span> and <span class=\"math\">w</span>. That is your part: stand up, measure, prove.",
+  "Jelajah Enam Rimba":"Six Forests Expedition",
+  "Latihan &amp; Penguatan":"Practice &amp; Reinforcement",
+  "◒ Mandiri atau PR":"◒ Independent work or homework",
+  "Enam wilayah, satu untuk tiap jenis salah paham — Rimba Lambang sampai Gua Berubah. Nyawa yang hilang <b>kembali</b> begitu kekeliruannya kamu perbaiki.":"Six regions, one for each kind of misconception — from Symbol Forest to the Changing Cave. Lost lives <b>come back</b> as soon as you fix the mistake.",
+  "Bengkel Kartu":"Card Workshop",
+  "Menyusun &amp; Membaca":"Building &amp; Reading",
+  "◓ Di meja, dengan kartu cetak":"◓ At the desk, with printed cards",
+  "Delapan misi berganti arah. Kadang kamera membaca susunanmu, kadang kamu yang harus <b>membangun</b> ekspresi dari nol dengan tangan sendiri.":"Eight missions that switch direction. Sometimes the camera reads your arrangement; sometimes you have to <b>build</b> the expression from scratch with your own hands.",
+  "Modul ini masih berbahasa Indonesia.":"This module is still in Indonesian only.",
+  "Panel Guru":"Teacher Panel",
+  "Tempel KODE JEJAK sekelas, lihat peta miskonsepsi yang muncul. Tanpa internet, tanpa akun.":"Paste a whole class's KODE JEJAK codes and see the misconception map that emerges. No internet, no accounts.",
+  "Lembar Kartu Cetak":"Printable Card Sheet",
+  "24 kartu hitam-putih di HVS biasa. Cetak sekali, pakai sekelas.":"24 black-and-white cards on plain paper. Print once, use for the whole class.",
+  "Tentang":"About",
+  "Pengembang, gagasan di balik media, dan batasan yang perlu diketahui.":"The developer, the ideas behind the media, and the limitations you should know about.",
+  "Media ini ditulis sendiri dari nol — satu berkas per modul, tanpa pustaka luar, tanpa kunci API, dan sanggup berjalan tanpa internet.":"This media was written from scratch — one file per module, no external libraries, no API keys, and it runs without internet.",
+  "Guru Matematika &amp; Robotika · Semesta Bilingual Boarding School, Semarang":"Mathematics &amp; Robotics Teacher · Semesta Bilingual Boarding School, Semarang",
+  "S1 &amp; S2 Pendidikan Matematika · Universitas Negeri Semarang":"Bachelor's &amp; Master's in Mathematics Education · Universitas Negeri Semarang",
+  "Pemodelan Matematika":"Mathematical Modelling",
+  "Gagasan pokok":"Core idea",
+  "Kamera memberi <b>struktur</b>, siswa memberi <b>besaran</b>. Kalau kamera ikut mengukur, variabelnya mati.":"The camera provides the <b>structure</b>; the student provides the <b>quantities</b>. If the camera measured too, the variable would die.",
+  "Cara menilai":"How assessment works",
+  "Yang dicatat bukan skor, melainkan <b>jenis</b> salah paham — enam kode, M1 sampai M6.":"What is recorded is not a score but the <b>kind</b> of misconception — six codes, M1 to M6.",
+  "Aturan poin":"Points rule",
+  "Memperbaiki kekeliruan dibayar <b>lebih mahal</b> daripada benar sejak awal.":"Fixing a mistake earns <b>more</b> than being right from the start.",
+  "Data siswa":"Student data",
+  "Tidak pernah meninggalkan perangkat. Tidak ada server, tidak ada akun, tidak ada kunci API.":"Never leaves the device. No server, no accounts, no API keys.",
+  "<b>Perlu diketahui.</b> Modul 2 dan 4 memakai kamera, dan peramban hanya mengizinkannya lewat <b>HTTPS</b> atau <b>localhost</b> — dari berkas biasa kamera akan ditolak. Karena itu keduanya selalu menyediakan <b>Contoh simulasi</b>, <b>Unggah foto</b>, dan penghitung manual, sehingga seluruh alur tetap bisa ditempuh tanpa kamera sama sekali.":"<b>Good to know.</b> Modules 2 and 4 use the camera, and browsers only allow it over <b>HTTPS</b> or <b>localhost</b> — opened as a plain file, the camera will be blocked. That is why both always offer a <b>Simulated example</b>, <b>Upload photo</b> and a manual counter, so the whole activity can be done without a camera at all.",
+  "Kemajuanmu tersimpan di perangkat ini saja. Ganti perangkat? Pakai <b>kode simpan</b> di dalam tiap modul.":"Your progress is saved on this device only. Switching devices? Use the <b>save code</b> inside each module.",
+  "Hapus semua kemajuan di perangkat ini":"Delete all progress on this device",
+  "Yakin? Tekan sekali lagi untuk menghapus.":"Sure? Press once more to delete.",
+  "Terhapus. Memuat ulang…":"Deleted. Reloading…",
+  "{a} dari {b} kegiatan":"{a} of {b} activities",
+  "{a} dari {b} tahap":"{a} of {b} stages",
+  "{a} dari {b} mahkota":"{a} of {b} crowns",
+  "{a} dari {b} misi":"{a} of {b} missions",
+  "Belum dimulai":"Not started",
+  "<b>{n}</b> jejak":"<b>{n}</b> footprints",
+  "<b>{n}</b>/{t} lencana":"<b>{n}</b>/{t} badges",
+  "Buka lagi":"Open again",
+  "Lanjutkan":"Continue",
+  "Mulai":"Start",
+  "Kemajuan tidak bisa ditampilkan — penyimpanan peramban sedang diblokir. Seluruh modul tetap bisa dipakai.":"Progress can't be shown — browser storage is blocked. All modules can still be used.",
+  "Perjalanan belum dimulai — pilih satu pintu di bawah.":"Your journey hasn't started yet — pick a door below.",
+  "jejak terkumpul":"footprints collected",
+  "lencana":"badges",
+  "dari 4 modul tuntas":"of 4 modules completed",
+  "Modul {n} — {label}":"Module {n} — {label}",
+  "Jejak Aljabar":"Jejak Aljabar"
+},
+zh:{
+  "Media Pembelajaran Matematika":"数学学习媒体",
+  "Dari benda yang bisa dipegang, menuju lambang yang bisa dipikirkan.":"从可以握在手中的物体，走向可以思考的符号。",
+  "Peta empat modul: Jejak Aljabar, Petualangan Lapangan, Jelajah Enam Rimba, Bengkel Kartu":"四个模块的地图：Jejak Aljabar、实地探险、六林探险、卡片工坊",
+  "Cincin di sekeliling angka menunjukkan bagian yang sudah kamu tuntaskan. Boleh dimulai dari mana saja — tetapi Modul 1 yang membangun dasarnya.":"数字周围的圆环显示你已完成的部分。可以从任何一处开始——但模块 1 负责打下基础。",
+  "Memahami Konsep":"理解概念",
+  "◐ Di dalam kelas":"◐ 在教室里",
+  "Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga neraca tetap setara, lalu berdebat melawan Budi — teman sebaya yang keliru.":"四个站点：给未知的量命名、列出代数式、让天平保持平衡，然后与 Budi 辩论——一位想法有误的同学。",
+  "Petualangan Lapangan":"实地探险",
+  "Penerapan Konsep":"应用概念",
+  "◑ Di depan papan mading":"◑ 在布告栏前",
+  "Kamera memindai papan dan menyusun <span class=\"math\">K = 2p + 2l</span> — tetapi tidak sanggup memberi nilai <span class=\"math\">p</span> dan <span class=\"math\">l</span>. Itu bagianmu: berdiri, mengukur, membuktikan.":"摄像头扫描布告栏并列出 <span class=\"math\">C = 2a + 2b</span>——却无法给出 <span class=\"math\">a</span> 和 <span class=\"math\">b</span> 的值。这是你的任务：站起来、测量、证明。",
+  "Jelajah Enam Rimba":"六林探险",
+  "Latihan &amp; Penguatan":"练习与巩固",
+  "◒ Mandiri atau PR":"◒ 自主练习或作业",
+  "Enam wilayah, satu untuk tiap jenis salah paham — Rimba Lambang sampai Gua Berubah. Nyawa yang hilang <b>kembali</b> begitu kekeliruannya kamu perbaiki.":"六个区域，每种误解对应一个——从符号森林到变化洞穴。只要你改正错误，失去的生命就会<b>回来</b>。",
+  "Bengkel Kartu":"卡片工坊",
+  "Menyusun &amp; Membaca":"组合与解读",
+  "◓ Di meja, dengan kartu cetak":"◓ 在桌上，用打印的卡片",
+  "Delapan misi berganti arah. Kadang kamera membaca susunanmu, kadang kamu yang harus <b>membangun</b> ekspresi dari nol dengan tangan sendiri.":"八个方向交替的任务。有时摄像头读取你的排列，有时你要亲手从零<b>搭建</b>代数式。",
+  "Modul ini masih berbahasa Indonesia.":"本模块目前只有印尼语版本。",
+  "Panel Guru":"教师面板",
+  "Tempel KODE JEJAK sekelas, lihat peta miskonsepsi yang muncul. Tanpa internet, tanpa akun.":"粘贴全班的 KODE JEJAK 代码，查看浮现出的误解分布图。无需联网，无需账号。",
+  "Lembar Kartu Cetak":"打印卡片纸",
+  "24 kartu hitam-putih di HVS biasa. Cetak sekali, pakai sekelas.":"普通纸上的 24 张黑白卡片。打印一次，全班共用。",
+  "Tentang":"关于",
+  "Pengembang, gagasan di balik media, dan batasan yang perlu diketahui.":"开发者、媒体背后的理念，以及需要了解的局限。",
+  "Media ini ditulis sendiri dari nol — satu berkas per modul, tanpa pustaka luar, tanpa kunci API, dan sanggup berjalan tanpa internet.":"本媒体从零开始自行编写——每个模块一个文件，不用外部库，不用 API 密钥，无需联网也能运行。",
+  "Guru Matematika &amp; Robotika · Semesta Bilingual Boarding School, Semarang":"数学与机器人课教师 · Semesta Bilingual Boarding School，三宝垄",
+  "S1 &amp; S2 Pendidikan Matematika · Universitas Negeri Semarang":"数学教育学士与硕士 · 三宝垄国立大学（Universitas Negeri Semarang）",
+  "Pemodelan Matematika":"数学建模",
+  "Gagasan pokok":"核心理念",
+  "Kamera memberi <b>struktur</b>, siswa memberi <b>besaran</b>. Kalau kamera ikut mengukur, variabelnya mati.":"摄像头提供<b>结构</b>，学生提供<b>数值</b>。如果摄像头也去测量，变量就失去了意义。",
+  "Cara menilai":"评价方式",
+  "Yang dicatat bukan skor, melainkan <b>jenis</b> salah paham — enam kode, M1 sampai M6.":"记录的不是分数，而是误解的<b>类型</b>——六个代码，M1 到 M6。",
+  "Aturan poin":"积分规则",
+  "Memperbaiki kekeliruan dibayar <b>lebih mahal</b> daripada benar sejak awal.":"改正错误获得的积分<b>多于</b>一开始就答对。",
+  "Data siswa":"学生数据",
+  "Tidak pernah meninggalkan perangkat. Tidak ada server, tidak ada akun, tidak ada kunci API.":"从不离开设备。没有服务器，没有账号，没有 API 密钥。",
+  "<b>Perlu diketahui.</b> Modul 2 dan 4 memakai kamera, dan peramban hanya mengizinkannya lewat <b>HTTPS</b> atau <b>localhost</b> — dari berkas biasa kamera akan ditolak. Karena itu keduanya selalu menyediakan <b>Contoh simulasi</b>, <b>Unggah foto</b>, dan penghitung manual, sehingga seluruh alur tetap bisa ditempuh tanpa kamera sama sekali.":"<b>须知。</b>模块 2 和 4 使用摄像头，而浏览器只允许在 <b>HTTPS</b> 或 <b>localhost</b> 下使用——直接打开本地文件时摄像头会被拒绝。因此这两个模块始终提供<b>模拟示例</b>、<b>上传照片</b>和手动计数，完全没有摄像头也能走完全部流程。",
+  "Kemajuanmu tersimpan di perangkat ini saja. Ganti perangkat? Pakai <b>kode simpan</b> di dalam tiap modul.":"你的进度只保存在这台设备上。要换设备？请使用各模块里的<b>保存码</b>。",
+  "Hapus semua kemajuan di perangkat ini":"删除此设备上的全部进度",
+  "Yakin? Tekan sekali lagi untuk menghapus.":"确定吗？再按一次即可删除。",
+  "Terhapus. Memuat ulang…":"已删除。正在重新加载…",
+  "{a} dari {b} kegiatan":"已完成 {a}/{b} 项活动",
+  "{a} dari {b} tahap":"已完成 {a}/{b} 个阶段",
+  "{a} dari {b} mahkota":"已获得 {a}/{b} 顶王冠",
+  "{a} dari {b} misi":"已完成 {a}/{b} 个任务",
+  "Belum dimulai":"尚未开始",
+  "<b>{n}</b> jejak":"<b>{n}</b> 个足迹",
+  "<b>{n}</b>/{t} lencana":"<b>{n}</b>/{t} 枚徽章",
+  "Buka lagi":"再次打开",
+  "Lanjutkan":"继续",
+  "Mulai":"开始",
+  "Kemajuan tidak bisa ditampilkan — penyimpanan peramban sedang diblokir. Seluruh modul tetap bisa dipakai.":"无法显示进度——浏览器存储被阻止了。所有模块仍可正常使用。",
+  "Perjalanan belum dimulai — pilih satu pintu di bawah.":"旅程尚未开始——在下面选一扇门吧。",
+  "jejak terkumpul":"已收集的足迹",
+  "lencana":"徽章",
+  "dari 4 modul tuntas":"个模块已完成（共 4 个）",
+  "Modul {n} — {label}":"模块 {n} — {label}",
+  "Jejak Aljabar":"Jejak Aljabar"
+},
+ko:{
+  "Media Pembelajaran Matematika":"수학 학습 매체",
+  "Dari benda yang bisa dipegang, menuju lambang yang bisa dipikirkan.":"손에 잡히는 사물에서, 생각할 수 있는 기호로.",
+  "Peta empat modul: Jejak Aljabar, Petualangan Lapangan, Jelajah Enam Rimba, Bengkel Kartu":"네 모듈 지도: Jejak Aljabar, 현장 탐험, 여섯 숲 탐험, 카드 공방",
+  "Cincin di sekeliling angka menunjukkan bagian yang sudah kamu tuntaskan. Boleh dimulai dari mana saja — tetapi Modul 1 yang membangun dasarnya.":"숫자를 둘러싼 고리는 지금까지 끝낸 부분을 보여 줘요. 어디서 시작해도 되지만, 기초를 다지는 건 모듈 1이에요.",
+  "Memahami Konsep":"개념 이해",
+  "◐ Di dalam kelas":"◐ 교실 안에서",
+  "Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga neraca tetap setara, lalu berdebat melawan Budi — teman sebaya yang keliru.":"네 개의 정거장: 아직 모르는 것에 이름 붙이기, 식 세우기, 저울의 균형 지키기, 그리고 잘못 알고 있는 친구 Budi와 토론하기.",
+  "Petualangan Lapangan":"현장 탐험",
+  "Penerapan Konsep":"개념 적용",
+  "◑ Di depan papan mading":"◑ 게시판 앞에서",
+  "Kamera memindai papan dan menyusun <span class=\"math\">K = 2p + 2l</span> — tetapi tidak sanggup memberi nilai <span class=\"math\">p</span> dan <span class=\"math\">l</span>. Itu bagianmu: berdiri, mengukur, membuktikan.":"카메라는 게시판을 스캔해 <span class=\"math\">둘레 = 2a + 2b</span>를 세우지만, <span class=\"math\">a</span>와 <span class=\"math\">b</span>의 값은 알려 주지 못해요. 그건 직접 해야 해요: 일어서서, 재고, 증명하기.",
+  "Jelajah Enam Rimba":"여섯 숲 탐험",
+  "Latihan &amp; Penguatan":"연습과 다지기",
+  "◒ Mandiri atau PR":"◒ 혼자서 또는 숙제로",
+  "Enam wilayah, satu untuk tiap jenis salah paham — Rimba Lambang sampai Gua Berubah. Nyawa yang hilang <b>kembali</b> begitu kekeliruannya kamu perbaiki.":"오개념 종류마다 하나씩, 여섯 지역 — 기호 숲부터 변하는 동굴까지. 실수를 고치면 잃었던 목숨이 <b>돌아와요</b>.",
+  "Bengkel Kartu":"카드 공방",
+  "Menyusun &amp; Membaca":"만들기와 읽기",
+  "◓ Di meja, dengan kartu cetak":"◓ 책상에서, 인쇄한 카드로",
+  "Delapan misi berganti arah. Kadang kamera membaca susunanmu, kadang kamu yang harus <b>membangun</b> ekspresi dari nol dengan tangan sendiri.":"방향이 바뀌는 여덟 개의 미션. 카메라가 카드 배열을 읽을 때도 있고, 직접 손으로 식을 처음부터 <b>만들어야</b> 할 때도 있어요.",
+  "Modul ini masih berbahasa Indonesia.":"이 모듈은 아직 인도네시아어로만 제공돼요.",
+  "Panel Guru":"교사 패널",
+  "Tempel KODE JEJAK sekelas, lihat peta miskonsepsi yang muncul. Tanpa internet, tanpa akun.":"반 전체의 KODE JEJAK 코드를 붙여 넣고 드러나는 오개념 지도를 확인해요. 인터넷도, 계정도 필요 없어요.",
+  "Lembar Kartu Cetak":"인쇄용 카드 시트",
+  "24 kartu hitam-putih di HVS biasa. Cetak sekali, pakai sekelas.":"일반 용지에 흑백 카드 24장. 한 번 인쇄하면 반 전체가 써요.",
+  "Tentang":"소개",
+  "Pengembang, gagasan di balik media, dan batasan yang perlu diketahui.":"개발자, 매체에 담긴 생각, 그리고 알아 두어야 할 한계.",
+  "Media ini ditulis sendiri dari nol — satu berkas per modul, tanpa pustaka luar, tanpa kunci API, dan sanggup berjalan tanpa internet.":"이 매체는 처음부터 직접 만들었어요 — 모듈마다 파일 하나, 외부 라이브러리 없음, API 키 없음, 인터넷 없이도 작동해요.",
+  "Guru Matematika &amp; Robotika · Semesta Bilingual Boarding School, Semarang":"수학·로봇공학 교사 · Semesta Bilingual Boarding School, 스마랑",
+  "S1 &amp; S2 Pendidikan Matematika · Universitas Negeri Semarang":"수학교육 학사·석사 · 스마랑 국립대학교(Universitas Negeri Semarang)",
+  "Pemodelan Matematika":"수학적 모델링",
+  "Gagasan pokok":"핵심 아이디어",
+  "Kamera memberi <b>struktur</b>, siswa memberi <b>besaran</b>. Kalau kamera ikut mengukur, variabelnya mati.":"카메라는 <b>구조</b>를 주고, 학생은 <b>크기</b>를 줘요. 카메라가 측정까지 해 버리면 변수는 의미를 잃어요.",
+  "Cara menilai":"평가 방식",
+  "Yang dicatat bukan skor, melainkan <b>jenis</b> salah paham — enam kode, M1 sampai M6.":"기록하는 건 점수가 아니라 오개념의 <b>종류</b>예요 — M1부터 M6까지 여섯 가지 코드.",
+  "Aturan poin":"점수 규칙",
+  "Memperbaiki kekeliruan dibayar <b>lebih mahal</b> daripada benar sejak awal.":"실수를 고치면 처음부터 맞힌 것보다 <b>더 많은</b> 점수를 받아요.",
+  "Data siswa":"학생 데이터",
+  "Tidak pernah meninggalkan perangkat. Tidak ada server, tidak ada akun, tidak ada kunci API.":"기기 밖으로 나가지 않아요. 서버도, 계정도, API 키도 없어요.",
+  "<b>Perlu diketahui.</b> Modul 2 dan 4 memakai kamera, dan peramban hanya mengizinkannya lewat <b>HTTPS</b> atau <b>localhost</b> — dari berkas biasa kamera akan ditolak. Karena itu keduanya selalu menyediakan <b>Contoh simulasi</b>, <b>Unggah foto</b>, dan penghitung manual, sehingga seluruh alur tetap bisa ditempuh tanpa kamera sama sekali.":"<b>알아 두세요.</b> 모듈 2와 4는 카메라를 쓰는데, 브라우저는 <b>HTTPS</b>나 <b>localhost</b>에서만 카메라를 허용해요 — 일반 파일로 열면 카메라가 거부돼요. 그래서 두 모듈은 항상 <b>모의 예시</b>, <b>사진 올리기</b>, 수동 계산기를 함께 제공해서 카메라가 전혀 없어도 모든 과정을 할 수 있어요.",
+  "Kemajuanmu tersimpan di perangkat ini saja. Ganti perangkat? Pakai <b>kode simpan</b> di dalam tiap modul.":"진행 상황은 이 기기에만 저장돼요. 기기를 바꾸나요? 각 모듈 안의 <b>저장 코드</b>를 쓰세요.",
+  "Hapus semua kemajuan di perangkat ini":"이 기기의 모든 진행 상황 지우기",
+  "Yakin? Tekan sekali lagi untuk menghapus.":"정말요? 지우려면 한 번 더 누르세요.",
+  "Terhapus. Memuat ulang…":"지웠어요. 다시 불러오는 중…",
+  "{a} dari {b} kegiatan":"활동 {b}개 중 {a}개",
+  "{a} dari {b} tahap":"단계 {b}개 중 {a}개",
+  "{a} dari {b} mahkota":"왕관 {b}개 중 {a}개",
+  "{a} dari {b} misi":"미션 {b}개 중 {a}개",
+  "Belum dimulai":"아직 시작 안 함",
+  "<b>{n}</b> jejak":"발자국 <b>{n}</b>개",
+  "<b>{n}</b>/{t} lencana":"배지 <b>{n}</b>/{t}",
+  "Buka lagi":"다시 열기",
+  "Lanjutkan":"계속하기",
+  "Mulai":"시작",
+  "Kemajuan tidak bisa ditampilkan — penyimpanan peramban sedang diblokir. Seluruh modul tetap bisa dipakai.":"진행 상황을 표시할 수 없어요 — 브라우저 저장소가 막혀 있어요. 모든 모듈은 그대로 쓸 수 있어요.",
+  "Perjalanan belum dimulai — pilih satu pintu di bawah.":"여정이 아직 시작되지 않았어요 — 아래에서 문 하나를 고르세요.",
+  "jejak terkumpul":"모은 발자국",
+  "lencana":"배지",
+  "dari 4 modul tuntas":"개 모듈 완료(전체 4개)",
+  "Modul {n} — {label}":"모듈 {n} — {label}",
+  "Jejak Aljabar":"Jejak Aljabar"
+}
+});
+</script>
 <script>
 "use strict";
 
@@ -569,22 +954,22 @@ const MODUL = [
   { key:"jejak.modul1.v1", n:1, tautan:"jejak-aljabar.html", warna:"#14776f",
     x:240, y:268, lencana:13,
     maju:function(d){ return { ada:Object.keys(d.done || {}).length, dari:10 }; },
-    label:function(p){ return p.ada + " dari " + p.dari + " kegiatan"; } },
+    label:function(p){ return terj("{a} dari {b} kegiatan", {a:p.ada, b:p.dari}); } },
 
   { key:"jejak.modul2.v1", n:2, tautan:"ar-ukur.html", warna:"#c97a10",
     x:430, y:212, lencana:8,
     maju:function(d){ return { ada:Object.keys(d.done || {}).length, dari:4 }; },
-    label:function(p){ return p.ada + " dari " + p.dari + " tahap"; } },
+    label:function(p){ return terj("{a} dari {b} tahap", {a:p.ada, b:p.dari}); } },
 
   { key:"jejak.modul3.v1", n:3, tautan:"latihan.html", warna:"#6b4c8a",
     x:650, y:154, lencana:0, mahkota:24,
     maju:function(d){ return { ada:Object.keys(d.cleared || {}).length, dari:24 }; },
-    label:function(p){ return p.ada + " dari " + p.dari + " mahkota"; } },
+    label:function(p){ return terj("{a} dari {b} mahkota", {a:p.ada, b:p.dari}); } },
 
   { key:"jejak.modul4.v1", n:4, tautan:"ar-ekspresi.html", warna:"#b04a33",
     x:900, y:100, lencana:8,
     maju:function(d){ return { ada:Object.keys(d.selesai || {}).length, dari:8 }; },
-    label:function(p){ return p.ada + " dari " + p.dari + " misi"; } }
+    label:function(p){ return terj("{a} dari {b} misi", {a:p.ada, b:p.dari}); } }
 ];
 
 /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan sekolah,
@@ -610,35 +995,44 @@ const hasil = MODUL.map(function(m){
     persen: total ? Math.round(100 * (d ? p.ada : 0) / total) : 0,
     xp: d && typeof d.xp === "number" ? d.xp : 0,
     lencana: d ? Object.keys(d.badges || {}).length : 0,
-    label: d ? m.label(p) : "Belum dimulai"
+    p:p, terbaca:!!d
   };
 });
 
+/* Label dihitung saat digambar, bukan saat dibaca, supaya ikut bahasa. */
+function labelModul(h){ return h.terbaca ? h.m.label(h.p) : terj("Belum dimulai"); }
+/* Modul yang kamusnya sudah lengkap. Yang lain diberi catatan bila
+   bahasa yang dipilih bukan bahasa Indonesia. */
+const SUDAH_DITERJEMAHKAN = { 2:true };
+
 /* ---------- kartu ---------- */
-hasil.forEach(function(h){
+function gambarKartu(){ hasil.forEach(function(h){
   const n = h.m.n;
   const bar = document.getElementById("b" + n);
   if(bar) bar.style.width = h.persen + "%";
   const a = document.getElementById("m" + n + "a");
-  if(a) a.textContent = h.label;
+  if(a) a.textContent = labelModul(h);
   const b = document.getElementById("m" + n + "b");
   if(b){
     const bagian = [];
-    if(h.xp) bagian.push("<b>" + h.xp + "</b> jejak");
-    if(h.m.lencana && h.lencana) bagian.push("<b>" + h.lencana + "</b>/" + h.m.lencana + " lencana");
+    if(h.xp) bagian.push(terj("<b>{n}</b> jejak", {n:h.xp}));
+    if(h.m.lencana && h.lencana) bagian.push(terj("<b>{n}</b>/{t} lencana", {n:h.lencana, t:h.m.lencana}));
     b.innerHTML = bagian.join(" · ");
   }
   const g = document.getElementById("g" + n);
-  if(g) g.textContent = h.persen >= 100 ? "Buka lagi" : (h.ada > 0 ? "Lanjutkan" : "Mulai");
-});
+  if(g) g.textContent = h.persen >= 100 ? terj("Buka lagi") : (h.ada > 0 ? terj("Lanjutkan") : terj("Mulai"));
+  const catatan = document.querySelector("#c" + n + " [data-bhs-belum]");
+  if(catatan) catatan.classList.toggle("hide", JEJAK_BHS.kini() === "id" || !!SUDAH_DITERJEMAHKAN[n]);
+}); }
+gambarKartu();
 
 /* ---------- ringkasan ---------- */
-(function(){
+function gambarRingkasan(){
   const el = document.getElementById("summary");
   if(!el) return;
   if(!simpananHidup){
-    el.innerHTML = '<span class="stat"><span class="lbl">Kemajuan tidak bisa ditampilkan — ' +
-      "penyimpanan peramban sedang diblokir. Seluruh modul tetap bisa dipakai.</span></span>";
+    el.innerHTML = '<span class="stat"><span class="lbl">' + terj("Kemajuan tidak bisa ditampilkan — " +
+      "penyimpanan peramban sedang diblokir. Seluruh modul tetap bisa dipakai.") + "</span></span>";
     return;
   }
   const xp = hasil.reduce(function(s,h){ return s + h.xp; }, 0);
@@ -646,21 +1040,25 @@ hasil.forEach(function(h){
   const lcTotal = MODUL.reduce(function(s,m){ return s + m.lencana; }, 0);
   const tuntas = hasil.filter(function(h){ return h.persen >= 100; }).length;
   if(!xp && !lc && !tuntas){
-    el.innerHTML = '<span class="stat"><span class="lbl">Perjalanan belum dimulai — ' +
-      "pilih satu pintu di bawah.</span></span>";
+    el.innerHTML = '<span class="stat"><span class="lbl">' +
+      terj("Perjalanan belum dimulai — pilih satu pintu di bawah.") + "</span></span>";
     return;
   }
   el.innerHTML =
-    '<span class="stat"><b>' + xp + '</b><span class="lbl">jejak terkumpul</span></span>' +
-    '<span class="stat"><b>' + lc + "/" + lcTotal + '</b><span class="lbl">lencana</span></span>' +
-    '<span class="stat"><b>' + tuntas + '</b><span class="lbl">dari 4 modul tuntas</span></span>';
-})();
+    '<span class="stat"><b>' + xp + '</b><span class="lbl">' + terj("jejak terkumpul") + '</span></span>' +
+    '<span class="stat"><b>' + lc + "/" + lcTotal + '</b><span class="lbl">' + terj("lencana") + '</span></span>' +
+    '<span class="stat"><b>' + tuntas + '</b><span class="lbl">' + terj("dari 4 modul tuntas") + '</span></span>';
+}
+gambarRingkasan();
 
 /* ---------- simpul pada peta ---------- */
-(function(){
+const NAMA_MODUL = [tandai("Jejak Aljabar"), tandai("Petualangan Lapangan"),
+                    tandai("Jelajah Enam Rimba"), tandai("Bengkel Kartu")];
+function gambarPeta(){
   const NS = "http://www.w3.org/2000/svg";
   const g = document.getElementById("nodes");
   if(!g) return;
+  while(g.firstChild) g.removeChild(g.firstChild);       // digambar ulang saat bahasa berganti
   const R = 25, KEL = 2 * Math.PI * (R + 6);
 
   hasil.forEach(function(h){
@@ -669,7 +1067,7 @@ hasil.forEach(function(h){
     a.setAttribute("href", m.tautan);
     a.setAttribute("class", "node");
     a.setAttribute("tabindex", "0");
-    a.setAttribute("aria-label", "Modul " + m.n + " — " + h.label);
+    a.setAttribute("aria-label", terj("Modul {n} — {label}", {n:m.n, label:labelModul(h)}));
 
     const grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "disc");
@@ -723,7 +1121,7 @@ hasil.forEach(function(h){
     cap.setAttribute("font-size", "12.5"); cap.setAttribute("font-weight", "700");
     cap.setAttribute("fill", "var(--ink)");
     cap.setAttribute("font-family", 'ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif');
-    cap.textContent = ["Jejak Aljabar","Petualangan Lapangan","Jelajah Enam Rimba","Bengkel Kartu"][m.n - 1];
+    cap.textContent = terj(NAMA_MODUL[m.n - 1]);
     grp.appendChild(cap);
 
     a.appendChild(grp);
@@ -739,7 +1137,9 @@ hasil.forEach(function(h){
     const sampai = n === 0 ? 0 : L * (n / hasil.length);
     jalur.setAttribute("stroke-dasharray", sampai + " " + L);
   }
-})();
+}
+gambarPeta();
+document.addEventListener("jejak:bahasa", function(){ gambarKartu(); gambarRingkasan(); gambarPeta(); });
 
 /* ---------- hapus semua ---------- */
 (function(){
@@ -752,19 +1152,19 @@ hasil.forEach(function(h){
          halaman dan di sebagian peramban dalam-aplikasi tidak muncul
          sama sekali — tombol jadi seolah tidak berfungsi. */
       siap = true;
-      b.textContent = "Yakin? Tekan sekali lagi untuk menghapus.";
+      b.textContent = terj("Yakin? Tekan sekali lagi untuk menghapus.");
       b.style.borderColor = "#b04a33"; b.style.color = "#b04a33";
       clearTimeout(jam);
       jam = setTimeout(function(){
         siap = false;
-        b.textContent = "Hapus semua kemajuan di perangkat ini";
+        b.textContent = terj("Hapus semua kemajuan di perangkat ini");
         b.style.borderColor = ""; b.style.color = "";
       }, 5000);
       return;
     }
     clearTimeout(jam);
     MODUL.forEach(function(m){ try{ localStorage.removeItem(m.key); }catch(e){} });
-    b.textContent = "Terhapus. Memuat ulang…";
+    b.textContent = terj("Terhapus. Memuat ulang…");
     setTimeout(function(){ location.reload(); }, 550);
   });
 })();
@@ -790,6 +1190,9 @@ window.__menu = { MODUL:MODUL, hasil:hasil, baca:baca };
     { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
   ];
   var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+  /* Terjemahan hanya ada di halaman yang memuat cuplikan BAHASA
+     (bahasa-js.txt). Di halaman lain teksnya tetap bahasa Indonesia. */
+  function tr(s){ return window.terj ? window.terj(s) : s; }
 
   /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
      perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
@@ -804,13 +1207,13 @@ window.__menu = { MODUL:MODUL, hasil:hasil, baca:baca };
     if(!sah[v]) v = "kertas";
     document.documentElement.setAttribute("data-tema", v);
     var b = document.getElementById("btnTema");
-    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    if(b) b.lastChild.nodeValue = " " + tr(sah[v].nm);
     var m = document.getElementById("temaMenu");
     if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
       var aktif = t.getAttribute("data-tema") === v;
       t.setAttribute("aria-checked", aktif ? "true" : "false");
       var tk = t.querySelector(".tick");
-      if(tk) tk.textContent = aktif ? "dipakai" : "";
+      if(tk) tk.textContent = aktif ? tr("dipakai") : "";
     });
   }
 
@@ -818,17 +1221,17 @@ window.__menu = { MODUL:MODUL, hasil:hasil, baca:baca };
     var w = document.getElementById("temaWrap");
     if(!w) return;
     var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
-               'aria-controls="temaMenu" title="Ganti tema warna">' +
-               '<span aria-hidden="true">◐</span> Tema</button>' +
-               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
-               '<div class="hd">Tema warna</div>';
+               'aria-controls="temaMenu" title="' + tr("Ganti tema warna") + '">' +
+               '<span aria-hidden="true">◐</span> ' + tr("Tema") + '</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="' + tr("Tema warna") + '">' +
+               '<div class="hd">' + tr("Tema warna") + '</div>';
     TEMA.forEach(function(t){
       html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
               '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
               '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
               '"></i><i style="background:' + t.a + '"></i></span>' +
-              '<span><span class="nm">' + t.nm + '</span>' +
-              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span><span class="nm">' + tr(t.nm) + '</span>' +
+              '<span class="ket">' + tr(t.ket) + '</span></span>' +
               '<span class="tick"></span></button>';
     });
     html += "</div>";
@@ -860,6 +1263,18 @@ window.__menu = { MODUL:MODUL, hasil:hasil, baca:baca };
     });
 
     pakai(baca());
+    // Bahasa berganti → label tema ikut berganti, pilihan tema tidak berubah.
+    document.addEventListener("jejak:bahasa", function(){
+      btn.setAttribute("title", tr("Ganti tema warna"));
+      menu.setAttribute("aria-label", tr("Tema warna"));
+      menu.querySelector(".hd").textContent = tr("Tema warna");
+      Array.prototype.forEach.call(menu.querySelectorAll("button[data-tema]"), function(t){
+        var x = sah[t.getAttribute("data-tema")];
+        t.querySelector(".nm").textContent = tr(x.nm);
+        t.querySelector(".ket").textContent = tr(x.ket);
+      });
+      pakai(document.documentElement.getAttribute("data-tema"));
+    });
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);

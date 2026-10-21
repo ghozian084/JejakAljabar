@@ -3011,6 +3011,9 @@ window.__g  = { G:G, S:S, BADGES:BADGES, levelName:levelName, XP_ITEM:XP_ITEM, X
     { id:"kontras", nm:"Kontras Tinggi", ket:"Garis tegas, untuk proyektor & penglihatan rendah", a:"#ffffff", b:"#000000" }
   ];
   var sah = {}; TEMA.forEach(function(t){ sah[t.id] = t; });
+  /* Terjemahan hanya ada di halaman yang memuat cuplikan BAHASA
+     (bahasa-js.txt). Di halaman lain teksnya tetap bahasa Indonesia. */
+  function tr(s){ return window.terj ? window.terj(s) : s; }
 
   /* localStorage bisa ditolak sepenuhnya (mode penyamaran, kebijakan
      perangkat sekolah, iframe tanpa izin). Kalau itu terjadi, tema tetap
@@ -3025,13 +3028,13 @@ window.__g  = { G:G, S:S, BADGES:BADGES, levelName:levelName, XP_ITEM:XP_ITEM, X
     if(!sah[v]) v = "kertas";
     document.documentElement.setAttribute("data-tema", v);
     var b = document.getElementById("btnTema");
-    if(b) b.lastChild.nodeValue = " " + sah[v].nm;
+    if(b) b.lastChild.nodeValue = " " + tr(sah[v].nm);
     var m = document.getElementById("temaMenu");
     if(m) Array.prototype.forEach.call(m.querySelectorAll("button[data-tema]"), function(t){
       var aktif = t.getAttribute("data-tema") === v;
       t.setAttribute("aria-checked", aktif ? "true" : "false");
       var tk = t.querySelector(".tick");
-      if(tk) tk.textContent = aktif ? "dipakai" : "";
+      if(tk) tk.textContent = aktif ? tr("dipakai") : "";
     });
   }
 
@@ -3039,17 +3042,17 @@ window.__g  = { G:G, S:S, BADGES:BADGES, levelName:levelName, XP_ITEM:XP_ITEM, X
     var w = document.getElementById("temaWrap");
     if(!w) return;
     var html = '<button class="temaBtn" id="btnTema" aria-haspopup="true" aria-expanded="false" ' +
-               'aria-controls="temaMenu" title="Ganti tema warna">' +
-               '<span aria-hidden="true">◐</span> Tema</button>' +
-               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="Tema warna">' +
-               '<div class="hd">Tema warna</div>';
+               'aria-controls="temaMenu" title="' + tr("Ganti tema warna") + '">' +
+               '<span aria-hidden="true">◐</span> ' + tr("Tema") + '</button>' +
+               '<div class="temaMenu" id="temaMenu" role="menu" hidden aria-label="' + tr("Tema warna") + '">' +
+               '<div class="hd">' + tr("Tema warna") + '</div>';
     TEMA.forEach(function(t){
       html += '<button type="button" role="menuitemradio" aria-checked="false" data-tema="' + t.id + '">' +
               '<span class="sw" aria-hidden="true"><i style="background:' + t.a + '"></i>' +
               '<i style="background:' + t.b + '"></i><i style="background:' + t.b +
               '"></i><i style="background:' + t.a + '"></i></span>' +
-              '<span><span class="nm">' + t.nm + '</span>' +
-              '<span class="ket">' + t.ket + '</span></span>' +
+              '<span><span class="nm">' + tr(t.nm) + '</span>' +
+              '<span class="ket">' + tr(t.ket) + '</span></span>' +
               '<span class="tick"></span></button>';
     });
     html += "</div>";
@@ -3081,6 +3084,18 @@ window.__g  = { G:G, S:S, BADGES:BADGES, levelName:levelName, XP_ITEM:XP_ITEM, X
     });
 
     pakai(baca());
+    // Bahasa berganti → label tema ikut berganti, pilihan tema tidak berubah.
+    document.addEventListener("jejak:bahasa", function(){
+      btn.setAttribute("title", tr("Ganti tema warna"));
+      menu.setAttribute("aria-label", tr("Tema warna"));
+      menu.querySelector(".hd").textContent = tr("Tema warna");
+      Array.prototype.forEach.call(menu.querySelectorAll("button[data-tema]"), function(t){
+        var x = sah[t.getAttribute("data-tema")];
+        t.querySelector(".nm").textContent = tr(x.nm);
+        t.querySelector(".ket").textContent = tr(x.ket);
+      });
+      pakai(document.documentElement.getAttribute("data-tema"));
+    });
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bangun);
