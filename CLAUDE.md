@@ -69,11 +69,11 @@ for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
 done
 ```
 
-Keadaan sekarang: **521 uji, 0 gagal.**
+Keadaan sekarang: **524 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
-| `test.js` | Modul 1 | 111 |
+| `test.js` | Modul 1 | 114 |
 | `test-ar.js` | Modul 2 (termasuk soal buatan siswa dan penghitung waktu) | 66 |
 | `test-latihan.js` | Modul 3 | 47 |
 | `test-ekspresi.js` | Modul 4 | 53 |
@@ -199,7 +199,9 @@ jarang dilatih di kelas.
 5. Warna amber `#c97a10` hanya 3,35:1 di atas kartu putih (di bawah WCAG AA). Digelapkan
    ke `#a8630c`. Baru ketahuan ketika pemeriksa kontras dijalankan.
 6. `say(id, kind, html, diagCode)` — argumen keempat adalah **kode M**, bukan prosa.
-   Memasukkan kalimat penjelasan ke sana menyebabkan TypeError.
+   Memasukkan kalimat penjelasan ke sana menyebabkan TypeError. **Terulang** di tombol kode
+   simpan Modul 1: kode salah tidak memberi umpan balik sama sekali. Kini `test.js` memeriksa
+   statis bahwa argumen keempat setiap `say()` di `partC.html` adalah `"M1"`–`"M6"`.
 7. Skrip patch Python yang `assert`-nya gagal di tengah → tidak ada satu pun suntingan
    tersimpan. Selalu periksa hasilnya setelah menjalankan skrip patch.
 8. Tautan `jejak-aljabar.html#panelGuru` dari menu utama mendarat di Pos 1 — Panel Guru ada

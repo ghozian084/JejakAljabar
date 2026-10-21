@@ -2940,20 +2940,22 @@ document.getElementById("btnPakaiSimpan").addEventListener("click", () => {
   if(!v){ say("simpan","hint","Tempel kode simpannya dulu."); return; }
   const hasil = pakaiKodeSimpan(v);
   if(hasil === "gagal"){
-    say("simpan","bad","Kode itu tidak sah.",
+    /* Argumen keempat say() adalah kode M (lihat bug no. 6 di CLAUDE.md);
+       penjelasan tambahan ditempel sebagai <span class="diag">. */
+    say("simpan","bad","Kode itu tidak sah." + '<span class="diag">' +
       "Checksum-nya tidak cocok, jadi kodenya sengaja ditolak daripada memulihkan kemajuan yang keliru. " +
-      "Periksa lagi — biasanya ada satu karakter yang tertukar."); return;
+      "Periksa lagi — biasanya ada satu karakter yang tertukar.</span>"); return;
   }
   if(hasil === "versi"){
-    say("simpan","bad","Kode itu dibuat oleh versi media yang berbeda.",
-      "Struktur datanya sudah berubah, jadi memulihkannya justru akan memberi angka yang keliru."); return;
+    say("simpan","bad","Kode itu dibuat oleh versi media yang berbeda." + '<span class="diag">' +
+      "Struktur datanya sudah berubah, jadi memulihkannya justru akan memberi angka yang keliru.</span>"); return;
   }
   simpan(); renderMap(); renderProgress(); renderGame();
   const el = document.getElementById("q11");
   if(el && S.q11ok) el.value = S.letter;
   say("simpan","ok","Kemajuan dipulihkan dari kode. " + KEY_ITEMS.filter(k => S.done[k]).length +
-    " dari " + KEY_ITEMS.length + " kegiatan selesai, " + G.xp + " jejak.",
-    "Riwayat jawaban tidak ikut terbawa — Lembar Kerja PDF di perangkat ini akan mulai dari kosong.");
+    " dari " + KEY_ITEMS.length + " kegiatan selesai, " + G.xp + " jejak." + '<span class="diag">' +
+    "Riwayat jawaban tidak ikut terbawa — Lembar Kerja PDF di perangkat ini akan mulai dari kosong.</span>");
 });
 document.getElementById("btnMulaiBaru").addEventListener("click", () => {
   hapusSimpanan();

@@ -411,6 +411,42 @@ const fs = require('fs');
   });
   ks.forEach(([n, ok, x]) => rec('simpan: ' + n, ok, x));
 
+  /* Bug no. 6 di CLAUDE.md terulang di tombol kode simpan: penjelasan
+     ditaruh di argumen keempat say(), yang seharusnya kode M — akibatnya
+     TypeError, dan siswa tidak mendapat umpan balik sama sekali. Sekarang
+     diperiksa statis di SELURUH partC.html, bukan hanya di tempat itu. */
+  {
+    const src = fs.readFileSync(__dirname + '/partC.html', 'utf8');
+    const salah = [];
+    const re = /\bsay\(/g; let m;
+    while ((m = re.exec(src))) {
+      // pecah argumen tingkat atas, dengan memperhitungkan string "…" dan '…'
+      let i = re.lastIndex, d = 0, buf = '', args = [];
+      while (i < src.length) {
+        const c = src[i];
+        if (c === '"' || c === "'") { let e = i + 1; while (src[e] !== c) e += src[e] === '\\' ? 2 : 1; buf += src.slice(i, e + 1); i = e + 1; continue; }
+        if ('([{'.includes(c)) d++;
+        if (')]}'.includes(c)) { if (d === 0) { args.push(buf); break; } d--; }
+        if (c === ',' && d === 0) { args.push(buf); buf = ''; i++; continue; }
+        buf += c; i++;
+      }
+      if (args.length >= 4 && !/^\s*("M[1-6]"|diagCode)\s*$/.test(args[3]))
+        salah.push('baris ' + (src.slice(0, m.index).split('\n').length) + ': ' + args[3].trim().slice(0, 40));
+    }
+    rec('say(): argumen keempat selalu kode M1–M6, tidak pernah kalimat', salah.length === 0, salah.join(' | '));
+  }
+  {
+    const e0 = errs.length;
+    await page.evaluate(() => { location.hash = 'panelGuru'; }); await page.waitForTimeout(200);   // Pos 4
+    await page.fill('#inSimpan', 'SMP1-ZZZZZ-ZZZZZ'); await page.click('#btnPakaiSimpan'); await page.waitForTimeout(150);
+    rec('kode simpan salah: siswa mendapat penjelasan, tanpa galat',
+        (await page.textContent('#fb-simpan')).includes('tidak sah') && errs.length === e0, errs.slice(e0).join('|').slice(0, 70));
+    await page.click('#btnBuatSimpan'); const kode = await page.textContent('#simpanBox');
+    await page.fill('#inSimpan', kode); await page.click('#btnPakaiSimpan'); await page.waitForTimeout(150);
+    rec('kode simpan benar: pesan berhasil tampil, tanpa galat',
+        (await page.textContent('#fb-simpan')).includes('dipulihkan dari kode') && errs.length === e0, errs.slice(e0).join('|').slice(0, 70));
+  }
+
   console.log(R.join('\n'));
   console.log('\nerror konsol (di luar peringatan CSP): ' + (errs.length ? '\n' + errs.join('\n') : 'tidak ada'));
   console.log('\nGAGAL: ' + R.filter(r => r.startsWith('**')).length + ' / ' + R.length);
