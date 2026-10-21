@@ -64,12 +64,12 @@ build diubah, **ubah di kedua tempat**: `package.json` dan `vercel.json`.
 ```bash
 npm i -D playwright && npx playwright install chromium   # sekali saja
 for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
-         test-huruf.js test-menu.js test-tema.js test-kartu.js; do
+         test-huruf.js test-menu.js test-tema.js test-kartu.js test-bahasa.js; do
   printf "%-19s " "$f"; node $f | grep "^GAGAL:"
 done
 ```
 
-Keadaan sekarang: **463 uji, 0 gagal.**
+Keadaan sekarang: **521 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
@@ -81,8 +81,9 @@ Keadaan sekarang: **463 uji, 0 gagal.**
 | `test-menu.js` | Menu utama | 30 |
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
 | `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 59 |
+| `test-bahasa.js` | Pemilih bahasa, kelengkapan kamus, Modul 2 dalam en/zh/ko | 58 |
 
-**Setiap perubahan wajib menjalankan kedelapannya**, bukan hanya yang terkait. Sudah beberapa
+**Setiap perubahan wajib menjalankan kesembilannya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
 
 ---
@@ -99,6 +100,7 @@ kali perubahan di satu modul merusak modul lain.
 | `kodesimpan.js` | Cuplikan bersama: bit-packing → Crockford base32 + checksum |
 | `kartulapangan.js` | Cuplikan bersama: pita data hitam-putih di kartu hasil Modul 2. Format versi 3 (kartu 720×1210, pita 5 baris, sisa 6 simbol); kartu v1/v2 (720×1040, pita 4 baris) **tetap terbaca** — tata letaknya dikenali dari rasio gambar. **Disalin** ke `ar-ukur.html` dan `partC.html`; `test-kartu.js` memastikan salinannya sama persis |
 | `tema-css.txt` / `tema-js.txt` | Cuplikan tema, **disalin** ke tiap berkas (bukan ditaut) |
+| `bahasa-js.txt` | Cuplikan bahasa (ID · EN · 中文 · 한국어): pemilih, `terj()`/`tandai()`, `data-t`. **Disalin** ke `index.html` dan `ar-ukur.html`, dimuat SEBELUM skrip halaman |
 | `sapu-warna.py` / `pasang-tema.py` | Skrip sekali pakai untuk memasang sistem tema |
 | `makalah/` | Makalah lomba (docx-js). `isi.js` = naskah, `buat.js` = pembentuk Word |
 
@@ -155,6 +157,20 @@ menulis soal Langkah 4 tanpa variabel. Kunci yang keliru dijawab dengan ajakan m
 substitusi balik, **tanpa membocorkan kunci yang benar**. Angka yang tidak tertulis di kalimat
 hanya diberi catatan lunak (siswa mungkin menulisnya dengan huruf). Jejak soal per pindaian.
 
+**Bahasa: teks sumber tetap bahasa Indonesia di dalam kode.** Kamus tiap halaman memetakan kalimat
+Indonesia → en/zh/ko. Menu utama dan Modul 2 sudah diterjemahkan; Modul 1, 3, 4 belum (menu
+memberi catatan). Aturan menyunting di `index.html` dan `ar-ukur.html`:
+- kalimat baru di kode → `terj("…", {nilai})`; label tetap (nama lencana dsb.) → `tandai("…")`
+  lalu `terj(label)` saat tampil; kalimat di markup → atribut `data-t` (elemennya **tidak boleh**
+  berisi elemen ber-id), atribut → `data-t-attr="placeholder alt"`;
+- setiap kalimat baru wajib punya entri di kamus halaman untuk **ketiga** bahasa, dengan
+  placeholder `{x}` dan tag HTML yang sama — `test-bahasa.js` gagal bila ada yang terlewat;
+- huruf variabel Modul 2 mengikuti bahasa lewat `lambang()`: id p/l K/L · en l/w P/A ·
+  zh a/b C/S · ko a/b 둘레/넓이. Di kamus, huruf ditulis langsung dalam terjemahannya.
+**Diagnosis teks bebas (Modul 1: q14 dan Budi) mencocokkan kata kunci Indonesia.** Keputusan
+penulis: saat Modul 1 diterjemahkan, di bahasa selain Indonesia diagnosis itu **diam** — jawaban
+diterima tanpa kode M dan tanpa dicatat di Peta Miskonsepsi, siswa diberi tahu alasannya.
+
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang
 jarang dilatih di kelas.
@@ -205,6 +221,8 @@ jarang dilatih di kelas.
   dari simulasi, bukan lapangan.
 - Modul 2 belum punya Lembar Kerja PDF sendiri.
 - Visual 3D dari `im02.html` (rangka bambu, Joglo) belum dipindahkan.
+- **Terjemahan en/zh/ko belum diperiksa penutur asli** — terutama Mandarin dan Korea, dan
+  istilah matematika sekolah setempat. Modul 1, 3, 4 belum diterjemahkan.
 - **Makalah perlu diselaraskan dengan kartu lapangan.** `makalah/isi.js` menyatakan media
   "tidak memindahkan data peserta didik ke luar perangkat"; kartu lapangan mengirim foto
   lewat WhatsApp atas pilihan siswa. Klaim itu perlu dirumuskan ulang.
