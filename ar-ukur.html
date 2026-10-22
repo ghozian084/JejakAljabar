@@ -508,7 +508,8 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 <script>
 /* =====================================================================
    BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
-   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   sudah diterjemahkan (sekarang: index.html, ar-ukur.html, dan Modul 1
+   lewat partC.html). Harus
    dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
    sejak awal.
 
@@ -524,6 +525,10 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
      <p data-t>…</p>                      isi elemen diterjemahkan utuh;
                                           JANGAN berisi elemen ber-id
      data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+     {n|box|boxes}                        (hanya di terjemahan) bentuk tunggal
+                                          bila nilai n = 1, jamak bila bukan —
+                                          bahasa Inggris butuh "1 box"/"2 boxes";
+                                          bahasa Indonesia, Mandarin, Korea tidak
 
    Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
    lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
@@ -562,9 +567,13 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       var k = rapi(teks), ada = KAMUS[kini][k];
       if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
     }
-    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
-      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
-    });
+    if(nilai) hasil = String(hasil)
+      .replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, function(m, n, satu, banyak){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? (Number(nilai[n]) === 1 ? satu : banyak) : m;
+      })
+      .replace(/\{(\w+)\}/g, function(m, n){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+      });
     return hasil;
   }
   function tandai(teks){ return teks; }
@@ -774,7 +783,7 @@ JEJAK_BHS.tambah({
   "✓ cocok": "✓ match",
   "✗ belum cocok": "✗ no match yet",
   "Mengukur ulang": "Re-measured",
-  "{n} kali": "{n} times",
+  "{n} kali": "{n} {n|time|times}",
   "✓ benar · 2p + 2l = {k} cm": "✓ correct · 2l + 2w = {k} cm",
   "✗ belum benar": "✗ not correct yet",
   "— belum dikerjakan": "— not done yet",
@@ -797,7 +806,7 @@ JEJAK_BHS.tambah({
   "Berbagi langsung gagal di perangkat ini. Pakai <b>Unduh kartu</b>, lalu kirim dari galeri.": "Direct sharing failed on this device. Use <b>Download card</b>, then send it from your gallery.",
   "— penghitung waktu tidak dipakai": "— timer not used",
   "30 menit atau lebih": "30 minutes or more",
-  "{m} menit": "{m} minutes",
+  "{m} menit": "{m} {m|minute|minutes}",
   "✓ {lama}, dalam batas {b}": "✓ {lama}, within the {b}-minute limit",
   "{lama}, lewat batas {b} menit": "{lama}, over the {b}-minute limit",
   "Waktu habis · lewat": "Time's up · over by",

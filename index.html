@@ -421,7 +421,6 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <span class="where" data-t>◐ Di dalam kelas</span>
       <p data-t>Empat pos perjalanan: memberi nama pada yang belum diketahui, menyusun ekspresi, menjaga
          neraca tetap setara, lalu berdebat melawan Budi — teman sebaya yang keliru.</p>
-      <p class="bhsNote hide" data-bhs-belum><span aria-hidden="true">ⓘ</span> <span data-t>Modul ini masih berbahasa Indonesia.</span></p>
       <div class="bar"><i id="b1" style="width:0%"></i></div>
       <div class="meta"><span id="m1a">Belum dimulai</span><span id="m1b"></span></div>
       <div class="go"><span id="g1">Mulai</span> <span class="arrow" aria-hidden="true">→</span></div>
@@ -565,7 +564,8 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 <script>
 /* =====================================================================
    BAHASA — cuplikan bersama, disalin apa adanya ke setiap berkas yang
-   sudah diterjemahkan (sekarang: index.html dan ar-ukur.html). Harus
+   sudah diterjemahkan (sekarang: index.html, ar-ukur.html, dan Modul 1
+   lewat partC.html). Harus
    dimuat SEBELUM skrip halaman, karena skrip halaman memanggil terj()
    sejak awal.
 
@@ -581,6 +581,10 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
      <p data-t>…</p>                      isi elemen diterjemahkan utuh;
                                           JANGAN berisi elemen ber-id
      data-t-attr="placeholder alt"        atribut yang ikut diterjemahkan
+     {n|box|boxes}                        (hanya di terjemahan) bentuk tunggal
+                                          bila nilai n = 1, jamak bila bukan —
+                                          bahasa Inggris butuh "1 box"/"2 boxes";
+                                          bahasa Indonesia, Mandarin, Korea tidak
 
    Saat bahasa berganti: markup diterjemahkan ulang, <html lang> diganti,
    lalu peristiwa "jejak:bahasa" dikirim ke document agar halaman
@@ -619,9 +623,13 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       var k = rapi(teks), ada = KAMUS[kini][k];
       if(ada) hasil = ada; else hilang[kini + " | " + k] = true;
     }
-    if(nilai) hasil = String(hasil).replace(/\{(\w+)\}/g, function(m, n){
-      return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
-    });
+    if(nilai) hasil = String(hasil)
+      .replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, function(m, n, satu, banyak){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? (Number(nilai[n]) === 1 ? satu : banyak) : m;
+      })
+      .replace(/\{(\w+)\}/g, function(m, n){
+        return Object.prototype.hasOwnProperty.call(nilai, n) ? nilai[n] : m;
+      });
     return hasil;
   }
   function tandai(teks){ return teks; }
@@ -1003,7 +1011,7 @@ const hasil = MODUL.map(function(m){
 function labelModul(h){ return h.terbaca ? h.m.label(h.p) : terj("Belum dimulai"); }
 /* Modul yang kamusnya sudah lengkap. Yang lain diberi catatan bila
    bahasa yang dipilih bukan bahasa Indonesia. */
-const SUDAH_DITERJEMAHKAN = { 2:true };
+const SUDAH_DITERJEMAHKAN = { 1:true, 2:true };
 
 /* ---------- kartu ---------- */
 function gambarKartu(){ hasil.forEach(function(h){
