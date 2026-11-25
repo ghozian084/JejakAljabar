@@ -64,17 +64,18 @@ build diubah, **ubah di kedua tempat**: `package.json` dan `vercel.json`.
 ```bash
 npm i -D playwright && npx playwright install chromium   # sekali saja
 for f in test.js test-ar.js test-latihan.js test-ekspresi.js \
-         test-huruf.js test-menu.js test-tema.js test-kartu.js test-bahasa.js; do
+         test-huruf.js test-menu.js test-tema.js test-kartu.js test-bahasa.js \
+         test-revisi.js; do
   printf "%-19s " "$f"; node $f | grep "^GAGAL:"
 done
 ```
 
-Keadaan sekarang: **599 uji, 0 gagal.**
+Keadaan sekarang: **680 uji, 0 gagal.**
 
 | Berkas uji | Cakupan | Lolos |
 |---|---|---|
 | `test.js` | Modul 1 | 114 |
-| `test-ar.js` | Modul 2 (termasuk soal buatan siswa dan penghitung waktu) | 66 |
+| `test-ar.js` | Modul 2 (termasuk soal buatan siswa dan penghitung waktu) | 67 |
 | `test-latihan.js` | Modul 3 | 47 |
 | `test-ekspresi.js` | Modul 4 | 53 |
 | `test-huruf.js` | Kebijakan huruf lintas modul | 24 |
@@ -82,8 +83,9 @@ Keadaan sekarang: **599 uji, 0 gagal.**
 | `test-tema.js` | Tema warna + kontras WCAG | 73 |
 | `test-kartu.js` | Kartu lapangan: Modul 2 → Panel Guru | 59 |
 | `test-bahasa.js` | Pemilih bahasa, kelengkapan kamus, Modul 1 & 2 dalam en/zh/ko | 133 |
+| `test-revisi.js` | Tebak Model (M2), tulis-dulu · batas 3× · kunci guru · Periksa teman (M4), kalimat prinsip | 80 |
 
-**Setiap perubahan wajib menjalankan kesembilannya**, bukan hanya yang terkait. Sudah beberapa
+**Setiap perubahan wajib menjalankan kesepuluhnya**, bukan hanya yang terkait. Sudah beberapa
 kali perubahan di satu modul merusak modul lain.
 
 ---
@@ -182,6 +184,21 @@ poinnya per argumen, berurutan; hanya **bukti angka** yang tetap diperiksa. Tida
 Peta Miskonsepsi tidak berubah, kegiatannya tetap terhitung selesai, dan siswa diberi tahu
 alasannya. Mode model bahasa diabaikan di bahasa lain. Jawaban berstruktur (ekspresi, angka)
 tetap didiagnosis di semua bahasa.
+
+**Siswa memodelkan, kamera hanya memeriksa** (revisi setelah kritik juri: kamera kurang bernilai
+untuk aljabar).
+- Modul 2 · **Tebak Model**: setelah deteksi, "Kunci & buat model" baru aktif setelah siswa menulis
+  dugaan rumus keliling. Ekuivalensi diuji dengan substitusi nilai acak (`uraiRumus`/`tebakCocok`,
+  tanpa eval); dua huruf apa pun diterima. Salah → Petunjuk 1, Petunjuk 2, lalu model kamera +
+  isian "apa bedanya". Dugaan pertama & jumlah petunjuk hanya **tercetak** di kartu (baris "Dugaan
+  model"; jarak baris 36 → 32 px). Pita data **tidak** berubah. Opsi guru "Wajib tebak model" di
+  bagian bawah halaman (`jejak.modul2.tebak.v1`, atau tautan `?tebak=0/1`), bawaan aktif.
+- Modul 4: misi arah baca **menulis dulu, lalu memindai** (kartu Tulis dipindah ke atas kartu
+  Pindai lewat `tataLangkah()`). Umpan balik salah berupa petunjuk, tanpa "seharusnya …" dan tanpa
+  hitungan kamera. Batas `BATAS_PERIKSA` = 3 kesalahan per misi (hanya di misi, bukan mode bebas);
+  habis → kunci, dibuka guru dengan kode **GURU + nomor misi** (GURU1 … GURU8). Kode tertanam di
+  halaman — tujuannya jeda diskusi, bukan keamanan. Misi 7 & 8 = **Periksa teman**: kamera
+  disembunyikan, teman menghitung lewat − +, "Minta penengah" memakai 1 kesempatan.
 
 **Arah latihan Modul 4 ditentukan misi, bukan dipilih siswa.** Kalau boleh memilih, hampir
 semua siswa bertahan di arah "kamera membaca → aku menulis". Arah sebaliknya justru yang

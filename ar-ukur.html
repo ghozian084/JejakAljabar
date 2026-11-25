@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>JEJAK ALJABAR — Modul AR: Pindai &amp; Ukur</title>
+<title>JEJAK ALJABAR — Modul 2 · Computer Vision: Pindai &amp; Ukur</title>
 <style>
 /* =====================================================================
    TEMA WARNA
@@ -177,6 +177,15 @@ select,textarea{font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid 
   border-radius:9px;background:var(--card);color:var(--ink)}
 textarea{display:block;width:100%;box-sizing:border-box;min-height:84px;resize:vertical;line-height:1.5}
 select:focus,textarea:focus{outline:0;border-color:var(--ink)}
+/* Tebak Model: siswa menulis dugaan rumus sebelum kamera mengunci model. */
+.tebak{margin:12px 0 0;padding:12px 14px;border:1.5px dashed var(--line-strong);border-radius:10px;background:var(--card)}
+.tebak .ctx{margin-bottom:6px}
+.tebak input[type=text]{width:220px;max-width:100%}
+.tebak textarea{min-height:60px;margin-top:6px}
+.tebakmodel{font-size:17px;font-weight:700;margin:8px 0 4px}
+.opsiguru{font-size:13px}
+.opsiguru summary{cursor:pointer;font-weight:700}
+.opsiguru label{display:flex;gap:8px;align-items:center;margin:10px 0 4px}
 .soalkunci{line-height:2.6;margin:12px 0 4px;font-size:15px}
 .soalkunci input[type=number]{width:96px}
 .soalkunci input,.soalkunci select{line-height:normal;padding-top:6px;padding-bottom:6px}
@@ -371,6 +380,24 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <span style="font-size:12.5px;color:var(--ink-soft)" data-t>Sudut bisa digeser dengan jari.</span>
     </div>
     <div class="fb" id="fb-det"></div>
+    <div class="tebak hide" id="tebakBox">
+      <p class="ctx" data-t><b>Tebak modelnya dulu.</b> Amati bangunnya: ada berapa sisi, dan sisi mana yang sama panjang?
+        Tulis rumus kelilingnya dengan huruf — kamera baru mengunci model setelah kamu menebak.</p>
+      <p class="ctx" data-t>Pakai <span class="math">p</span> untuk sisi panjang dan <span class="math">l</span> untuk sisi lebar,
+        atau huruf lain pilihanmu.</p>
+      <div class="row">
+        <label for="inTebak" id="tebakAwal" class="math">K =</label>
+        <input type="text" id="inTebak" autocomplete="off" spellcheck="false" data-t-attr="placeholder" placeholder="rumus dengan huruf">
+        <button class="act small" id="btnTebak" data-t>Periksa dugaanku</button>
+      </div>
+      <div class="hide" id="tebakJelas">
+        <div class="tebakmodel" id="tebakModel"></div>
+        <label class="ctx" for="inJelas" data-t><b>Apa bedanya model kamera dengan dugaanmu?</b> Tulis singkat dengan kata-katamu sendiri.</label>
+        <textarea id="inJelas" maxlength="160"></textarea>
+        <div class="row"><button class="act small" id="btnJelas" data-t>Simpan penjelasanku</button></div>
+      </div>
+      <div class="fb" id="fb-tebak"></div>
+    </div>
   </div>
 
   <div class="card dim" id="cModel">
@@ -483,6 +510,14 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
     </div>
     <div class="fb" id="fb-simpan"></div>
   </div>
+
+  <details class="card opsiguru noprint" id="opsiGuru">
+    <summary data-t>Opsi guru</summary>
+    <label><input type="checkbox" id="optTebak" checked> <span data-t>Wajib tebak model</span></label>
+    <p class="ctx" data-t>Bila aktif, siswa harus menulis dugaan rumus keliling sebelum kamera mengunci model.
+      Dugaan pertama dan banyaknya petunjuk ikut tercetak di kartu hasil. Pengaturan ini tersimpan di perangkat ini saja;
+      bisa juga lewat tautan <b>ar-ukur.html?tebak=0</b> (mati) atau <b>?tebak=1</b> (aktif).</p>
+  </details>
 
   <div class="handoff">
     <div class="icon">🏫</div>
@@ -1402,6 +1437,96 @@ JEJAK_BHS.tambah({
   "Kunci &amp; buat model": "고정하고 모델 만들기"
  }
 });
+/* Tebak Model & Opsi guru (revisi: siswa memodelkan, kamera hanya memeriksa). */
+JEJAK_BHS.tambah({
+ "en": {
+  "<b>Tebak modelnya dulu.</b> Amati bangunnya: ada berapa sisi, dan sisi mana yang sama panjang? Tulis rumus kelilingnya dengan huruf — kamera baru mengunci model setelah kamu menebak.": "<b>Guess the model first.</b> Look at the shape: how many sides are there, and which sides are equal? Write its perimeter formula with letters — the camera only locks the model after you have guessed.",
+  "Pakai <span class=\"math\">p</span> untuk sisi panjang dan <span class=\"math\">l</span> untuk sisi lebar, atau huruf lain pilihanmu.": "Use <span class=\"math\">l</span> for the length and <span class=\"math\">w</span> for the width, or any other letters you choose.",
+  "rumus dengan huruf": "formula with letters",
+  "Periksa dugaanku": "Check my guess",
+  "<b>Apa bedanya model kamera dengan dugaanmu?</b> Tulis singkat dengan kata-katamu sendiri.": "<b>How is the camera's model different from your guess?</b> Write briefly in your own words.",
+  "Simpan penjelasanku": "Save my explanation",
+  "Opsi guru": "Teacher options",
+  "Wajib tebak model": "Model guess required",
+  "Bila aktif, siswa harus menulis dugaan rumus keliling sebelum kamera mengunci model. Dugaan pertama dan banyaknya petunjuk ikut tercetak di kartu hasil. Pengaturan ini tersimpan di perangkat ini saja; bisa juga lewat tautan <b>ar-ukur.html?tebak=0</b> (mati) atau <b>?tebak=1</b> (aktif).": "When on, students must write a guess of the perimeter formula before the camera locks the model. The first guess and the number of hints are printed on the result card. This setting is saved on this device only; you can also use the link <b>ar-ukur.html?tebak=0</b> (off) or <b>?tebak=1</b> (on).",
+  "Model kamera:": "Camera's model:",
+  "Benda baru. Sebelum kamera mengunci, tebak lagi rumus kelilingnya — apakah strukturnya sama?": "A new object. Before the camera locks it, guess its perimeter formula again — is the structure the same?",
+  "Tulis dugaanmu dulu.": "Write your guess first.",
+  "Tulisanmu belum terbaca sebagai rumus.": "Your answer can't be read as a formula yet.",
+  "Pakai huruf, angka, tanda + dan tanda kurung. Contoh bentuk lain: untuk segitiga bersisi sama, <span class=\"math\">s + s + s</span> atau <span class=\"math\">3s</span>.": "Use letters, numbers, the + sign and brackets. An example of another shape: for an equilateral triangle, <span class=\"math\">s + s + s</span> or <span class=\"math\">3s</span>.",
+  "Cocok. Kamu memperbaiki dugaanmu sendiri — sekarang kunci modelnya dan bandingkan dengan kamera.": "It matches. You corrected your guess yourself — now lock the model and compare it with the camera.",
+  "Dugaanmu cocok dengan struktur bangun ini. Sekarang kunci modelnya — kamera hanya memeriksa.": "Your guess matches the structure of this shape. Now lock the model — the camera only checks.",
+  "Bentuk yang berbeda pun diterima, asal nilainya selalu sama: media mengujinya dengan mengganti huruf dengan beberapa angka.": "Different-looking forms are accepted too, as long as the value is always the same: the media tests this by replacing the letters with several numbers.",
+  "Petunjuk 1: Bangun ini punya 4 sisi. Sudahkah semua sisi masuk rumusmu?": "Hint 1: This shape has 4 sides. Are all the sides in your formula?",
+  "Petunjuk 2: Sisi yang berhadapan sama panjang. Ada berapa sisi {p} dan {l}?": "Hint 2: Opposite sides are equal. How many {p} sides and {l} sides are there?",
+  "Belum cocok. Ini model yang dibuat kamera — bandingkan dengan dugaanmu, lalu jelaskan bedanya.": "Not a match yet. Here is the model the camera built — compare it with your guess, then explain the difference.",
+  "Tulis penjelasanmu dulu, minimal satu kalimat pendek.": "Write your explanation first, at least one short sentence.",
+  "Penjelasanmu tercatat. Sekarang kunci modelnya.": "Your explanation is recorded. Now lock the model.",
+  "Dugaan model": "Model guess",
+  "— tidak diminta (opsi guru mati)": "— not required (teacher option off)",
+  "“{d}” · ✓ cocok tanpa petunjuk": "“{d}” · ✓ matched without hints",
+  "“{d}” · {n} petunjuk, lalu menjelaskan bedanya": "“{d}” · {n} {n|hint|hints}, then explained the difference",
+  "“{d}” · ✓ cocok setelah {n} petunjuk": "“{d}” · ✓ matched after {n} {n|hint|hints}"
+ },
+ "zh": {
+  "<b>Tebak modelnya dulu.</b> Amati bangunnya: ada berapa sisi, dan sisi mana yang sama panjang? Tulis rumus kelilingnya dengan huruf — kamera baru mengunci model setelah kamu menebak.": "<b>先猜一猜模型。</b>观察这个图形：有几条边？哪些边一样长？用字母写出它的周长公式——你猜过之后，摄像头才会锁定模型。",
+  "Pakai <span class=\"math\">p</span> untuk sisi panjang dan <span class=\"math\">l</span> untuk sisi lebar, atau huruf lain pilihanmu.": "用 <span class=\"math\">a</span> 表示长，<span class=\"math\">b</span> 表示宽，也可以用你自己选的字母。",
+  "rumus dengan huruf": "用字母写公式",
+  "Periksa dugaanku": "检查我的猜想",
+  "<b>Apa bedanya model kamera dengan dugaanmu?</b> Tulis singkat dengan kata-katamu sendiri.": "<b>摄像头的模型和你的猜想有什么不同？</b>用你自己的话简单写一写。",
+  "Simpan penjelasanku": "保存我的解释",
+  "Opsi guru": "教师选项",
+  "Wajib tebak model": "必须先猜模型",
+  "Bila aktif, siswa harus menulis dugaan rumus keliling sebelum kamera mengunci model. Dugaan pertama dan banyaknya petunjuk ikut tercetak di kartu hasil. Pengaturan ini tersimpan di perangkat ini saja; bisa juga lewat tautan <b>ar-ukur.html?tebak=0</b> (mati) atau <b>?tebak=1</b> (aktif).": "开启时，学生必须在摄像头锁定模型之前写出周长公式的猜想。第一次猜想和提示次数会印在结果卡上。此设置只保存在本设备上；也可以使用链接 <b>ar-ukur.html?tebak=0</b>（关闭）或 <b>?tebak=1</b>（开启）。",
+  "Model kamera:": "摄像头的模型：",
+  "Benda baru. Sebelum kamera mengunci, tebak lagi rumus kelilingnya — apakah strukturnya sama?": "新的物体。在摄像头锁定之前，再猜一次它的周长公式——结构一样吗？",
+  "Tulis dugaanmu dulu.": "请先写下你的猜想。",
+  "Tulisanmu belum terbaca sebagai rumus.": "你写的内容还不能识别为公式。",
+  "Pakai huruf, angka, tanda + dan tanda kurung. Contoh bentuk lain: untuk segitiga bersisi sama, <span class=\"math\">s + s + s</span> atau <span class=\"math\">3s</span>.": "请使用字母、数字、加号和括号。其他图形的例子：等边三角形可以写成 <span class=\"math\">s + s + s</span> 或 <span class=\"math\">3s</span>。",
+  "Cocok. Kamu memperbaiki dugaanmu sendiri — sekarang kunci modelnya dan bandingkan dengan kamera.": "对上了。你自己修正了猜想——现在锁定模型，和摄像头的结果比较一下。",
+  "Dugaanmu cocok dengan struktur bangun ini. Sekarang kunci modelnya — kamera hanya memeriksa.": "你的猜想符合这个图形的结构。现在锁定模型——摄像头只负责检查。",
+  "Bentuk yang berbeda pun diterima, asal nilainya selalu sama: media mengujinya dengan mengganti huruf dengan beberapa angka.": "写法不同也可以，只要数值永远相同：本媒体会把字母换成几个数来检验。",
+  "Petunjuk 1: Bangun ini punya 4 sisi. Sudahkah semua sisi masuk rumusmu?": "提示 1：这个图形有 4 条边。你的公式里包含所有的边了吗？",
+  "Petunjuk 2: Sisi yang berhadapan sama panjang. Ada berapa sisi {p} dan {l}?": "提示 2：相对的边一样长。有几条 {p} 边、几条 {l} 边？",
+  "Belum cocok. Ini model yang dibuat kamera — bandingkan dengan dugaanmu, lalu jelaskan bedanya.": "还没有对上。这是摄像头建立的模型——和你的猜想比较一下，然后说明不同之处。",
+  "Tulis penjelasanmu dulu, minimal satu kalimat pendek.": "请先写下你的解释，至少一句短句。",
+  "Penjelasanmu tercatat. Sekarang kunci modelnya.": "你的解释已记录。现在锁定模型。",
+  "Dugaan model": "模型猜想",
+  "— tidak diminta (opsi guru mati)": "— 未要求（教师选项已关闭）",
+  "“{d}” · ✓ cocok tanpa petunjuk": "“{d}” · ✓ 无提示即符合",
+  "“{d}” · {n} petunjuk, lalu menjelaskan bedanya": "“{d}” · {n} 次提示，之后说明了不同",
+  "“{d}” · ✓ cocok setelah {n} petunjuk": "“{d}” · ✓ {n} 次提示后符合"
+ },
+ "ko": {
+  "<b>Tebak modelnya dulu.</b> Amati bangunnya: ada berapa sisi, dan sisi mana yang sama panjang? Tulis rumus kelilingnya dengan huruf — kamera baru mengunci model setelah kamu menebak.": "<b>먼저 모델을 추측해 봐요.</b> 도형을 관찰해요: 변이 몇 개이고, 어떤 변끼리 길이가 같나요? 둘레 공식을 문자로 써요 — 추측한 뒤에야 카메라가 모델을 고정해요.",
+  "Pakai <span class=\"math\">p</span> untuk sisi panjang dan <span class=\"math\">l</span> untuk sisi lebar, atau huruf lain pilihanmu.": "가로에는 <span class=\"math\">a</span>, 세로에는 <span class=\"math\">b</span>를 쓰거나, 원하는 다른 문자를 써도 돼요.",
+  "rumus dengan huruf": "문자로 쓴 공식",
+  "Periksa dugaanku": "내 추측 확인하기",
+  "<b>Apa bedanya model kamera dengan dugaanmu?</b> Tulis singkat dengan kata-katamu sendiri.": "<b>카메라의 모델은 내 추측과 무엇이 다른가요?</b> 내 말로 짧게 써요.",
+  "Simpan penjelasanku": "내 설명 저장하기",
+  "Opsi guru": "교사 설정",
+  "Wajib tebak model": "모델 추측 필수",
+  "Bila aktif, siswa harus menulis dugaan rumus keliling sebelum kamera mengunci model. Dugaan pertama dan banyaknya petunjuk ikut tercetak di kartu hasil. Pengaturan ini tersimpan di perangkat ini saja; bisa juga lewat tautan <b>ar-ukur.html?tebak=0</b> (mati) atau <b>?tebak=1</b> (aktif).": "켜 두면 학생은 카메라가 모델을 고정하기 전에 둘레 공식의 추측을 써야 해요. 첫 추측과 힌트 횟수가 결과 카드에 인쇄돼요. 이 설정은 이 기기에만 저장돼요. 링크 <b>ar-ukur.html?tebak=0</b>(끄기)이나 <b>?tebak=1</b>(켜기)로도 바꿀 수 있어요.",
+  "Model kamera:": "카메라의 모델:",
+  "Benda baru. Sebelum kamera mengunci, tebak lagi rumus kelilingnya — apakah strukturnya sama?": "새 물체예요. 카메라가 고정하기 전에 둘레 공식을 다시 추측해 봐요 — 구조가 같을까요?",
+  "Tulis dugaanmu dulu.": "먼저 추측을 써요.",
+  "Tulisanmu belum terbaca sebagai rumus.": "쓴 내용을 아직 공식으로 읽을 수 없어요.",
+  "Pakai huruf, angka, tanda + dan tanda kurung. Contoh bentuk lain: untuk segitiga bersisi sama, <span class=\"math\">s + s + s</span> atau <span class=\"math\">3s</span>.": "문자, 숫자, + 기호, 괄호를 써요. 다른 도형의 예: 정삼각형이라면 <span class=\"math\">s + s + s</span> 또는 <span class=\"math\">3s</span>.",
+  "Cocok. Kamu memperbaiki dugaanmu sendiri — sekarang kunci modelnya dan bandingkan dengan kamera.": "맞아요. 스스로 추측을 고쳤어요 — 이제 모델을 고정하고 카메라와 비교해 봐요.",
+  "Dugaanmu cocok dengan struktur bangun ini. Sekarang kunci modelnya — kamera hanya memeriksa.": "추측이 이 도형의 구조와 맞아요. 이제 모델을 고정해요 — 카메라는 확인만 해요.",
+  "Bentuk yang berbeda pun diterima, asal nilainya selalu sama: media mengujinya dengan mengganti huruf dengan beberapa angka.": "모양이 다른 식도 값이 항상 같다면 인정돼요: 문자에 여러 수를 넣어서 확인해요.",
+  "Petunjuk 1: Bangun ini punya 4 sisi. Sudahkah semua sisi masuk rumusmu?": "힌트 1: 이 도형은 변이 4개예요. 모든 변이 공식에 들어 있나요?",
+  "Petunjuk 2: Sisi yang berhadapan sama panjang. Ada berapa sisi {p} dan {l}?": "힌트 2: 마주 보는 변은 길이가 같아요. {p} 변과 {l} 변은 각각 몇 개인가요?",
+  "Belum cocok. Ini model yang dibuat kamera — bandingkan dengan dugaanmu, lalu jelaskan bedanya.": "아직 맞지 않아요. 이것이 카메라가 만든 모델이에요 — 내 추측과 비교하고, 다른 점을 설명해요.",
+  "Tulis penjelasanmu dulu, minimal satu kalimat pendek.": "먼저 설명을 써요. 짧은 문장 하나 이상이요.",
+  "Penjelasanmu tercatat. Sekarang kunci modelnya.": "설명이 기록됐어요. 이제 모델을 고정해요.",
+  "Dugaan model": "모델 추측",
+  "— tidak diminta (opsi guru mati)": "— 요구하지 않음 (교사 설정 꺼짐)",
+  "“{d}” · ✓ cocok tanpa petunjuk": "“{d}” · ✓ 힌트 없이 맞음",
+  "“{d}” · {n} petunjuk, lalu menjelaskan bedanya": "“{d}” · 힌트 {n}번, 그 뒤 차이를 설명함",
+  "“{d}” · ✓ cocok setelah {n} petunjuk": "“{d}” · ✓ 힌트 {n}번 뒤 맞음"
+ }
+});
 </script>
 <script>
 "use strict";
@@ -1908,6 +2033,7 @@ async function startCam(){
     const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}}, audio:false});
     VID.srcObject = s; await VID.play();
     ST.live = true; ST.img = null; ST.quad = null; ST.locked = false;
+    tebakUlang();
     hud("Kamera aktif. Berdirilah <b>tegak lurus</b> menghadap papan, lalu tekan <b>Deteksi bangun</b>.");
     drawSource();
   }catch(e){
@@ -2123,6 +2249,7 @@ function resetFlow(){
   document.getElementById("rt").style.display = "none";
   document.getElementById("btnLock").disabled = true;
   ST.digeser = false;
+  tebakUlang();
 }
 document.getElementById("btnDetect").onclick = () => {
   if(!ST.img && !ST.live){ fb("det","hint",terj("Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu.")); return; }
@@ -2136,7 +2263,7 @@ document.getElementById("btnDetect").onclick = () => {
     overlay();
     fb("det","hint",terj("Bangun tidak terdeteksi otomatis — biasanya karena latar terlalu ramai atau cahaya kurang. " +
       "Kerangka bantu sudah dipasang: <b>geser keempat titik putih</b> ke sudut papan, lalu kunci."));
-    document.getElementById("btnLock").disabled = false;
+    bukaTebak();
     return;
   }
   ST.quad = q; overlay();
@@ -2150,8 +2277,201 @@ document.getElementById("btnDetect").onclick = () => {
       : terj("Sudut pandangmu cukup tegak lurus (selisih sisi berseberangan {s}%).", {s:Math.round(sp.skew*100)}));
   if(sp.skew <= 0.25) grant("tegak");
   stepDone("cScan", false, "pemindai");
-  document.getElementById("btnLock").disabled = false;
+  bukaTebak();
 };
+/* ---------- TEBAK MODEL ----------
+   Siswa memodelkan dulu, kamera hanya memeriksa. Sebelum "Kunci & buat
+   model" berfungsi, siswa menulis dugaan rumus keliling dari pengamatannya
+   sendiri. Kecocokan diuji lewat SUBSTITUSI nilai acak, bukan pencocokan
+   teks: 2p+2l, 2(p+l), p+l+p+l, l+p+l+p semuanya diterima.
+
+   Huruf itu bebas (lihat Modul 1 & 4): dua huruf apa pun diterima. Rumus
+   keliling simetris, jadi tidak perlu tahu huruf mana yang panjang.
+
+   Salah → petunjuk bertingkat, BUKAN jawaban. Setelah dua petunjuk, model
+   kamera ditampilkan dan siswa diminta menjelaskan bedanya sendiri.
+   Penilai ditulis sendiri (tokenizer + recursive descent): tanpa eval dan
+   tanpa new Function, karena keduanya diblokir CSP sistem sekolah. */
+const TEBAK_KUNCI = "jejak.modul2.tebak.v1";
+const TEBAK = { wajib:true, lolos:false, petunjuk:0, pertama:"", jelas:"", tahap:"tebak", terkunci:false };
+(function(){
+  let v = null;
+  try{ v = localStorage.getItem(TEBAK_KUNCI); }catch(e){}
+  const m = /[?&]tebak=([01])\b/.exec(location.search || "");
+  if(m){ v = m[1]; try{ localStorage.setItem(TEBAK_KUNCI, v); }catch(e){} }
+  TEBAK.wajib = v !== "0";
+  document.getElementById("optTebak").checked = TEBAK.wajib;
+})();
+document.getElementById("optTebak").addEventListener("change", function(){
+  TEBAK.wajib = this.checked;
+  try{ localStorage.setItem(TEBAK_KUNCI, TEBAK.wajib ? "1" : "0"); }catch(e){}
+  if(!TEBAK.wajib) document.getElementById("tebakBox").classList.add("hide");
+  else if(ST.quad && !ST.locked) bukaTebak();
+  aturKunci();
+});
+
+/* Pengurai rumus: + − × · * / ( ), perkalian tersirat (2p, 2(p+l), pl).
+   Mengembalikan { f:fungsi(nilai), huruf:[...] } atau null bila tak terbaca. */
+function uraiRumus(teks){
+  let s = String(teks || "").toLowerCase();
+  if(s.indexOf("=") >= 0) s = s.slice(s.lastIndexOf("=") + 1);       // "K = …" → "…"
+  s = s.replace(/[×·∙]/g, "*").replace(/[−–]/g, "-").replace(/,/g, ".").replace(/\s+/g, "");
+  if(!s || s.length > 60) return null;
+  const tok = [];
+  for(let i = 0; i < s.length;){
+    const c = s[i];
+    if(/[0-9.]/.test(c)){
+      let j = i; while(j < s.length && /[0-9.]/.test(s[j])) j++;
+      const n = parseFloat(s.slice(i, j)); if(!isFinite(n)) return null;
+      tok.push({ t:"n", v:n }); i = j;
+    }else if(/[a-z]/.test(c)){ tok.push({ t:"h", v:c }); i++; }
+    else if("+-*/()".indexOf(c) >= 0){ tok.push({ t:c }); i++; }
+    else return null;
+  }
+  let k = 0;
+  const lihat = function(){ return tok[k] ? tok[k].t : null; };
+  function jumlah(){
+    let a = kali(); if(!a) return null;
+    while(lihat() === "+" || lihat() === "-"){
+      const op = tok[k++].t, b = kali(); if(!b) return null;
+      const x = a;
+      a = op === "+" ? function(v){ return x(v) + b(v); } : function(v){ return x(v) - b(v); };
+    }
+    return a;
+  }
+  function kali(){
+    let a = faktor(); if(!a) return null;
+    for(;;){
+      const t = lihat();
+      if(t === "*" || t === "/"){
+        k++; const b = faktor(); if(!b) return null; const x = a;
+        a = t === "*" ? function(v){ return x(v) * b(v); } : function(v){ return x(v) / b(v); };
+      }else if(t === "n" || t === "h" || t === "("){
+        const b = faktor(); if(!b) return null; const x = a;
+        a = function(v){ return x(v) * b(v); };
+      }else return a;
+    }
+  }
+  function faktor(){
+    const t = lihat();
+    if(t === "-"){ k++; const a = faktor(); return a ? function(v){ return -a(v); } : null; }
+    if(t === "+"){ k++; return faktor(); }
+    if(t === "n"){ const n = tok[k++].v; return function(){ return n; }; }
+    if(t === "h"){ const h = tok[k++].v; return function(v){ return v[h]; }; }
+    if(t === "("){
+      k++; const a = jumlah(); if(!a || lihat() !== ")") return null;
+      k++; return a;
+    }
+    return null;
+  }
+  const f = jumlah();
+  if(!f || k !== tok.length) return null;
+  const huruf = [];
+  tok.forEach(function(x){ if(x.t === "h" && huruf.indexOf(x.v) < 0) huruf.push(x.v); });
+  return { f:f, huruf:huruf };
+}
+/* Cocok dengan model kamera (keliling = 2 × sisi panjang + 2 × sisi lebar)?
+   Diuji pada enam pasang nilai acak; dua huruf berbeda wajib ada. */
+function tebakCocok(teks){
+  const r = uraiRumus(teks);
+  if(!r) return null;
+  if(r.huruf.length !== 2) return false;
+  for(let i = 0; i < 6; i++){
+    const x = 1.3 + Math.random() * 40, y = 1.7 + Math.random() * 40, v = {};
+    v[r.huruf[0]] = x; v[r.huruf[1]] = y;
+    const hasil = r.f(v), benar = 2 * x + 2 * y;
+    if(!isFinite(hasil) || Math.abs(hasil - benar) > 1e-6 * benar) return false;
+  }
+  return true;
+}
+function tebakLolos(){ return !TEBAK.wajib || TEBAK.lolos; }
+function aturKunci(){ document.getElementById("btnLock").disabled = !(ST.quad && tebakLolos()); }
+function modelKamera(){
+  const p = '<span class="p">' + lambang("p") + "</span>", l = '<span class="l">' + lambang("l") + "</span>";
+  return lambang("K") + " = " + p + " + " + l + " + " + p + " + " + l + " = 2" + p + " + 2" + l;
+}
+function tulisTebak(){
+  document.getElementById("tebakAwal").textContent = lambang("K") + " =";
+  document.getElementById("tebakModel").innerHTML = terj("Model kamera:") + " " + modelKamera();
+}
+function tebakUlang(){
+  TEBAK.lolos = false; TEBAK.petunjuk = 0; TEBAK.pertama = ""; TEBAK.jelas = ""; TEBAK.tahap = "tebak";
+  const box = document.getElementById("tebakBox");
+  if(!box) return;
+  box.classList.add("hide");
+  document.getElementById("tebakJelas").classList.add("hide");
+  document.getElementById("inTebak").value = "";
+  document.getElementById("inJelas").value = "";
+  document.getElementById("inTebak").disabled = false;
+  document.getElementById("btnTebak").disabled = false;
+  document.getElementById("inJelas").disabled = false;
+  document.getElementById("btnJelas").disabled = false;
+  document.getElementById("fb-tebak").className = "fb";
+}
+/* Dipanggil setiap kali kerangka bangun tersedia (deteksi otomatis maupun
+   kerangka bantu). Tanpa kewajiban menebak, perilakunya sama seperti dulu. */
+function bukaTebak(){
+  if(TEBAK.wajib && !TEBAK.lolos){
+    const box = document.getElementById("tebakBox");
+    const baru = box.classList.contains("hide");
+    box.classList.remove("hide"); tulisTebak();
+    if(baru && TEBAK.terkunci)
+      fb("tebak","hint",terj("Benda baru. Sebelum kamera mengunci, tebak lagi rumus kelilingnya — apakah strukturnya sama?"));
+  }
+  aturKunci();
+}
+document.getElementById("btnTebak").onclick = () => {
+  const el = document.getElementById("inTebak"), teks = el.value.trim();
+  if(!teks){ fb("tebak","hint",terj("Tulis dugaanmu dulu.")); return; }
+  if(!TEBAK.pertama) TEBAK.pertama = teks.slice(0, 40);
+  const c = tebakCocok(teks);
+  if(c === null){
+    fb("tebak","hint",terj("Tulisanmu belum terbaca sebagai rumus."),
+      terj("Pakai huruf, angka, tanda + dan tanda kurung. Contoh bentuk lain: untuk segitiga bersisi sama, " +
+           "<span class=\"math\">s + s + s</span> atau <span class=\"math\">3s</span>."));
+    return;
+  }
+  if(c){
+    TEBAK.lolos = true; TEBAK.tahap = "selesai";
+    el.disabled = true; document.getElementById("btnTebak").disabled = true;
+    fb("tebak","ok",TEBAK.petunjuk
+      ? terj("Cocok. Kamu memperbaiki dugaanmu sendiri — sekarang kunci modelnya dan bandingkan dengan kamera.")
+      : terj("Dugaanmu cocok dengan struktur bangun ini. Sekarang kunci modelnya — kamera hanya memeriksa."),
+      terj("Bentuk yang berbeda pun diterima, asal nilainya selalu sama: media mengujinya dengan mengganti huruf dengan beberapa angka."));
+    aturKunci();
+    return;
+  }
+  TEBAK.petunjuk++;
+  if(TEBAK.petunjuk === 1){
+    fb("tebak","hint",terj("Petunjuk 1: Bangun ini punya 4 sisi. Sudahkah semua sisi masuk rumusmu?"));
+  }else if(TEBAK.petunjuk === 2){
+    fb("tebak","hint",terj("Petunjuk 2: Sisi yang berhadapan sama panjang. Ada berapa sisi {p} dan {l}?",
+      {p:lambang("p"), l:lambang("l")}));
+  }else{
+    TEBAK.petunjuk = 2;
+    TEBAK.tahap = "jelas";
+    el.disabled = true; document.getElementById("btnTebak").disabled = true;
+    tulisTebak();
+    document.getElementById("tebakJelas").classList.remove("hide");
+    fb("tebak","hint",terj("Belum cocok. Ini model yang dibuat kamera — bandingkan dengan dugaanmu, lalu jelaskan bedanya."));
+    document.getElementById("inJelas").focus();
+  }
+};
+document.getElementById("btnJelas").onclick = () => {
+  const t = document.getElementById("inJelas").value.trim();
+  if(t.replace(/\s+/g, "").length < 8){
+    fb("tebak","hint",terj("Tulis penjelasanmu dulu, minimal satu kalimat pendek."));
+    return;
+  }
+  TEBAK.jelas = t.slice(0, 160); TEBAK.lolos = true; TEBAK.tahap = "selesai";
+  document.getElementById("inJelas").disabled = true; document.getElementById("btnJelas").disabled = true;
+  fb("tebak","ok",terj("Penjelasanmu tercatat. Sekarang kunci modelnya."));
+  aturKunci();
+};
+document.getElementById("inTebak").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); document.getElementById("btnTebak").click(); }
+});
+
 function gambarModel(){
   const p = '<span class="p">' + lambang("p") + "</span>", l = '<span class="l">' + lambang("l") + "</span>";
   document.getElementById("saw").innerHTML =
@@ -2162,7 +2482,7 @@ function gambarModel(){
   document.getElementById("eqL").innerHTML = lambang("L") + " = " + p + " × " + l;
 }
 document.getElementById("btnLock").onclick = () => {
-  if(!ST.quad) return;
+  if(!ST.quad || !tebakLolos()) return;
   ST.locked = true; stopCam();
   if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
   overlay();
@@ -2177,7 +2497,9 @@ document.getElementById("btnLock").onclick = () => {
   ST.kartuFoto.getContext("2d").drawImage(CV, 0, 0);
   ST.jejak = { id:Math.floor(Math.random() * 1048576), statusUkur:0, p:0, l:0, ukurUlang:0,
                kDua:0, kLuas:0, kLain:0, kBenar:false,
-               soal:"", soalOk:false, soalTeks:"", soalKunci:"", soalXp:{}, soalSalah:{} };
+               soal:"", soalOk:false, soalTeks:"", soalKunci:"", soalXp:{}, soalSalah:{},
+               tebak:{ wajib:TEBAK.wajib, pertama:TEBAK.pertama, petunjuk:TEBAK.petunjuk, jelas:TEBAK.jelas } };
+  TEBAK.terkunci = true;
   kartuBasi(); undim("cKirim"); resetSoal();
 
   gambarModel();
@@ -2322,6 +2644,15 @@ function bungkus(x, teks, lebar, maks){
   if(baris.length > maks){ baris.length = maks; baris[maks - 1] = baris[maks - 1].replace(/\s*\S*$/, "") + " …"; }
   return baris;
 }
+/* Dugaan pertama siswa sebelum kamera mengunci model, untuk dibaca guru.
+   Hanya tercetak di kartu — pita data tidak berubah. */
+function teksTebakKartu(t){
+  if(!t || !t.wajib) return terj("— tidak diminta (opsi guru mati)");
+  const d = t.pertama.length > 24 ? t.pertama.slice(0, 23) + "…" : t.pertama;
+  if(!t.petunjuk) return terj("“{d}” · ✓ cocok tanpa petunjuk", {d:d});
+  if(t.jelas) return terj("“{d}” · {n} petunjuk, lalu menjelaskan bedanya", {d:d, n:t.petunjuk});
+  return terj("“{d}” · ✓ cocok setelah {n} petunjuk", {d:d, n:t.petunjuk});
+}
 function gambarKartu(){
   const d = kartuData(), W = KARTU.W;
   const HURUF = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
@@ -2359,14 +2690,18 @@ function gambarKartu(){
       : (salahK.length ? terj("✗ belum benar") : terj("— belum dikerjakan"))],
     [terj("Kekeliruan keliling"), salahK.length ? salahK.join(" · ") : terj("tidak ada")],
     [terj("Sudut papan"), d.digeser ? terj("dibetulkan sendiri dengan jari") : terj("diterima dari deteksi kamera")],
-    [terj("Waktu kerja"), teksWaktuKartu(d.waktu)]
+    [terj("Waktu kerja"), teksWaktuKartu(d.waktu)],
+    [terj("Dugaan model"), teksTebakKartu(ST.jejak.tebak)]
   ];
+  /* Baris "Dugaan model" ditambahkan belakangan: jarak baris dirapatkan dari
+     36 ke 32 px supaya kedelapan baris muat di atas kotak soal. Ukuran
+     kartu dan letak pita TIDAK berubah, jadi Panel Guru tetap membacanya. */
   let y = 624;
   baris.forEach(function(b){
     x.textAlign = "left";
     x.fillStyle = "#5b6668"; x.font = "15px " + HURUF; x.fillText(b[0], 24, y);
     x.fillStyle = "#1f2a2e"; x.font = "bold 18px " + HURUF; x.fillText(b[1], 196, y, W - 196 - 20);
-    y += 36;
+    y += 32;
   });
   /* Soal buatan siswa. Kalimatnya terlalu panjang untuk pita, jadi dicetak
      untuk dibaca guru; pita hanya membawa jenis soal dan status kuncinya. */
@@ -2670,6 +3005,7 @@ document.addEventListener("jejak:bahasa", function(){
   renderGame(); renderTimer(); renderSoal(true);
   if(hudKini) hud(hudKini[0], hudKini[1]);
   if(ST.locked) gambarModel();
+  if(!document.getElementById("tebakBox").classList.contains("hide")) tulisTebak();
   if(!document.getElementById("restoreBar").classList.contains("hide")) tulisPulih();
   if(ST.quad && ST.img && !ST.live){ X.drawImage(ST.img, 0, 0, CV.width, CV.height); overlay(); }
 });

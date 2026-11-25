@@ -56,7 +56,10 @@ const BASE = "file://" + __dirname + "/";
   // ---- alur ujung-ke-ujung lewat UI ----
   await page.click('#btnSim'); await page.waitForTimeout(250);
   await page.click('#btnDetect'); await page.waitForTimeout(250);
-  rec('UI: tombol kunci aktif setelah deteksi', !(await page.getAttribute('#btnLock', 'disabled') !== null));
+  rec('UI: setelah deteksi, kunci menunggu tebakan model', (await page.getAttribute('#btnLock', 'disabled')) !== null &&
+      await page.isVisible('#tebakBox'));
+  await page.fill('#inTebak', '2p+2l'); await page.click('#btnTebak');
+  rec('UI: tombol kunci aktif setelah tebakan diterima', (await page.getAttribute('#btnLock', 'disabled')) === null);
   await page.click('#btnLock'); await page.waitForTimeout(250);
   rec('UI: model aljabar dibuat otomatis', (await page.textContent('#eqK')).includes('2p + 2l'),
       (await page.textContent('#eqK')).trim());
@@ -117,7 +120,7 @@ const BASE = "file://" + __dirname + "/";
 
   await page.click('#btnSim'); await page.waitForTimeout(200);
   await page.click('#btnDetect'); await page.waitForTimeout(200);
-  await page.click('#btnLock'); await page.waitForTimeout(300);
+  await page.fill('#inTebak', '2p+2l'); await page.click('#btnTebak'); await page.click('#btnLock'); await page.waitForTimeout(300);
   await page.screenshot({ path: 'shot-ar.png' });
 
   // ---------- simpan kemajuan ----------
@@ -197,7 +200,7 @@ const BASE = "file://" + __dirname + "/";
     };
     rec('soal: Langkah 5 redup sebelum papan dipindai', await redup());
     await q.click('#btnSim'); await q.waitForTimeout(150); await q.click('#btnDetect'); await q.waitForTimeout(150);
-    await q.click('#btnLock'); await q.waitForTimeout(150);
+    await q.fill('#inTebak', '2p+2l'); await q.click('#btnTebak'); await q.click('#btnLock'); await q.waitForTimeout(150);
     const rS = await q.evaluate(() => window.__ar.ST.ratio), PS = +(50 * rS).toFixed(1);
     await q.fill('#inP', String(PS)); await q.fill('#inL', '50'); await q.click('#btnCheck');
     rec('soal: masih redup sebelum keliling benar', await redup());
@@ -273,7 +276,7 @@ const BASE = "file://" + __dirname + "/";
 
     // pindaian baru = papan baru = soal baru
     await q.click('#btnSim'); await q.waitForTimeout(150); await q.click('#btnDetect'); await q.waitForTimeout(150);
-    await q.click('#btnLock'); await q.waitForTimeout(150);
+    await q.fill('#inTebak', '2p+2l'); await q.click('#btnTebak'); await q.click('#btnLock'); await q.waitForTimeout(150);
     rec('soal: pindaian baru mengosongkan soal dan meredupkan Langkah 5', (await redup()) &&
         (await jj()).soal === '' && (await q.inputValue('#soalTeks')) === '' &&
         (await q.getAttribute('[data-soal="maju"]', 'aria-pressed')) === 'false');
@@ -307,7 +310,7 @@ const BASE = "file://" + __dirname + "/";
       (await w.getAttribute('#tmChip', 'class')).includes('habis') && (await cip()).includes('Waktu habis · lewat 02:1'), await cip());
   // pengingat, bukan batas: langkah ukur tetap bisa diselesaikan
   await w.click('#btnSim'); await w.clock.runFor(200); await w.click('#btnDetect'); await w.clock.runFor(200);
-  await w.click('#btnLock'); await w.clock.runFor(200);
+  await w.fill('#inTebak', '2p+2l'); await w.click('#btnTebak'); await w.click('#btnLock'); await w.clock.runFor(200);
   const rW = await w.evaluate(() => window.__ar.ST.ratio);
   await w.fill('#inP', String(+(50 * rW).toFixed(1))); await w.fill('#inL', '50'); await w.click('#btnCheck');
   rec('waktu: setelah habis, siswa tetap boleh menyelesaikan ukurannya',

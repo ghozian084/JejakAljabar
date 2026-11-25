@@ -90,7 +90,7 @@ const BASE = "file://" + __dirname + "/";
   r = await coba(2,5,'7a','n');   rec('M4: konkatenasi huruf lain tetap M2', /M2/.test(r.teks));
   r = await coba(2,5,'7','n');    rec('M4: penjumlahan jadi angka tetap M1', /M1/.test(r.teks));
   r = await coba(2,5,'2a+5b','n');rec('M4: dua huruf ditolak', r.kelas.includes('bad') && /kedua/.test(r.teks));
-  r = await coba(2,5,'3a+5','n'); rec('M4: angka meleset disebut bagiannya', /meleset/.test(r.teks));
+  r = await coba(2,5,'3a+5','n'); rec('M4: angka meleset disebut bagiannya (petunjuk, tanpa angka jawaban)', /Jumlah kotak di ekspresimu/.test(r.teks) && !/2a|terbaca 2/.test(r.teks));
   r = await coba(2,5,'kotak dua','n'); rec('M4: tak terbaca diberi contoh bentuk', /belum terbaca/.test(r.teks));
   rec('M4: tanpa error konsol', e4.length===0, e4.join('|').slice(0,80));
 
