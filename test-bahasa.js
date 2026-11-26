@@ -169,7 +169,7 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
     const { p, ctx } = await halaman('ar-ukur.html', b);
     await p.click('#btnTimer');
     await p.click('#btnSim'); await p.waitForTimeout(150); await p.click('#btnDetect'); await p.waitForTimeout(150);
-    await p.click('#btnLock'); await p.waitForTimeout(150);
+    await p.fill('#inTebak', '2p+2l'); await p.click('#btnTebak'); await p.click('#btnLock'); await p.waitForTimeout(150);
     rec(b + ': model memakai huruf bahasanya', (await p.textContent('#eqK')).trim() === HARAP[b].eqK &&
         (await p.textContent('#eqL')).trim() === HARAP[b].eqL, (await p.textContent('#eqK')).trim());
     const r = await p.evaluate(() => window.__ar.ST.ratio), P = +(50 * r).toFixed(1);
@@ -338,7 +338,7 @@ const tag = x => (x.match(/<\/?[a-z]+\b/g) || []).sort().join(',');
   {
     const { p, ctx } = await halaman('ar-ukur.html');
     await p.click('#btnSim'); await p.waitForTimeout(150); await p.click('#btnDetect'); await p.waitForTimeout(150);
-    await p.click('#btnLock'); await p.waitForTimeout(150);
+    await p.fill('#inTebak', '2p+2l'); await p.click('#btnTebak'); await p.click('#btnLock'); await p.waitForTimeout(150);
     const r = await p.evaluate(() => window.__ar.ST.ratio), P = +(50 * r).toFixed(1);
     await p.fill('#inP', String(P)); await p.fill('#inL', '50'); await p.click('#btnCheck');
     await p.fill('#inK', String(2 * P + 100)); await p.click('#btnK');

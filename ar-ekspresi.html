@@ -276,6 +276,10 @@ details.sheetwrap[open]>summary::before{content:"▾ "}
 .restore b{font-weight:700}
 .restore button{margin-left:auto}
 .hide{display:none !important}
+/* Batas periksa, kunci guru, dan Periksa teman. Status selalu disertai lambang + kata. */
+.sisa{font-size:12.5px;color:var(--ink-soft);margin:6px 0 0}
+.kunci{margin-top:12px;padding:12px 14px;border:1.5px solid var(--clay-line);border-radius:10px;background:var(--clay-bg);color:var(--clay-ink);font-size:14px;line-height:1.55}
+.kunci input[type=text]{width:150px;text-transform:uppercase}
 .xpchip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:5px 12px;
   border-radius:999px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);white-space:nowrap}
 .xpchip b{color:var(--ink);font-variant-numeric:tabular-nums}
@@ -403,7 +407,7 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
 
   <div class="card">
     <h2><span class="step">LANGKAH 1</span> Misi bengkel</h2>
-    <p class="ctx">Delapan misi, berganti-ganti arah: kadang kamera yang membaca, kadang kamu yang menyusun.
+    <p class="ctx">Delapan misi, berganti-ganti arah: kadang kamu menulis lalu kamera memeriksa, kadang kamu yang menyusun.
       Arahnya ditentukan misi — bukan dipilih sendiri, supaya kedua arah benar-benar terlatih.</p>
     <div class="misirow" id="misiRow"></div>
     <div class="misibox" id="misiBox"></div>
@@ -413,14 +417,23 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <button class="act ghost small" id="btnBebas">Mode bebas</button>
     </div>
     <div class="row hide" id="modeRow">
-      <button class="chip" id="mBaca" aria-pressed="true">Kamera membaca → aku menulis</button>
+      <button class="chip" id="mBaca" aria-pressed="true">Aku menulis → kamera memeriksa</button>
       <button class="chip" id="mSusun" aria-pressed="false">Media meminta → aku menyusun</button>
     </div>
     <div class="note teal" id="tugas" style="display:none"></div>
   </div>
 
-  <div class="card">
-    <h2><span class="step">LANGKAH 2</span> Pindai arena</h2>
+  <div class="card" id="cPindai">
+    <h2><span class="step" id="stepPindai">LANGKAH 2</span> <span id="l2title">Pindai arena</span></h2>
+    <div class="note teal hide" id="temanBox">
+      <b>Mode Periksa teman — kamera dimatikan.</b> Minta satu teman sekelompok menghitung kartu di arenamu,
+      lalu masukkan hitungannya dengan tombol − dan + di bawah. Media mencocokkan hitungan temanmu dengan
+      tugasnya. Kamera hanya dipanggil sebagai penengah bila kalian tidak sepakat.
+      <div class="row" style="margin-bottom:0">
+        <button class="act ghost small" id="btnPenengah">Minta penengah (memakai 1 kesempatan)</button>
+      </div>
+    </div>
+    <div id="kameraAlat">
     <p class="ctx">Kamera butuh HTTPS. Kalau berkas ini dibuka langsung dari berkas, pakai
       <b>Contoh simulasi</b> atau unggah foto.</p>
     <div class="row">
@@ -437,6 +450,7 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
     <div class="row">
       <button class="act small" id="btnPindai">Pindai</button>
       <span style="font-size:12.5px;color:var(--ink-soft)">Hasilnya bisa dibetulkan manual di bawah.</span>
+    </div>
     </div>
     <div class="fb" id="fb-pindai"></div>
 
@@ -456,7 +470,7 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
   </div>
 
   <div class="card dim" id="cJawab">
-    <h2><span class="step">LANGKAH 3</span> <span id="l3title">Tulis ekspresinya</span></h2>
+    <h2><span class="step" id="stepJawab">LANGKAH 3</span> <span id="l3title">Tulis ekspresinya</span></h2>
     <p class="ctx" id="l3ctx">Kamera sudah menghitung kartunya. Sekarang giliranmu menuliskannya sebagai aljabar —
       kamera sengaja tidak menampilkan jawabannya sebelum kamu mencoba.</p>
     <div id="jawabBox">
@@ -471,6 +485,15 @@ if(v==="laut"||v==="malam"||v==="kontras")document.documentElement.setAttribute(
       <button class="act ghost small" id="btnTugasBaru">Tugas lain</button>
     </div>
     <div class="fb" id="fb-jawab"></div>
+    <p class="sisa hide" id="sisaCoba"></p>
+    <div class="kunci hide" id="kunciBox" role="status">
+      <b>🔒 Kesempatan periksa untuk misi ini habis.</b> Diskusikan dengan kelompokmu, lalu minta guru membuka kunci.
+      <div class="row" style="margin-bottom:0">
+        <input type="text" id="inKodeGuru" autocomplete="off" placeholder="kode guru" aria-label="kode guru">
+        <button class="act small" id="btnBukaKunci">Buka kunci</button>
+      </div>
+      <div class="fb" id="fb-kunci"></div>
+    </div>
   </div>
 
   <div class="card">
@@ -600,11 +623,11 @@ function BitBaca(teks, awalan){
    ===================================================================== */
 const MISI = [
   { arah:"baca",  ti:"Baca susunanmu sendiri",
-    de:"Susun kartu sesukamu — <b>minimal satu kotak dan satu karya satuan</b> — lalu pindai dan tulis ekspresinya.",
+    de:"Susun kartu sesukamu — <b>minimal satu kotak dan satu ikan satuan</b> — lalu pindai dan tulis ekspresinya.",
     syarat:function(){ return ST.sq >= 1 && ST.ci >= 1; },
-    kurang:"Misi ini butuh minimal <b>satu kotak</b> dan <b>satu karya satuan</b> di arena." },
+    kurang:"Misi ini butuh minimal <b>satu kotak</b> dan <b>satu ikan satuan</b> di arena." },
   { arah:"susun", t:{a:2,b:0}, ti:"Susun 2n",
-    de:"Tidak ada karya satuan di sini. Berapa kartu kotak, berapa satuan?" },
+    de:"Tidak ada ikan satuan di sini. Berapa kartu kotak, berapa satuan?" },
   { arah:"susun", t:{a:1,b:4}, ti:"Susun n + 4",
     de:"Perhatikan: di depan huruf <b>tidak ada angka</b>. Apa artinya untuk jumlah kartunya?" },
   { arah:"baca",  ti:"Tumpukan besar",
@@ -614,14 +637,15 @@ const MISI = [
   { arah:"susun", t:{a:3,b:0}, ti:"Susun 3n",
     de:"Sekali lagi tanpa satuan — pastikan arenanya benar-benar bersih dari kartu bulat." },
   { arah:"baca",  ti:"Tanpa satu pun kotak",
-    de:"Susun <b>hanya karya satuan</b>, minimal dua, tanpa kotak sama sekali. Lalu tulis ekspresinya.",
+    de:"Susun <b>hanya ikan satuan</b>, minimal dua, tanpa kotak sama sekali. Lalu tulis ekspresinya.",
     syarat:function(){ return ST.sq === 0 && ST.ci >= 2; },
-    kurang:"Misi ini butuh <b>nol kotak</b> dan minimal dua karya satuan." },
-  { arah:"susun", t:{a:4,b:6}, ti:"Susun 4n + 6",
-    de:"Dua bagian sekaligus. Hitung masing-masing terpisah sebelum menaruh kartunya." },
-  { arah:"bos",   t:{a:3,b:5}, ti:"BOS · Susun lalu tuliskan",
-    de:"Susun <b>3n + 5</b> di arena. Setelah kamera membenarkan susunanmu, kamu masih harus " +
-       "<b>menuliskan ekspresinya</b> — dua arah dalam satu misi." }
+    kurang:"Misi ini butuh <b>nol kotak</b> dan minimal dua ikan satuan." },
+  { arah:"susun", t:{a:4,b:6}, ti:"Susun 4n + 6", teman:true,
+    de:"Dua bagian sekaligus. Hitung masing-masing terpisah sebelum menaruh kartunya. " +
+       "<b>Periksa teman:</b> kali ini temanmu yang memeriksa, bukan kamera." },
+  { arah:"bos",   t:{a:3,b:5}, ti:"BOS · Susun lalu tuliskan", teman:true,
+    de:"Susun <b>3n + 5</b> di arena. Setelah susunanmu dibenarkan, kamu masih harus " +
+       "<b>menuliskan ekspresinya</b> — dua arah dalam satu misi. <b>Periksa teman:</b> kamera dimatikan." }
 ];
 const BADGES = [
   { id:"pembaca",   n:"Pembaca Kartu",   d:"Menerjemahkan susunan benda menjadi simbol aljabar" },
@@ -635,7 +659,14 @@ const BADGES = [
 ];
 const LEVELS = [ [0,"Calon Perajin"], [40,"Perajin"], [80,"Juru Kartu"], [130,"Ahli Bengkel"] ];
 const XP_MISI = 12, XP_PULIH = 8;
-const MI = { i:0, selesai:{}, xp:0, badges:{}, bebas:false, keliru:0, bosTahap:0, pernahAdj:false };
+const MI = { i:0, selesai:{}, xp:0, badges:{}, bebas:false, keliru:0, bosTahap:0, pernahAdj:false,
+             coba:0, cobaMisi:-1, kunci:false, penengah:false };
+/* Batas periksa per misi. Habis → siswa berdiskusi dengan kelompok, lalu
+   guru membuka kunci dengan kode GURU + nomor misi (mis. GURU3). Tanpa
+   peladen, kode itu memang tertanam di halaman; tujuannya jeda untuk
+   berdiskusi, bukan keamanan. Memperbaiki tetap dibayar paling mahal. */
+const BATAS_PERIKSA = 3;
+function kodeGuru(i){ return "GURU" + (i + 1); }
 
 function levelName(xp){ let n = LEVELS[0][1]; LEVELS.forEach(function(a){ if(xp >= a[0]) n = a[1]; }); return n; }
 function toast(kind, title, desc, medal){
@@ -674,9 +705,11 @@ function terapkanMisi(){
       '<div class="no">Mode bebas</div><div class="ti">Latihan tanpa misi</div>' +
       '<div class="de">Pilih arahnya sendiri di bawah. Tidak ada jejak yang diberikan di mode ini — ' +
       "gunakan untuk mencoba-coba atau untuk demo.</div>";
+    tataLangkah(); renderCoba();
     return;
   }
   MI.keliru = 0;
+  if(MI.cobaMisi !== MI.i){ MI.coba = 0; MI.kunci = false; MI.penengah = false; MI.cobaMisi = MI.i; }
   ST.mode = (m.arah === "bos") ? "susun" : m.arah;
   MI.bosTahap = 0;
   document.getElementById("jawabBox").style.display = ST.mode === "baca" ? "" : "none";
@@ -698,7 +731,42 @@ function terapkanMisi(){
     ST.target = null;
     document.getElementById("tugas").style.display = "none";
   }
+  tataLangkah(); renderCoba();
   renderEq();
+}
+/* Arah "aku menulis → kamera memeriksa": kartu Tulis dipindah ke atas kartu
+   Pindai. Siswa menulis dari kartu di mejanya DULU; kamera datang belakangan,
+   hanya untuk memeriksa. Arah susun memakai urutan lama. */
+function tataLangkah(){
+  const el = function(i){ return document.getElementById(i); };
+  const jawab = el("cJawab"), pindai = el("cPindai");
+  const tulisDulu = ST.mode === "baca";
+  const jawabDiAtas = !!(jawab.compareDocumentPosition(pindai) & Node.DOCUMENT_POSITION_FOLLOWING);
+  if(tulisDulu && !jawabDiAtas) pindai.parentNode.insertBefore(jawab, pindai);
+  if(!tulisDulu && jawabDiAtas) jawab.parentNode.insertBefore(pindai, jawab);
+  el("stepJawab").textContent = tulisDulu ? "LANGKAH 2" : "LANGKAH 3";
+  el("stepPindai").textContent = tulisDulu ? "LANGKAH 3" : "LANGKAH 2";
+  const m = misiAktif(), teman = !!(m && m.teman);
+  el("l2title").textContent = teman ? "Periksa teman" : (tulisDulu ? "Pindai untuk memeriksa" : "Pindai arena");
+  el("l3ctx").textContent = tulisDulu
+    ? "Lihat kartu di mejamu, lalu tulis ekspresinya dulu. Setelah itu pindai arena di langkah berikutnya — " +
+      "kamera hanya memeriksa, ekspresinya tidak ditampilkan sebelum kamu mencoba."
+    : "Kamu sudah menyusun kartunya. Sekarang " + (teman ? "hitungan temanmu" : "hasil pindaian kamera") +
+      " dicocokkan: apakah susunan itu benar-benar mewakili ekspresi yang diminta.";
+  el("temanBox").classList.toggle("hide", !teman);
+  el("kameraAlat").classList.toggle("hide", teman && !MI.penengah);
+  if(teman && !MI.penengah) stopCam();
+}
+/* Sisa kesempatan & kotak kunci. Hanya berlaku di misi, bukan mode bebas. */
+function renderCoba(){
+  const el = function(i){ return document.getElementById(i); };
+  const m = misiAktif();
+  const sisa = Math.max(0, BATAS_PERIKSA - MI.coba);
+  el("sisaCoba").classList.toggle("hide", !m || MI.kunci);
+  el("sisaCoba").textContent = "Kesempatan periksa misi ini: " + sisa + " dari " + BATAS_PERIKSA + " tersisa.";
+  el("kunciBox").classList.toggle("hide", !(m && MI.kunci));
+  const tutup = !!(m && MI.kunci);
+  ["btnCek","btnCekSusun","btnPenengah"].forEach(function(i){ el(i).disabled = tutup; });
 }
 function renderBengkel(){
   const el = function(i){ return document.getElementById(i); };
@@ -760,7 +828,8 @@ let simpanAktif = (function(){
 function simpanBengkel(){
   if(!simpanAktif) return;
   try{ localStorage.setItem(SIMPAN_KEY, JSON.stringify({ v:1, i:MI.i, selesai:MI.selesai,
-    xp:MI.xp, badges:MI.badges, pernahAdj:MI.pernahAdj })); }
+    xp:MI.xp, badges:MI.badges, pernahAdj:MI.pernahAdj,
+    coba:MI.coba, cobaMisi:MI.cobaMisi, kunci:MI.kunci, penengah:MI.penengah })); }
   catch(e){ simpanAktif = false; }
 }
 function hapusSimpanan(){ try{ localStorage.removeItem(SIMPAN_KEY); }catch(e){} }
@@ -771,6 +840,7 @@ function pulihkanBengkel(){
   if(!d || d.v !== 1) return;
   MI.i = d.i || 0; MI.selesai = d.selesai || {}; MI.xp = d.xp || 0;
   MI.badges = d.badges || {}; MI.pernahAdj = !!d.pernahAdj;
+  if(d.cobaMisi === MI.i){ MI.coba = d.coba || 0; MI.kunci = !!d.kunci; MI.penengah = !!d.penengah; MI.cobaMisi = MI.i; }
   const bar = document.getElementById("restoreBar");
   if(bar){
     document.getElementById("restoreTxt").innerHTML =
@@ -1031,7 +1101,7 @@ function renderEq(){
       ? "Inilah yang dibaca kamera dari susunanmu."
       : "Belum ada kartu yang terbaca.";
   }
-  $("cJawab").classList.toggle("dim", !(ST.sq || ST.ci));
+  $("cJawab").classList.toggle("dim", ST.mode !== "baca" && !(ST.sq || ST.ci));
 }
 
 /* ---------- mode ---------- */
@@ -1049,6 +1119,7 @@ function setMode(m){
       "mewakili ekspresi yang diminta.";
   $("fb-jawab").className = "fb";
   if(m === "susun") tugasBaru(); else $("tugas").style.display = "none";
+  tataLangkah();
   renderEq();
 }
 function tugasBaru(){
@@ -1135,10 +1206,9 @@ function cekTulis(){
   /* M2 — konkatenasi: kedua bagian disatukan jadi satu suku berhuruf. */
   if(p && p.h && p.c === 0 && p.k === a + b && a && b){
     const gab = String(a + b) + p.h;
-    fb("jawab","bad","Kamu menyatukan " + a + " kotak dengan " + b + " ikan satuan menjadi " + gab + ".",
-      "<b>M2 — konkatenasi.</b> Uji sendiri: kalau satu kotak berisi 10 ekor, susunanmu berisi " +
-      (a*10 + b) + " ekor, sedangkan " + gab + " memberi " + ((a+b)*10) + ". " +
-      "Ikan satuan tidak ikut berlipat ketika isi kotak bertambah.");
+    fb("jawab","bad","Kamu menyatukan kotak dan ikan satuan menjadi satu suku berhuruf, " + gab + ".",
+      "<b>M2 — konkatenasi.</b> Uji sendiri: misalkan satu kotak berisi 10 ekor. Hitung isi susunan di mejamu, " +
+      "lalu hitung nilai " + gab + ". Samakah? Ingat, ikan satuan tidak ikut berlipat ketika isi kotak bertambah.");
     return;
   }
   /* M1 — variabel sebagai label: kartu kotak dihitung bernilai satu. */
@@ -1153,7 +1223,7 @@ function cekTulis(){
   if(dh && a && b){
     fb("jawab","bad","Kamu memberi huruf pada <b>kedua</b> bagian: " + norm + ".",
       "Huruf dipakai hanya untuk yang <i>belum diketahui</i>, yaitu isi satu kotak. " +
-      "Ikan satuan sudah terlihat jelas ada " + b + " ekor — bilangan yang sudah pasti tidak perlu huruf. " +
+      "Ikan satuan bisa kamu hitung langsung di meja — bilangan yang sudah pasti tidak perlu huruf. " +
       (dh.h1 === dh.h2
         ? "Lagipula " + dh.k1 + dh.h1 + " + " + dh.k2 + dh.h2 + " berarti " + (dh.k1+dh.k2) + dh.h1 + ", " +
           "seolah ikan satuan ikut berlipat ketika isi kotak bertambah."
@@ -1163,13 +1233,11 @@ function cekTulis(){
   /* Struktur terbaca, hanya angkanya meleset — sebut bagian mana. */
   if(p){
     let d = "";
-    if(p.k !== a) d += "Bagian <b>kotak</b>: kamu menulis " +
-      (p.k === 0 ? "tidak ada suku huruf" : (p.k === 1 ? "" : p.k) + (p.h || h)) +
-      ", padahal kamera membaca " + a + " kotak. ";
-    if(p.c !== b) d += "Bagian <b>ikan satuan</b>: kamu menulis " + p.c + ", padahal terbaca " + b + ". ";
-    fb("jawab","bad", d + "Bentuk tulisannya sudah benar — yang meleset angkanya.",
-      "Baca ulang hitungan kamera di atas. Kalau kamera yang salah hitung, betulkan dengan tombol " +
-      "− dan + dulu, baru tulis lagi.");
+    if(p.k !== a) d += "Jumlah kotak di ekspresimu belum sama dengan di meja. ";
+    if(p.c !== b) d += "Cek lagi banyaknya ikan satuan. ";
+    fb("jawab","bad", d + "Bentuk tulisannya sudah benar — tinggal angkanya.",
+      "Hitung ulang kartu di mejamu satu per satu, lalu bandingkan dengan ekspresimu. " +
+      "Kalau kamera yang salah hitung, betulkan dengan tombol − dan +.");
     return;
   }
   /* Tidak terbaca sama sekali. */
@@ -1180,7 +1248,13 @@ function cekTulis(){
 }
 function cekSusun(){
   if(!ST.target){ fb("jawab","hint","Ambil tugas dulu."); return; }
-  if(!ST.scanned){ fb("jawab","hint","Pindai dulu arenanya."); return; }
+  if(!ST.scanned){
+    const mt = misiAktif();
+    fb("jawab","hint", mt && mt.teman && !MI.penengah
+      ? "Minta temanmu menghitung kartunya dulu, lalu masukkan hitungannya dengan tombol − dan +."
+      : "Pindai dulu arenanya.");
+    return;
+  }
   const { a, b } = ST.target, h = huruf();
   if(ST.sq === a && ST.ci === b){
     fb("jawab","ok","Susunanmu benar. Kamera membaca <b>" + a + " kotak</b> dan <b>" + b + " ikan satuan</b> — " +
@@ -1207,19 +1281,72 @@ function cekSusun(){
   }
   MI.keliru++;
   let d = "";
-  if(ST.sq !== a) d += "Kartu <b>kotak</b>: kamu memasang " + ST.sq + ", seharusnya " + a + ". ";
-  if(ST.ci !== b) d += "Kartu <b>ikan satuan</b>: kamu memasang " + ST.ci + ", seharusnya " + b + ". ";
+  if(ST.sq !== a) d += "Banyaknya kartu <b>kotak</b> di meja belum sesuai dengan ekspresinya. ";
+  if(ST.ci !== b) d += "Cek lagi banyaknya <b>ikan satuan</b>. ";
   let why = "Angka di depan huruf memberi tahu <i>berapa kotak</i>; angka yang berdiri sendiri memberi tahu " +
     "<i>berapa satuan</i>. Keduanya dibaca terpisah.";
   if(ST.sq === a + b && ST.ci === 0){
-    why = "<b>M2 — konkatenasi.</b> Kamu memperlakukan " + a + h + " + " + b + " seolah berarti " +
-      (a+b) + " kotak. Angka " + b + " berdiri sendiri, jadi ia satuan — bukan kotak.";
+    why = "<b>M2 — konkatenasi.</b> Semua angka di ekspresinya kamu jadikan kotak. Baca lagi: angka yang " +
+      "berdiri sendiri, tanpa huruf, itu kotak atau satuan?";
   }else if(ST.sq === 0 && ST.ci === a + b){
-    why = "<b>M1 — variabel sebagai label.</b> Kamu mengubah semuanya jadi satuan, padahal " + a + h +
-      " justru bagian yang <i>belum</i> diketahui jumlahnya.";
+    why = "<b>M1 — variabel sebagai label.</b> Kamu mengubah semuanya jadi satuan, padahal suku yang memuat " +
+      "huruf justru bagian yang <i>belum</i> diketahui jumlahnya.";
   }
   fb("jawab","bad", d.trim(), why);
 }
+
+/* ---------- kesempatan periksa & kunci guru ----------
+   Kesempatan berkurang hanya untuk jawaban yang benar-benar dinilai keliru
+   (MI.keliru bertambah). Kolom kosong, belum memindai, atau syarat misi yang
+   belum terpenuhi tidak memakan kesempatan. */
+function sudahDipindai(){
+  const m = misiAktif();
+  if(ST.scanned) return true;
+  fb("jawab","hint","Ekspresimu sudah ditulis. Sekarang " +
+    (m && m.teman && !MI.penengah ? "minta temanmu menghitung kartunya dan masukkan dengan tombol − dan +"
+                                  : "pindai arenanya di langkah berikutnya") +
+    " — baru ekspresimu bisa diperiksa.");
+  return false;
+}
+function catatCoba(k0){
+  if(!misiAktif() || MI.keliru <= k0) return;
+  MI.coba++;
+  if(MI.coba >= BATAS_PERIKSA){ MI.kunci = true; $("fb-kunci").className = "fb"; }
+  renderCoba(); simpanBengkel();
+}
+function periksaTulis(){
+  const m = misiAktif();
+  if(m && MI.kunci){ renderCoba(); return; }
+  if(m && ($("jwb").value || "").trim() && !sudahDipindai()) return;
+  const k0 = MI.keliru;
+  cekTulis();
+  catatCoba(k0);
+}
+function periksaSusun(){
+  if(misiAktif() && MI.kunci){ renderCoba(); return; }
+  const k0 = MI.keliru;
+  cekSusun();
+  catatCoba(k0);
+}
+$("btnBukaKunci").addEventListener("click", () => {
+  const v = ($("inKodeGuru").value || "").toUpperCase().replace(/\s+/g, "");
+  if(!v){ fb("kunci","hint","Minta gurumu mengetik kodenya."); return; }
+  if(v !== kodeGuru(MI.i)){ fb("kunci","bad","✗ Kode guru belum tepat."); return; }
+  MI.kunci = false; MI.coba = 0; $("inKodeGuru").value = "";
+  renderCoba(); simpanBengkel();
+  fb("jawab","hint","🔓 Kunci dibuka guru. Kamu punya " + BATAS_PERIKSA + " kesempatan lagi — pakai hasil diskusi kelompokmu.");
+});
+$("btnPenengah").addEventListener("click", () => {
+  if(MI.kunci){ renderCoba(); return; }
+  if(MI.penengah){ fb("pindai","hint","Penengah sudah dipanggil — pakai tombol <b>Pindai</b> di bawah."); return; }
+  if(BATAS_PERIKSA - MI.coba < 2){
+    fb("pindai","hint","Kesempatanmu tinggal satu. Periksa dulu bersama temanmu — penengah memakai satu kesempatan.");
+    return;
+  }
+  MI.coba++; MI.penengah = true;
+  tataLangkah(); renderCoba(); simpanBengkel();
+  fb("pindai","hint","Penengah dipanggil (memakai 1 kesempatan). Pindai arenanya; hasil kamera menggantikan hitungan temanmu.");
+});
 
 /* ---------- kabel ---------- */
 $("btnSim").addEventListener("click", () => {
@@ -1242,6 +1369,10 @@ $("file").addEventListener("change", e => {
   im.src = URL.createObjectURL(f);
 });
 $("btnPindai").addEventListener("click", () => {
+  if(misiAktif() && ST.mode === "baca" && !($("jwb").value || "").trim()){
+    fb("pindai","hint","Tulis dulu ekspresi dari kartu di mejamu (Langkah 2). Kamera baru memeriksa setelah kamu menulis.");
+    return;
+  }
   if(!ST.img && !ST.live){ fb("pindai","hint","Belum ada gambar. Tekan <b>Contoh simulasi</b> dulu."); return; }
   if(ST.img) X.drawImage(ST.img, 0, 0, CV.width, CV.height);
   else if(ST.live){
@@ -1315,11 +1446,11 @@ $("btnPakaiSimpan").addEventListener("click", () => {
 $("mBaca").addEventListener("click", () => setMode("baca"));
 $("mSusun").addEventListener("click", () => setMode("susun"));
 $("huruf").addEventListener("input", () => { renderEq(); if(ST.mode === "susun" && ST.target) tugasBaru(); });
-$("btnCek").addEventListener("click", cekTulis);
-$("btnCekSusun").addEventListener("click", cekSusun);
+$("btnCek").addEventListener("click", periksaTulis);
+$("btnCekSusun").addEventListener("click", periksaSusun);
 $("btnTugasBaru").addEventListener("click", tugasBaru);
 document.addEventListener("keydown", e => {
-  if(e.key === "Enter" && document.activeElement === $("jwb")){ e.preventDefault(); cekTulis(); }
+  if(e.key === "Enter" && document.activeElement === $("jwb")){ e.preventDefault(); periksaTulis(); }
 });
 pulihkanBengkel();          // harus mendahului render pertama
 renderBengkel();
@@ -1329,7 +1460,7 @@ renderEq();
 /* dipakai berkas pengujian */
 window.__ae = { ST:ST, detectCards:detectCards, simulate:simulate, otsu:otsu, eqText:eqText, setMode:setMode };
 window.__mi = { MI:MI, MISI:MISI, BADGES:BADGES, levelName:levelName, terapkanMisi:terapkanMisi,
-                XP_MISI:XP_MISI, XP_PULIH:XP_PULIH };
+                XP_MISI:XP_MISI, XP_PULIH:XP_PULIH, BATAS_PERIKSA:BATAS_PERIKSA, kodeGuru:kodeGuru };
 window.__ks = { buat:buatKodeSimpan, pakai:pakaiKodeSimpan };
 window.__snap = () => JSON.stringify({xp:MI.xp, i:MI.i, s:Object.keys(MI.selesai).sort(),
   b:Object.keys(MI.badges).sort(), pa:MI.pernahAdj});

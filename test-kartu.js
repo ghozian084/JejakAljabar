@@ -39,7 +39,7 @@ const BASE = "file://" + __dirname + "/";
   await m2.mouse.move(sudut.x + 3, sudut.y + 2, { steps: 3 }); await m2.mouse.up();
   rec('sudut yang digeser tercatat untuk pindaian ini', await m2.evaluate(() => window.__ar.ST.digeser === true));
 
-  await m2.click('#btnLock'); await m2.waitForTimeout(150);
+  await m2.fill('#inTebak', '2p+2l'); await m2.click('#btnTebak'); await m2.click('#btnLock'); await m2.waitForTimeout(150);
   rec('kartu kirim aktif setelah papan dikunci', !(await redup()));
   const rasio = await m2.evaluate(() => window.__ar.ST.ratio);
 
@@ -182,7 +182,7 @@ const BASE = "file://" + __dirname + "/";
   const kartu = { A_akhir: buf(await jpeg()) };
   const kunciBaru = async () => {
     await m2.click('#btnSim'); await m2.waitForTimeout(120); await m2.click('#btnDetect'); await m2.waitForTimeout(120);
-    await m2.click('#btnLock'); await m2.waitForTimeout(120);
+    await m2.fill('#inTebak', '2p+2l'); await m2.click('#btnTebak'); await m2.click('#btnLock'); await m2.waitForTimeout(120);
     return m2.evaluate(() => window.__ar.ST.ratio);
   };
   const r2 = await kunciBaru();
